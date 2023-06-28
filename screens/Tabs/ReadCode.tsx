@@ -1,5 +1,5 @@
 import React, { useRef, useState } from "react";
-import Scanner from "../../components/Scanner";
+import Scanner from "../../components/Camera";
 import {
   Box,
   Button,
@@ -21,6 +21,7 @@ import { RootStackParamList } from "../Root";
 import { FontAwesome } from "@expo/vector-icons";
 import { TextInput } from "react-native";
 import Animated, { FadeInLeft } from "react-native-reanimated";
+import ScanIcon from "../../assets/qr-code-scan-icon.svg";
 
 export type ReadCodeProps = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, "ReadCode">,
@@ -39,16 +40,18 @@ export default function ReadCode({ navigation }: ReadCodeProps) {
   return (
     <Box flex={1}>
       <FocusAwareStatusBar style="dark" />
-      {isFocused ? null : (
-        <Scanner onBarCode={(code) => navigation.push("Meter", { id: code })} />
-      )}
-      <VStack
-        space={2}
-        p={3}
-        alignItems={"center"}
-        flex={1}
-        justifyContent={"center"}
+      <Scanner
+        onBarCodeScanned={(e) => {
+          if (e.data == null) return;
+
+          navigation.push("Meter", { id: e.data });
+        }}
       >
+        <Center flex={1}>
+          <ScanIcon width={200} height={200} fill="white" opacity={0.2} />
+        </Center>
+      </Scanner>
+      <VStack space={2} p={5} alignItems={"center"} justifyContent={"center"}>
         <AnimatedText entering={FadeInLeft.delay(100)} color={"dark.400"}>
           Point your camera to the QR Code attached to the meter
         </AnimatedText>

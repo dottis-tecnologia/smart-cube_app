@@ -13,6 +13,7 @@ export type TabParamList = {
   Home: undefined;
   ReadCode: undefined;
   Sync: undefined;
+  Meter: { id: string };
 };
 
 const Tab = createBottomTabNavigator<TabParamList>();
@@ -42,7 +43,7 @@ export default function Tabs({}: TabsProps) {
         options={{
           tabBarIcon: tabBarIcon("qrcode"),
           tabBarLabel: "Read",
-          title: "Read Code",
+          title: "Read QR Code",
         }}
       />
       <Tab.Screen

@@ -14,9 +14,14 @@ import {
   Text,
   VStack,
 } from "native-base";
-import Animated, { FadeInLeft } from "react-native-reanimated";
+import Animated, {
+  FadeInLeft,
+  useAnimatedStyle,
+  withTiming,
+} from "react-native-reanimated";
 import { FontAwesome } from "@expo/vector-icons";
 import { intlFormat } from "date-fns";
+import { useIsFocused } from "@react-navigation/native";
 
 export type MeterProps = NativeStackScreenProps<RootStackParamList, "Meter">;
 
@@ -57,17 +62,20 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
     unit: "kWh",
     location: "BUILD-075",
   };
+  const isFocused = useIsFocused();
 
   return (
     <>
       <FocusAwareStatusBar style="dark" />
-      <Fab
-        placement="bottom-right"
-        colorScheme="primary"
-        size="lg"
-        icon={<Icon name="plus" pl={0.5} as={FontAwesome} />}
-        onPress={() => navigation.navigate("CreateReading", { id })}
-      />
+      {isFocused && (
+        <Fab
+          placement="bottom-right"
+          colorScheme="primary"
+          size="lg"
+          icon={<Icon name="plus" pl={0.5} as={FontAwesome} />}
+          onPress={() => navigation.navigate("CreateReading", { id })}
+        />
+      )}
       <FlatList
         ListHeaderComponent={
           <Box>
