@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Center,
@@ -13,7 +13,6 @@ import { TabParamList } from "./Tabs";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { intlFormat } from "date-fns";
 import { FontAwesome } from "@expo/vector-icons";
-import { StatusBar } from "expo-status-bar";
 import FocusAwareStatusBar from "../../components/util/FocusAwareStatusBar";
 import Animated, {
   FadeInDown,
@@ -21,62 +20,34 @@ import Animated, {
   FadeInUp,
   SlideInLeft,
 } from "react-native-reanimated";
-import { CompositeScreenProps } from "@react-navigation/native";
+import { CompositeScreenProps, useFocusEffect } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../Root";
+import useQuery from "../../hooks/useQuery";
 
 export type HomeProps = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, "Home">,
   NativeStackScreenProps<RootStackParamList>
 >;
 
-const mockReadings = [
-  {
-    id: 1,
-    meterId: "FDU24MZ4",
-    location: "BUILDING-32",
-    value: 34743,
-    unit: "kWh",
-    created_at: new Date(2023, 3, 18, 18, 35, 23),
-  },
-  {
-    id: 3,
-    meterId: "FDU24MZ4",
-    location: "BUILDING-32",
-    value: 34743,
-    unit: "kWh",
-    created_at: new Date(2023, 3, 18, 18, 35, 23),
-  },
-  {
-    id: 5,
-    meterId: "FDU24MZ4",
-    location: "BUILDING-32",
-    value: 34743,
-    unit: "kWh",
-    created_at: new Date(2023, 3, 18, 18, 35, 23),
-  },
-  {
-    id: 6,
-    meterId: "FDU24MZ4",
-    location: "BUILDING-32",
-    value: 34743,
-    unit: "kWh",
-    created_at: new Date(2023, 3, 18, 18, 35, 23),
-  },
-  {
-    id: 8,
-    meterId: "FDU24MZ4",
-    location: "BUILDING-32",
-    value: 34743,
-    unit: "kWh",
-    created_at: new Date(2023, 3, 18, 18, 35, 23),
-  },
-];
-
 const AnimatedBox = Animated.createAnimatedComponent(Box);
 const AnimatedHStack = Animated.createAnimatedComponent(HStack);
 
 export default function Home({ navigation }: HomeProps) {
+  const { data: readings, refetch } = useQuery<{
+    id: string;
+    meterId: string;
+    value: number;
+    createdAt: string;
+    unit: string;
+    location: string;
+  }>(
+    "SELECT readings.*, meters.unit, meters.location FROM readings JOIN meters ON readings.meterId = meters.id ORDER BY createdAt DESC LIMIT 12;"
+  );
+  useFocusEffect(() => {
+    refetch;
+  });
+
   return (
     <Box flex={1} bg="primary.400" safeArea>
       <FocusAwareStatusBar style="light" />
@@ -121,7 +92,7 @@ export default function Home({ navigation }: HomeProps) {
           <Heading size="sm" mb={3}>
             Latest readings
           </Heading>
-          {mockReadings.map((reading, index) => (
+          {readings?.map((reading, index) => (
             <AnimatedHStack
               key={reading.id}
               p={5}
@@ -155,7 +126,7 @@ export default function Home({ navigation }: HomeProps) {
                 <Text color="emphasis.500">{reading.meterId}</Text>
                 <Text>{reading.location}</Text>
                 <Text color="light.500">
-                  {intlFormat(reading.created_at, {
+                  {intlFormat(new Date(reading.createdAt), {
                     year: "numeric",
                     month: "short",
                     day: "2-digit",

@@ -8,6 +8,7 @@ import HeaderBar from "../../components/shared/TabHeaderBar";
 import FocusAwareStatusBar from "../../components/util/FocusAwareStatusBar";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../Root";
+import Sync from "./Sync";
 
 export type TabParamList = {
   Home: undefined;
@@ -48,7 +49,7 @@ export default function Tabs({}: TabsProps) {
       />
       <Tab.Screen
         name="Sync"
-        component={Placeholder}
+        component={Sync}
         options={{
           tabBarIcon: tabBarIcon("refresh"),
           tabBarLabel: "Sync",
@@ -62,11 +63,3 @@ const tabBarIcon =
   (name: string) =>
   ({ color, size }: { color: string; size: number }) =>
     <Icon as={FontAwesome} name={name} color={color} size={size} />;
-
-function Placeholder() {
-  return (
-    <>
-      <FocusAwareStatusBar style="dark" />
-    </>
-  );
-}

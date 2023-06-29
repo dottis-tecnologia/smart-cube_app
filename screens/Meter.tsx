@@ -4,65 +4,71 @@ import FocusAwareStatusBar from "../components/util/FocusAwareStatusBar";
 import {
   AspectRatio,
   Box,
+  Button,
+  Center,
   Fab,
   FlatList,
   HStack,
   Heading,
   Icon,
   Image,
-  ScrollView,
+  Spinner,
   Text,
   VStack,
 } from "native-base";
-import Animated, {
-  FadeInLeft,
-  useAnimatedStyle,
-  withTiming,
-} from "react-native-reanimated";
+import Animated, { FadeInLeft } from "react-native-reanimated";
 import { FontAwesome } from "@expo/vector-icons";
 import { intlFormat } from "date-fns";
 import { useIsFocused } from "@react-navigation/native";
+import useQuery from "../hooks/useQuery";
 
 export type MeterProps = NativeStackScreenProps<RootStackParamList, "Meter">;
 
 const AnimatedBox = Animated.createAnimatedComponent(Box);
 const AnimatedHStack = Animated.createAnimatedComponent(HStack);
 
-const readings = [
-  {
-    id: 0,
-    technician: "John Smith",
-    value: 34743,
-    created_at: new Date(2023, 3, 18, 18, 35, 23),
-  },
-  {
-    id: 1,
-    technician: "John Smith",
-    value: 34700,
-    created_at: new Date(2023, 3, 18, 18, 35, 23),
-  },
-  {
-    id: 2,
-    technician: "John Doe",
-    value: 34643,
-    created_at: new Date(2023, 3, 18, 18, 35, 23),
-  },
-  {
-    id: 3,
-    technician: "John Smith",
-    value: 34610,
-    created_at: new Date(2023, 3, 18, 18, 35, 23),
-  },
-];
-
 export default function Meter({ route: { params }, navigation }: MeterProps) {
   const { id } = params;
-  const meter = {
-    id,
-    unit: "kWh",
-    location: "BUILD-075",
-  };
+  const { data: meterData } = useQuery<{
+    id: string;
+    location: string;
+    unit: string;
+  }>("SELECT * FROM meters WHERE id = ?;", [id]);
+  const { data: readings } = useQuery<{
+    id: string;
+    meterId: string;
+    value: number;
+    createdAt: string;
+  }>("SELECT * FROM readings WHERE meterId = ? ORDER BY createdAt DESC;", [id]);
+
   const isFocused = useIsFocused();
+
+  if (meterData == null) {
+    return (
+      <Center flex={1}>
+        <FocusAwareStatusBar style="dark" />
+        <Spinner />
+      </Center>
+    );
+  }
+
+  if (meterData.length === 0) {
+    return (
+      <Center flex={1}>
+        <FocusAwareStatusBar style="dark" />
+        <Text mb={3}>The meter with id {id} was not found</Text>
+        <Button
+          variant="ghost"
+          leftIcon={<Icon as={FontAwesome} name="arrow-left" />}
+          onPress={() => navigation.goBack()}
+        >
+          Go back
+        </Button>
+      </Center>
+    );
+  }
+
+  const meter = meterData[0];
 
   return (
     <>
@@ -129,7 +135,7 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
               </AnimatedHStack>
             </Box>
             <Heading m={3} fontSize={"md"}>
-              Last readings
+              Latest readings
             </Heading>
           </Box>
         }
@@ -147,10 +153,10 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
             <HStack alignItems={"center"}>
               <VStack flex={1}>
                 <Text color="white" fontWeight="bold">
-                  {item.technician}
+                  John Smith
                 </Text>
                 <Text color="white">
-                  {intlFormat(item.created_at, {
+                  {intlFormat(new Date(item.createdAt), {
                     year: "numeric",
                     month: "short",
                     day: "2-digit",

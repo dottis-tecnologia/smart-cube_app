@@ -3,6 +3,8 @@ import Tabs from "./Tabs/Tabs";
 import HeaderBar from "../components/shared/HeaderBar";
 import Meter from "./Meter";
 import CreateReading from "./CreateReading";
+import { useEffect } from "react";
+import { deleteDatabase, getDatabase } from "../util/db";
 
 export type RootProps = {};
 
