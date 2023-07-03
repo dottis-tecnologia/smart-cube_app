@@ -33,6 +33,7 @@ export default function Confirmation({
         <Text mb={3}>Do you confirm these values?</Text>
         <HStack space={3} alignItems={"center"}>
           <Button
+            size="lg"
             leftIcon={<Icon as={FontAwesome} name="arrow-left" />}
             colorScheme={"red"}
             onPress={() => onReturn?.()}

@@ -18,7 +18,7 @@ import {
 } from "native-base";
 import Animated, { FadeInLeft } from "react-native-reanimated";
 import { FontAwesome } from "@expo/vector-icons";
-import { intlFormat } from "date-fns";
+import { formatDistanceToNow, intlFormat } from "date-fns";
 import { useIsFocused } from "@react-navigation/native";
 import useQuery from "../hooks/useQuery";
 import { dbQuery } from "../util/db";
@@ -163,12 +163,8 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
                   John Smith
                 </Text>
                 <Text color="white">
-                  {intlFormat(new Date(item.createdAt), {
-                    year: "numeric",
-                    month: "short",
-                    day: "2-digit",
-                    hour: "numeric",
-                    minute: "numeric",
+                  {formatDistanceToNow(new Date(item.createdAt), {
+                    addSuffix: true,
                   })}
                 </Text>
               </VStack>

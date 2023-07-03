@@ -50,6 +50,7 @@ export default function InputReading({
           <Button
             leftIcon={<Icon as={FontAwesome} name="arrow-left" />}
             colorScheme={"red"}
+            size="lg"
             onPress={() => onReturn?.()}
           >
             Take another picture

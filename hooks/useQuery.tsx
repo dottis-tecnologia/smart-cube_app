@@ -10,7 +10,6 @@ export default function useQuery<T>(fn: () => Promise<T>) {
     isLoading.current = true;
 
     try {
-      console.log("fetching");
       const result = await fn();
       setData(result);
     } finally {

@@ -45,11 +45,7 @@ export default function ReadCode({ navigation }: ReadCodeProps) {
 
           navigation.push("Meter", { id: e.data });
         }}
-      >
-        <Center flex={1}>
-          <ScanIcon width={200} height={200} fill="white" opacity={0.2} />
-        </Center>
-      </Scanner>
+      ></Scanner>
       <VStack space={2} p={5} alignItems={"center"} justifyContent={"center"}>
         <AnimatedText entering={FadeInLeft.delay(100)} color={"dark.400"}>
           Point your camera to the QR Code attached to the meter

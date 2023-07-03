@@ -11,7 +11,7 @@ import {
 } from "native-base";
 import { TabParamList } from "./Tabs";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
-import { intlFormat } from "date-fns";
+import { formatDistanceToNow, intlFormat } from "date-fns";
 import { FontAwesome } from "@expo/vector-icons";
 import FocusAwareStatusBar from "../../components/util/FocusAwareStatusBar";
 import Animated, {
@@ -47,6 +47,11 @@ const getMeters = () =>
   );
 export default function Home({ navigation }: HomeProps) {
   const { data: readings } = useQuery(getMeters);
+  const { data: readingCount } = useQuery(() =>
+    dbQuery<{ count: 5 }>(
+      "SELECT COUNT(*) as count FROM readings WHERE date(createdAt) = date('now');"
+    )
+  );
 
   return (
     <Box flex={1} bg="primary.400" safeArea>
@@ -85,7 +90,9 @@ export default function Home({ navigation }: HomeProps) {
           entering={FadeInUp.delay(150)}
         >
           <Text color="secondary.400">Readings today</Text>
-          <Heading color="emphasis.500">8</Heading>
+          <Heading color="emphasis.500">
+            {readingCount?.rows[0].count || 0}
+          </Heading>
         </AnimatedBox>
 
         <Box p={3}>
@@ -126,12 +133,8 @@ export default function Home({ navigation }: HomeProps) {
                 <Text color="emphasis.500">{reading.meterId}</Text>
                 <Text>{reading.location}</Text>
                 <Text color="light.500">
-                  {intlFormat(new Date(reading.createdAt), {
-                    year: "numeric",
-                    month: "short",
-                    day: "2-digit",
-                    hour: "numeric",
-                    minute: "numeric",
+                  {formatDistanceToNow(new Date(reading.createdAt), {
+                    addSuffix: true,
                   })}
                 </Text>
               </VStack>

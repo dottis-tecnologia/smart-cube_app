@@ -5,15 +5,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 const dbPath = "db.db";
 
 export async function getDatabase() {
-  if (
-    !(await FileSystem.getInfoAsync(FileSystem.documentDirectory + "SQLite"))
-      .exists
-  ) {
-    await FileSystem.makeDirectoryAsync(
-      FileSystem.documentDirectory + "SQLite"
-    );
-  }
-
   const file = await FileSystem.getInfoAsync(
     `${FileSystem.documentDirectory}SQLite/${dbPath}`
   );
@@ -34,7 +25,7 @@ export async function getDatabase() {
           `CREATE TABLE readings (
             id TEXT PRIMARY KEY NOT NULL,
             meterId TEXT, 
-            value INTEGER,
+            value REAL,
             createdAt TEXT,
             synchedAt TEXT,
             FOREIGN KEY(meterId) REFERENCES meters(id)
@@ -95,5 +86,4 @@ export async function deleteDatabase() {
     `${FileSystem.documentDirectory}SQLite/${dbPath}`
   );
   await AsyncStorage.removeItem("last-sync");
-  console.log("database deleted");
 }

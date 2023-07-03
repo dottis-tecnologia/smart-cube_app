@@ -1,4 +1,4 @@
-import { deleteDatabase, getDatabase, dbQuery } from "../../util/db";
+import { deleteDatabase, dbQuery } from "../../util/db";
 import {
   Box,
   Button,
@@ -7,6 +7,7 @@ import {
   Heading,
   Icon,
   IconButton,
+  Popover,
   Text,
   VStack,
   useToast,
@@ -14,17 +15,16 @@ import {
 import FocusAwareStatusBar from "../../components/util/FocusAwareStatusBar";
 import { FontAwesome } from "@expo/vector-icons";
 import useMutation from "../../hooks/useMutation";
-import { syncMeters } from "../../util/sync";
 import useQuery from "../../hooks/useQuery";
-import Animated, { SlideInLeft } from "react-native-reanimated";
-import { intlFormat } from "date-fns";
-import { useFocusEffect } from "@react-navigation/native";
-import trpc from "../../util/trpc";
+import Animated, { SlideInLeft, SlideOutRight } from "react-native-reanimated";
+import { formatDistanceToNow } from "date-fns";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useState } from "react";
+import { syncData } from "../../util/sync/sync";
+import { sendReading } from "../../util/sync/readings";
 
 export type SyncProps = {};
 
-const AnimatedBox = Animated.createAnimatedComponent(Box);
 const AnimatedHStack = Animated.createAnimatedComponent(HStack);
 
 const getReadings = () =>
@@ -48,37 +48,30 @@ export default function Sync({}: SyncProps) {
     return new Date(lastSync);
   });
 
-  const { mutate, isMutating } = useMutation(syncMeters, {
-    onSuccess: () =>
+  const { mutate, isMutating } = useMutation(syncData, {
+    onSuccess: () => {
       toast.show({
         title: "Success",
         description: "Data synchronized successfully",
         colorScheme: "green",
-      }),
+      });
+      refetchReadings();
+      refetchLastSync();
+    },
   });
-  const { mutate: deleteDb, isMutating: isDeletingDb } = useMutation(
-    deleteDatabase,
-    {
-      onSuccess: () => {
-        refetchLastSync();
-        refetchReadings();
-      },
-    }
-  );
 
   return (
     <>
       <FocusAwareStatusBar style="dark" />
       <FlatList
         ListFooterComponent={
-          <Box>
-            <Button
-              isLoading={isDeletingDb}
-              colorScheme={"red"}
-              onPress={() => deleteDb()}
-            >
-              Delete local datebase
-            </Button>
+          <Box p={3}>
+            <DeleteDBButton
+              onSuccess={() => {
+                refetchLastSync();
+                refetchReadings();
+              }}
+            />
           </Box>
         }
         ListHeaderComponent={
@@ -102,15 +95,13 @@ export default function Sync({}: SyncProps) {
               >
                 <Box key="1">
                   <Heading color="white">Sync</Heading>
-                  <Text color="light.700">Last synchronization:</Text>
-                  <Text color="white">
+                  <Text color="white" opacity={0.7}>
+                    Last synchronization:
+                  </Text>
+                  <Text color="white" opacity={0.8}>
                     {lastSync
-                      ? intlFormat(lastSync, {
-                          year: "numeric",
-                          month: "short",
-                          day: "2-digit",
-                          hour: "numeric",
-                          minute: "numeric",
+                      ? formatDistanceToNow(lastSync, {
+                          addSuffix: true,
                         })
                       : "never"}
                   </Text>
@@ -136,7 +127,6 @@ export default function Sync({}: SyncProps) {
         renderItem={({ item }) => <ReadingItem item={item} />}
         keyExtractor={(item) => item.id}
       />
-      <Box p={3} borderRadius={"lg"} mt={-2} bg="light.50" key="2"></Box>
     </>
   );
 }
@@ -152,10 +142,8 @@ function ReadingItem({
     unit: string;
   };
 }) {
-  const { isSuccess, mutate, error, isError, isMutating } = useMutation(
-    trpc.readings.create.mutate
-  );
-  console.log(error);
+  const { isSuccess, mutate, error, isError, isMutating } =
+    useMutation(sendReading);
 
   return (
     <AnimatedHStack
@@ -169,20 +157,18 @@ function ReadingItem({
       alignItems="center"
       space={5}
       entering={SlideInLeft.delay(200).randomDelay()}
+      exiting={SlideOutRight.delay(200).randomDelay()}
     >
       <VStack flex={1}>
         <Text color="white" key="1">
           {item.meterId}
         </Text>
         <Text color="white" key="2">
-          {intlFormat(new Date(item.createdAt), {
-            year: "numeric",
-            month: "short",
-            day: "2-digit",
-            hour: "numeric",
-            minute: "numeric",
+          {formatDistanceToNow(new Date(item.createdAt), {
+            addSuffix: true,
           })}
         </Text>
+        {isError ? <Text color="white">{error?.message}</Text> : null}
       </VStack>
       <Text color="white" fontWeight={"bold"}>
         {item.value} {item.unit}
@@ -191,9 +177,79 @@ function ReadingItem({
         colorScheme={"white"}
         variant={"ghost"}
         isDisabled={isMutating}
-        onPress={() => mutate({ ...item, createdAt: new Date(item.createdAt) })}
+        onPress={() => mutate(item)}
         _icon={{ as: FontAwesome, name: "refresh", color: "white" }}
       />
     </AnimatedHStack>
+  );
+}
+
+type DeleteDBButtonProps = {
+  onSuccess?: () => void;
+};
+function DeleteDBButton({ onSuccess }: DeleteDBButtonProps) {
+  const [isOpen, setIsOpen] = useState(false);
+  const toast = useToast();
+  const { mutate: deleteDb, isMutating: isDeletingDb } = useMutation(
+    deleteDatabase,
+    {
+      onSuccess: () => {
+        onSuccess?.();
+        toast.show({
+          title: "Success",
+          description: "Database deleted successfully",
+        });
+      },
+    }
+  );
+
+  return (
+    <Popover
+      isOpen={isOpen}
+      onClose={() => setIsOpen(false)}
+      onOpen={() => setIsOpen(true)}
+      trigger={(triggerProps) => {
+        return (
+          <Button
+            {...triggerProps}
+            colorScheme="danger"
+            isLoading={isDeletingDb}
+          >
+            Delete Database
+          </Button>
+        );
+      }}
+    >
+      <Popover.Content accessibilityLabel="Delete Database" m={3}>
+        <Popover.Arrow />
+        <Popover.CloseButton />
+        <Popover.Header>Delete Customer</Popover.Header>
+        <Popover.Body>
+          This action will delete the local database and all the data stored in
+          this device, any unsynchronized data will be lost, be careful when
+          using this option
+        </Popover.Body>
+        <Popover.Footer justifyContent="flex-end">
+          <Button.Group space={2}>
+            <Button
+              colorScheme="coolGray"
+              variant="ghost"
+              onPress={() => setIsOpen(false)}
+            >
+              Cancel
+            </Button>
+            <Button
+              colorScheme="danger"
+              onPress={() => {
+                deleteDb();
+                setIsOpen(false);
+              }}
+            >
+              Delete
+            </Button>
+          </Button.Group>
+        </Popover.Footer>
+      </Popover.Content>
+    </Popover>
   );
 }
