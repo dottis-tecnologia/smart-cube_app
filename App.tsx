@@ -6,6 +6,8 @@ import {
   extendTheme,
 } from "native-base";
 import { LinearGradient } from "expo-linear-gradient";
+import { useEffect } from "react";
+import trpc from "./util/trpc";
 
 // extend the theme
 const theme = extendTheme({

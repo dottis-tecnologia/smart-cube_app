@@ -1,5 +1,6 @@
 import * as SQLite from "expo-sqlite";
 import * as FileSystem from "expo-file-system";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const dbPath = "db.db";
 
@@ -25,7 +26,8 @@ export async function getDatabase() {
           `CREATE TABLE meters (
             id TEXT PRIMARY KEY NOT NULL,
             location TEXT, 
-            unit TEXT
+            unit TEXT,
+            synchedAt TEXT
           )`
         );
         tx.executeSql(
@@ -34,6 +36,7 @@ export async function getDatabase() {
             meterId TEXT, 
             value INTEGER,
             createdAt TEXT,
+            synchedAt TEXT,
             FOREIGN KEY(meterId) REFERENCES meters(id)
           )`
         );
@@ -51,7 +54,7 @@ type Result<T> = {
   rows: T[];
 };
 
-export async function query<T>(
+export async function dbQuery<T>(
   sql: string,
   args: unknown[] = [],
   readOnly: boolean = true
@@ -88,8 +91,9 @@ export async function deleteDatabase() {
 
   if (!file.exists) return;
 
-  console.log("database deleted");
   await FileSystem.deleteAsync(
     `${FileSystem.documentDirectory}SQLite/${dbPath}`
   );
+  await AsyncStorage.removeItem("last-sync");
+  console.log("database deleted");
 }

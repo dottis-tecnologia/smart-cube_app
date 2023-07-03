@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Box,
   Center,
@@ -24,6 +24,7 @@ import { CompositeScreenProps, useFocusEffect } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../Root";
 import useQuery from "../../hooks/useQuery";
+import { dbQuery } from "../../util/db";
 
 export type HomeProps = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, "Home">,
@@ -33,8 +34,8 @@ export type HomeProps = CompositeScreenProps<
 const AnimatedBox = Animated.createAnimatedComponent(Box);
 const AnimatedHStack = Animated.createAnimatedComponent(HStack);
 
-export default function Home({ navigation }: HomeProps) {
-  const { data: readings, refetch } = useQuery<{
+const getMeters = () =>
+  dbQuery<{
     id: string;
     meterId: string;
     value: number;
@@ -44,9 +45,8 @@ export default function Home({ navigation }: HomeProps) {
   }>(
     "SELECT readings.*, meters.unit, meters.location FROM readings JOIN meters ON readings.meterId = meters.id ORDER BY createdAt DESC LIMIT 12;"
   );
-  useFocusEffect(() => {
-    refetch;
-  });
+export default function Home({ navigation }: HomeProps) {
+  const { data: readings } = useQuery(getMeters);
 
   return (
     <Box flex={1} bg="primary.400" safeArea>
@@ -92,7 +92,7 @@ export default function Home({ navigation }: HomeProps) {
           <Heading size="sm" mb={3}>
             Latest readings
           </Heading>
-          {readings?.map((reading, index) => (
+          {readings?.rows.map((reading, index) => (
             <AnimatedHStack
               key={reading.id}
               p={5}

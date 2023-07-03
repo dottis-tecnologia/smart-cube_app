@@ -43,6 +43,7 @@ export default function InputReading({
           mb={5}
           size="2xl"
           keyboardType="numeric"
+          placeholder="Enter the reading here..."
           onChangeText={(v) => setReading(+v)}
         />
         <HStack space={3} alignItems={"center"}>

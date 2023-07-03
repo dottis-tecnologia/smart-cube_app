@@ -14,7 +14,6 @@ import {
 import { CompositeScreenProps, useIsFocused } from "@react-navigation/native";
 import { TabParamList } from "./Tabs";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
-import { StatusBar } from "expo-status-bar";
 import FocusAwareStatusBar from "../../components/util/FocusAwareStatusBar";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../Root";

@@ -21,6 +21,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import { intlFormat } from "date-fns";
 import { useIsFocused } from "@react-navigation/native";
 import useQuery from "../hooks/useQuery";
+import { dbQuery } from "../util/db";
 
 export type MeterProps = NativeStackScreenProps<RootStackParamList, "Meter">;
 
@@ -29,17 +30,23 @@ const AnimatedHStack = Animated.createAnimatedComponent(HStack);
 
 export default function Meter({ route: { params }, navigation }: MeterProps) {
   const { id } = params;
-  const { data: meterData } = useQuery<{
-    id: string;
-    location: string;
-    unit: string;
-  }>("SELECT * FROM meters WHERE id = ?;", [id]);
-  const { data: readings } = useQuery<{
-    id: string;
-    meterId: string;
-    value: number;
-    createdAt: string;
-  }>("SELECT * FROM readings WHERE meterId = ? ORDER BY createdAt DESC;", [id]);
+  const { data: meterData } = useQuery(() =>
+    dbQuery<{
+      id: string;
+      location: string;
+      unit: string;
+    }>("SELECT * FROM meters WHERE id = ?;", [id])
+  );
+  const { data: readings } = useQuery(() =>
+    dbQuery<{
+      id: string;
+      meterId: string;
+      value: number;
+      createdAt: string;
+    }>("SELECT * FROM readings WHERE meterId = ? ORDER BY createdAt DESC;", [
+      id,
+    ])
+  );
 
   const isFocused = useIsFocused();
 
@@ -52,7 +59,7 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
     );
   }
 
-  if (meterData.length === 0) {
+  if (meterData.rows.length === 0) {
     return (
       <Center flex={1}>
         <FocusAwareStatusBar style="dark" />
@@ -68,7 +75,7 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
     );
   }
 
-  const meter = meterData[0];
+  const meter = meterData.rows[0];
 
   return (
     <>
@@ -139,7 +146,7 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
             </Heading>
           </Box>
         }
-        data={readings}
+        data={readings?.rows}
         renderItem={({ item }) => (
           <AnimatedBox
             entering={FadeInLeft.delay(300).randomDelay()}

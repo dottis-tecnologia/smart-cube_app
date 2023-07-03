@@ -1,26 +1,32 @@
-import { useEffect, useState } from "react";
-import { query } from "../util/db";
+import { useFocusEffect } from "@react-navigation/native";
+import { useCallback, useEffect, useRef, useState } from "react";
 
-export default function useQuery<T>(queryString: string, params?: unknown[]) {
-  const [data, setData] = useState<T[] | null>(null);
+export default function useQuery<T>(fn: () => Promise<T>) {
+  const [data, setData] = useState<T | null>(null);
+  const isLoading = useRef(false);
 
   const fetch = async () => {
-    const result = await query<T>(queryString, params);
+    if (isLoading.current) return;
+    isLoading.current = true;
 
-    if (result == null) {
-      setData(null);
-      return;
+    try {
+      console.log("fetching");
+      const result = await fn();
+      setData(result);
+    } finally {
+      isLoading.current = false;
     }
-
-    setData(result.rows);
   };
 
-  useEffect(() => {
-    fetch();
-  }, [query]);
+  useFocusEffect(
+    useCallback(() => {
+      fetch();
+    }, [])
+  );
 
   return {
     data,
+    isLoading,
     refetch: fetch,
   };
 }
