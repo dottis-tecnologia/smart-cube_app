@@ -5,7 +5,7 @@ import { apiUrl } from "../config";
 const trpc = createTRPCProxyClient<AppRouter>({
   links: [
     httpBatchLink({
-      url: apiUrl,
+      url: apiUrl + "/trpc",
     }),
   ],
 });

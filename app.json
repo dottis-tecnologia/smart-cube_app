@@ -12,8 +12,9 @@
       "backgroundColor": "#ffffff"
     },
     "androidNavigationBar": {
-      "visible": "sticky-immersive"
+      "backgroundColor": "#0093e9"
     },
+
     "assetBundlePatterns": ["**/*"],
     "ios": {
       "supportsTablet": true

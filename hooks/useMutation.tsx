@@ -7,7 +7,7 @@ export default function useMutation<T extends any[] | [], R, E extends Error>(
     onError,
   }: {
     onSuccess?: () => void;
-    onError?: () => void;
+    onError?: (error: E) => void;
   } = {}
 ) {
   const [isMutating, setIsMutating] = useState(false);
@@ -20,8 +20,9 @@ export default function useMutation<T extends any[] | [], R, E extends Error>(
       await fn(...args);
       onSuccess?.();
     } catch (e) {
+      console.error(e);
       setError(e as E);
-      onError?.();
+      onError?.(e as E);
     } finally {
       setIsMutating(false);
       setIsFinished(true);

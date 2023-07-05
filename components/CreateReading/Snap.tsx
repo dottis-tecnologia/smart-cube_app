@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import { Box, Button, Center, Icon, Spinner, Text } from "native-base";
 import Camera from "../Camera";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
+import uploadFile from "../../util/uploadFile";
 
 export type SnapProps = {
   onSnapshot?: (picture: CameraCapturedPicture) => void;

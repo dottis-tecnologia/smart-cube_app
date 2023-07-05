@@ -17,11 +17,13 @@ import {
   VStack,
 } from "native-base";
 import Animated, { FadeInLeft } from "react-native-reanimated";
-import { FontAwesome } from "@expo/vector-icons";
+import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { formatDistanceToNow, intlFormat } from "date-fns";
 import { useIsFocused } from "@react-navigation/native";
 import useQuery from "../hooks/useQuery";
 import { dbQuery } from "../util/db";
+import * as FileSystem from "expo-file-system";
+import { useEffect } from "react";
 
 export type MeterProps = NativeStackScreenProps<RootStackParamList, "Meter">;
 
@@ -35,6 +37,7 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
       id: string;
       location: string;
       unit: string;
+      imagePath: string;
     }>("SELECT * FROM meters WHERE id = ?;", [id])
   );
   const { data: readings } = useQuery(() =>
@@ -43,6 +46,7 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
       meterId: string;
       value: number;
       createdAt: string;
+      imagePath: string;
     }>("SELECT * FROM readings WHERE meterId = ? ORDER BY createdAt DESC;", [
       id,
     ])
@@ -93,13 +97,26 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
         ListHeaderComponent={
           <Box>
             <AspectRatio ratio={1}>
-              <Image
-                source={require("../assets/meter.jpg")}
-                resizeMode="cover"
-                w={"100%"}
-                h={"100%"}
-                alt="meter picture"
-              />
+              {meter.imagePath ? (
+                <Image
+                  source={{
+                    uri: `${FileSystem.documentDirectory}pictures/${meter.id}/image.jpg`,
+                  }}
+                  resizeMode="cover"
+                  w={"100%"}
+                  h={"100%"}
+                  alt="meter picture"
+                />
+              ) : (
+                <Center flex={1} bg="black">
+                  <Icon
+                    as={FontAwesome5}
+                    name="image"
+                    size={24}
+                    color="light.800"
+                  />
+                </Center>
+              )}
             </AspectRatio>
             <Box p={3}>
               <AnimatedHStack

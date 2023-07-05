@@ -34,6 +34,7 @@ const getReadings = () =>
     value: number;
     unit: string;
     createdAt: string;
+    imagePath: string;
   }>(
     "SELECT readings.*, meters.unit FROM readings JOIN meters ON readings.meterId = meters.id WHERE readings.synchedAt IS NULL;"
   );
@@ -48,7 +49,7 @@ export default function Sync({}: SyncProps) {
     return new Date(lastSync);
   });
 
-  const { mutate, isMutating } = useMutation(syncData, {
+  const { mutate, isMutating, error, isError } = useMutation(syncData, {
     onSuccess: () => {
       toast.show({
         title: "Success",
@@ -139,6 +140,7 @@ function ReadingItem({
     value: number;
     meterId: string;
     createdAt: string;
+    imagePath: string;
     unit: string;
   };
 }) {

@@ -4,6 +4,10 @@ import FocusAwareStatusBar from "../components/util/FocusAwareStatusBar";
 import NewReading from "../components/CreateReading/NewReading";
 import { dbQuery } from "../util/db";
 import { randomUUID } from "expo-crypto";
+import useMutation from "../hooks/useMutation";
+import { CameraCapturedPicture } from "expo-camera";
+import { Center, Spinner } from "native-base";
+import * as FileSystem from "expo-file-system";
 
 export type CreateReadingProps = NativeStackScreenProps<
   RootStackParamList,
@@ -15,21 +19,43 @@ export default function CreateReading({
   route: { params },
 }: CreateReadingProps) {
   const { id } = params;
+  const { isMutating, mutate } = useMutation(
+    async (snapshot: CameraCapturedPicture, reading: number) => {
+      const readingId = randomUUID();
+
+      const uri = snapshot.uri;
+      const extSplit = uri.split(".");
+      const ext = extSplit[extSplit.length - 1];
+      const filePath = `${FileSystem.documentDirectory}pictures/${id}/${readingId}.${ext}`;
+
+      await FileSystem.copyAsync({
+        from: uri,
+        to: filePath,
+      });
+
+      await dbQuery(
+        "INSERT INTO readings (id, meterId, value, createdAt, imagePath) VALUES (?, ?, ?, ?, ?)",
+        [readingId, id, reading, new Date().toISOString(), filePath],
+        false
+      );
+    },
+    {
+      onSuccess: () => {
+        navigation.navigate("Tabs");
+      },
+    }
+  );
 
   return (
     <>
       <FocusAwareStatusBar style="dark" />
-      <NewReading
-        onConfirm={async (snapshot, reading) => {
-          await dbQuery(
-            "INSERT INTO readings (id, meterId, value, createdAt) VALUES (?, ?, ?, ?)",
-            [randomUUID(), id, reading, new Date().toISOString()],
-            false
-          );
-
-          navigation.navigate("Tabs");
-        }}
-      />
+      {isMutating ? (
+        <Center flex={1}>
+          <Spinner />
+        </Center>
+      ) : (
+        <NewReading onConfirm={mutate} />
+      )}
     </>
   );
 }

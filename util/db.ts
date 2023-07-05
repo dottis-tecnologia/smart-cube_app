@@ -18,7 +18,8 @@ export async function getDatabase() {
             id TEXT PRIMARY KEY NOT NULL,
             location TEXT, 
             unit TEXT,
-            synchedAt TEXT
+            synchedAt TEXT,
+            imagePath TEXT
           )`
         );
         tx.executeSql(
@@ -28,6 +29,7 @@ export async function getDatabase() {
             value REAL,
             createdAt TEXT,
             synchedAt TEXT,
+            imagePath TEXT,
             FOREIGN KEY(meterId) REFERENCES meters(id)
           )`
         );
@@ -76,14 +78,18 @@ export async function dbQuery<T>(
 }
 
 export async function deleteDatabase() {
-  const file = await FileSystem.getInfoAsync(
-    `${FileSystem.documentDirectory}SQLite/${dbPath}`
-  );
+  const databasePath = `${FileSystem.documentDirectory}SQLite/${dbPath}`;
 
-  if (!file.exists) return;
+  const databaseFile = await FileSystem.getInfoAsync(databasePath);
+  if (databaseFile.exists) {
+    await FileSystem.deleteAsync(databasePath);
+  }
 
-  await FileSystem.deleteAsync(
-    `${FileSystem.documentDirectory}SQLite/${dbPath}`
-  );
+  const picturesPath = `${FileSystem.documentDirectory}pictures`;
+
+  const picturesDir = await FileSystem.getInfoAsync(databasePath);
+  if (picturesDir.exists) {
+    await FileSystem.deleteAsync(picturesPath);
+  }
   await AsyncStorage.removeItem("last-sync");
 }

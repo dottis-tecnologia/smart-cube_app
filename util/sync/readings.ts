@@ -1,12 +1,13 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import trpc from "../trpc";
 import { isBefore } from "date-fns";
 import { dbQuery } from "../db";
+import uploadFile from "../uploadFile";
+import * as FileSystem from "expo-file-system";
 
 type Reading = {
   id: string;
   meterId: string;
-  value: number;
+  value: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -18,7 +19,7 @@ export const syncReading = async (reading: Reading, lastSync?: Date) => {
       [
         reading.id,
         reading.meterId,
-        reading.value,
+        +reading.value,
         new Date(reading.createdAt).toISOString(),
         new Date().toISOString(),
       ],
@@ -38,17 +39,25 @@ type ReadingPayload = {
   meterId: string;
   value: number;
   createdAt: string;
-  synchedAt?: string;
+  imagePath: string;
 };
 export const sendReading = async (payload: ReadingPayload) => {
-  const mutation = await trpc.readings.create.mutate({
+  const uploadedImagePath = await uploadFile(
+    payload.imagePath,
+    `${payload.meterId}/readings`
+  );
+
+  const data = await trpc.readings.create.mutate({
     ...payload,
     createdAt: new Date(payload.createdAt),
+    imagePath: uploadedImagePath,
   });
 
   await dbQuery(
-    "UPDATE readings SET synchedAt = ? WHERE id = ?",
-    [mutation.createdAt, payload.id],
+    "UPDATE readings SET synchedAt = ?, imagePath = ? WHERE id = ?",
+    [data.createdAt, null, payload.id],
     false
   );
+
+  FileSystem.deleteAsync(payload.imagePath);
 };
