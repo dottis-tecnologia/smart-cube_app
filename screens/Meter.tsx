@@ -90,7 +90,7 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
           colorScheme="primary"
           size="lg"
           icon={<Icon name="plus" pl={0.5} as={FontAwesome} />}
-          onPress={() => navigation.navigate("CreateReading", { id })}
+          onPress={() => navigation.navigate("CreateReading", { meterId: id })}
         />
       )}
       <FlatList
@@ -100,7 +100,7 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
               {meter.imagePath ? (
                 <Image
                   source={{
-                    uri: `${FileSystem.documentDirectory}pictures/${meter.id}/image.jpg`,
+                    uri: meter.imagePath,
                   }}
                   resizeMode="cover"
                   w={"100%"}

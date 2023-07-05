@@ -27,6 +27,7 @@ export const syncData = async () => {
     meterId: string;
     value: number;
     createdAt: string;
+    imagePath: string;
   }>("SELECT * FROM readings WHERE readings.synchedAt IS NULL;");
 
   if (unsentReadings == null) throw new Error("Error while getting readings");

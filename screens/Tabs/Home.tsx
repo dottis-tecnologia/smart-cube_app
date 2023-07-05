@@ -5,6 +5,7 @@ import {
   HStack,
   Heading,
   Icon,
+  IconButton,
   ScrollView,
   Text,
   VStack,
@@ -110,25 +111,13 @@ export default function Home({ navigation }: HomeProps) {
               space={5}
               entering={SlideInLeft.delay(index * 100)}
             >
-              <Box
-                rounded="full"
-                bg={{
-                  linearGradient: {
-                    colors: ["primary.400", "secondary.300"],
-                    start: [0, 0],
-                    end: [0, 1],
-                  },
-                }}
-                p={2}
-              >
-                <Icon
-                  as={FontAwesome}
-                  name="check-circle-o"
-                  size="6"
-                  color="white"
-                  style={{ paddingLeft: 1.4 }}
-                />
-              </Box>
+              <IconButton
+                _icon={{ as: FontAwesome, name: "eye" }}
+                variant={"outline"}
+                onPress={() =>
+                  navigation.navigate("Reading", { id: reading.id })
+                }
+              ></IconButton>
               <VStack flex={1}>
                 <Text color="emphasis.500">{reading.meterId}</Text>
                 <Text>{reading.location}</Text>

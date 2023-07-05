@@ -18,7 +18,7 @@ export default function CreateReading({
   navigation,
   route: { params },
 }: CreateReadingProps) {
-  const { id } = params;
+  const { meterId } = params;
   const { isMutating, mutate } = useMutation(
     async (snapshot: CameraCapturedPicture, reading: number) => {
       const readingId = randomUUID();
@@ -26,7 +26,7 @@ export default function CreateReading({
       const uri = snapshot.uri;
       const extSplit = uri.split(".");
       const ext = extSplit[extSplit.length - 1];
-      const filePath = `${FileSystem.documentDirectory}pictures/${id}/${readingId}.${ext}`;
+      const filePath = `${FileSystem.documentDirectory}pictures/${meterId}/${readingId}.${ext}`;
 
       await FileSystem.copyAsync({
         from: uri,
@@ -35,7 +35,7 @@ export default function CreateReading({
 
       await dbQuery(
         "INSERT INTO readings (id, meterId, value, createdAt, imagePath) VALUES (?, ?, ?, ?, ?)",
-        [readingId, id, reading, new Date().toISOString(), filePath],
+        [readingId, meterId, reading, new Date().toISOString(), filePath],
         false
       );
     },

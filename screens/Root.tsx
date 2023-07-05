@@ -5,13 +5,15 @@ import Meter from "./Meter";
 import CreateReading from "./CreateReading";
 import { useEffect } from "react";
 import { deleteDatabase, getDatabase } from "../util/db";
+import Reading from "./Reading";
 
 export type RootProps = {};
 
 export type RootStackParamList = {
   Tabs: undefined;
   Meter: { id: string };
-  CreateReading: { id: string };
+  Reading: { id: string };
+  CreateReading: { meterId: string };
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -30,6 +32,7 @@ export default function Root({}: RootProps) {
         options={{ headerShown: false }}
       />
       <Stack.Screen name="Meter" component={Meter} />
+      <Stack.Screen name="Reading" component={Reading} />
       <Stack.Screen name="CreateReading" component={CreateReading} />
     </Stack.Navigator>
   );
