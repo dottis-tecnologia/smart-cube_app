@@ -11,6 +11,7 @@ import {
   HStack,
   Heading,
   Icon,
+  Pressable,
   Image,
   Spinner,
   Text,
@@ -22,8 +23,6 @@ import { formatDistanceToNow, intlFormat } from "date-fns";
 import { useIsFocused } from "@react-navigation/native";
 import useQuery from "../hooks/useQuery";
 import { dbQuery } from "../util/db";
-import * as FileSystem from "expo-file-system";
-import { useEffect } from "react";
 
 export type MeterProps = NativeStackScreenProps<RootStackParamList, "Meter">;
 
@@ -46,6 +45,7 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
       meterId: string;
       value: number;
       createdAt: string;
+      synchedAt?: string;
       imagePath: string;
     }>("SELECT * FROM readings WHERE meterId = ? ORDER BY createdAt DESC;", [
       id,
@@ -84,6 +84,46 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
   return (
     <>
       <FocusAwareStatusBar style="dark" />
+
+      <AspectRatio ratio={1}>
+        {meter.imagePath ? (
+          <Image
+            source={{
+              uri: meter.imagePath,
+            }}
+            resizeMode="cover"
+            w={"100%"}
+            h={"100%"}
+            alt="meter picture"
+          />
+        ) : (
+          <Center flex={1} bg="black">
+            <Icon as={FontAwesome5} name="image" size={24} color="light.800" />
+          </Center>
+        )}
+      </AspectRatio>
+      <Box p={3}>
+        <AnimatedHStack entering={FadeInLeft} space={1} alignItems={"center"}>
+          <Icon as={FontAwesome} name="tag" color="primary.400" key="1" />
+          <Text key="2">Meter ID: </Text>
+          <Text fontWeight={"bold"} color="primary.400" fontSize={"lg"} key="3">
+            {meter.id}
+          </Text>
+        </AnimatedHStack>
+        <AnimatedHStack
+          entering={FadeInLeft.delay(200)}
+          space={1}
+          alignItems={"center"}
+        >
+          <Icon as={FontAwesome} name="map-pin" color="primary.400" key="1" />
+          <Text key="2">Location: </Text>
+          <Text fontWeight={"bold"} color="primary.400" fontSize={"lg"} key="3">
+            {meter.location}
+          </Text>
+          {/* For some reason RN is complaining about the missing key parameter here, don't know why */}
+        </AnimatedHStack>
+      </Box>
+
       {isFocused && (
         <Fab
           placement="bottom-right"
@@ -95,101 +135,44 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
       )}
       <FlatList
         ListHeaderComponent={
-          <Box>
-            <AspectRatio ratio={1}>
-              {meter.imagePath ? (
-                <Image
-                  source={{
-                    uri: meter.imagePath,
-                  }}
-                  resizeMode="cover"
-                  w={"100%"}
-                  h={"100%"}
-                  alt="meter picture"
-                />
-              ) : (
-                <Center flex={1} bg="black">
-                  <Icon
-                    as={FontAwesome5}
-                    name="image"
-                    size={24}
-                    color="light.800"
-                  />
-                </Center>
-              )}
-            </AspectRatio>
-            <Box p={3}>
-              <AnimatedHStack
-                entering={FadeInLeft}
-                space={1}
-                alignItems={"center"}
-              >
-                <Icon as={FontAwesome} name="tag" color="primary.400" key="1" />
-                <Text key="2">Meter ID: </Text>
-                <Text
-                  fontWeight={"bold"}
-                  color="primary.400"
-                  fontSize={"lg"}
-                  key="3"
-                >
-                  {meter.id}
-                </Text>
-              </AnimatedHStack>
-              <AnimatedHStack
-                entering={FadeInLeft.delay(200)}
-                space={1}
-                alignItems={"center"}
-              >
-                <Icon
-                  as={FontAwesome}
-                  name="map-pin"
-                  color="primary.400"
-                  key="1"
-                />
-                <Text key="2">Location: </Text>
-                <Text
-                  fontWeight={"bold"}
-                  color="primary.400"
-                  fontSize={"lg"}
-                  key="3"
-                >
-                  {meter.location}
-                </Text>
-                {/* For some reason RN is complaining about the missing key parameter here, don't know why */}
-              </AnimatedHStack>
-            </Box>
-            <Heading m={3} fontSize={"md"}>
-              Latest readings
-            </Heading>
-          </Box>
+          <Heading m={3} fontSize={"md"}>
+            Latest readings
+          </Heading>
         }
         data={readings?.rows}
         renderItem={({ item }) => (
-          <AnimatedBox
-            entering={FadeInLeft.delay(300).randomDelay()}
-            px={5}
-            py={3}
-            mx={3}
-            mb={3}
-            bg="lime.500"
-            rounded="lg"
+          <Pressable
+            onPress={() => navigation.navigate("Reading", { id: item.id })}
           >
-            <HStack alignItems={"center"}>
-              <VStack flex={1}>
-                <Text color="white" fontWeight="bold">
-                  John Smith
-                </Text>
-                <Text color="white">
-                  {formatDistanceToNow(new Date(item.createdAt), {
-                    addSuffix: true,
-                  })}
-                </Text>
-              </VStack>
-              <Text color="white" fontWeight={"bold"}>
-                {item.value} {meter.unit}
-              </Text>
-            </HStack>
-          </AnimatedBox>
+            {({ isPressed }) => (
+              <AnimatedBox
+                entering={FadeInLeft.delay(300).randomDelay()}
+                px={5}
+                py={3}
+                mx={3}
+                mb={3}
+                opacity={isPressed ? 0.5 : 1}
+                bg={item.synchedAt ? "green.500" : "red.500"}
+                rounded="lg"
+              >
+                <HStack alignItems={"center"}>
+                  <VStack flex={1}>
+                    <Text color="white" fontWeight="bold">
+                      John Smith
+                    </Text>
+                    <Text color="white">
+                      {formatDistanceToNow(new Date(item.createdAt), {
+                        addSuffix: true,
+                      })}
+                    </Text>
+                  </VStack>
+                  <Text color="white" fontWeight={"bold"}>
+                    {item.value} {meter.unit}
+                  </Text>
+                </HStack>
+              </AnimatedBox>
+            )}
+          </Pressable>
         )}
         keyExtractor={(item) => item.id.toString()}
       ></FlatList>

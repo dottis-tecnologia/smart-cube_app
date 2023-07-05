@@ -112,7 +112,7 @@ export default function Reading({
             </Center>
           )}
         </AspectRatio>
-        <Text fontWeight={"bold"} color="gray.400" fontSize={"sm"} key="3">
+        <Text mx={1} color="gray.400" fontSize={"sm"} key="3">
           {reading.id}
         </Text>
         <Box p={3}>

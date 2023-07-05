@@ -147,13 +147,15 @@ function ReadingItem({
   const { isSuccess, mutate, error, isError, isMutating } =
     useMutation(sendReading);
 
+  if (isSuccess) return <></>;
+
   return (
     <AnimatedHStack
       key={item.id}
       p={5}
       mb={3}
       mx={3}
-      bg={isSuccess ? "green.500" : "red.500"}
+      bg={"red.500"}
       opacity={isMutating ? 0.5 : 1}
       rounded="lg"
       alignItems="center"

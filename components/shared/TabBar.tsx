@@ -19,7 +19,14 @@ export default function TabBar({
 }: TabBarProps) {
   return (
     <Animated.View entering={FadeInDown}>
-      <HStack bg="primary.400" py={2} px={5} space={3}>
+      <HStack
+        bg="primary.400"
+        py={2}
+        px={5}
+        space={3}
+        borderBottomWidth={1}
+        borderBottomColor={"primary.600"}
+      >
         {state.routes.map((route, index) => {
           const { options } = descriptors[route.key];
           const label = options.tabBarLabel ?? options.title ?? route.name;
