@@ -14,8 +14,9 @@
     "androidNavigationBar": {
       "backgroundColor": "#0093e9"
     },
-
-    "assetBundlePatterns": ["**/*"],
+    "assetBundlePatterns": [
+      "**/*"
+    ],
     "ios": {
       "supportsTablet": true
     },
@@ -23,7 +24,12 @@
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "permissions": [
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
+      ],
+      "package": "com.dottis.smartcube"
     },
     "web": {
       "favicon": "./assets/favicon.png",
@@ -36,6 +42,11 @@
           "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera."
         }
       ]
-    ]
+    ],
+    "extra": {
+      "eas": {
+        "projectId": "d9cd5daf-3360-4bd0-8a53-bc3a859589a7"
+      }
+    }
   }
 }

@@ -68,10 +68,10 @@ export default function Sync({}: SyncProps) {
       refetchReadings();
       refetchLastSync();
     },
-    onError() {
+    onError(e) {
       toast.show({
         title: "Error",
-        description: "Something went wrong while synchronizing",
+        description: e.message,
         colorScheme: "danger",
       });
     },
