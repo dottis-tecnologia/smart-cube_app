@@ -81,7 +81,7 @@ export default function Sync({}: SyncProps) {
   });
 
   return (
-    <>
+    <Box flex={1} bg="light.100">
       <FocusAwareStatusBar style="dark" />
       <Center
         h={HEADER_HEIGHT}
@@ -119,30 +119,11 @@ export default function Sync({}: SyncProps) {
                 : "never"}
             </Text>
           </Box>
-          <Button
-            key="2"
-            leftIcon={<Icon as={FontAwesome} name="refresh" />}
-            colorScheme={"green"}
-            onPress={() => mutate()}
-            isLoading={isMutating}
-          >
-            Sync
-          </Button>
         </HStack>
       </Center>
       <FlatList
         flex={1}
         ItemSeparatorComponent={() => <Box mb={3}></Box>}
-        ListFooterComponent={
-          <Box my={3}>
-            <DeleteDBButton
-              onSuccess={() => {
-                refetchLastSync();
-                refetchReadings();
-              }}
-            />
-          </Box>
-        }
         _contentContainerStyle={{
           marginTop: HEADER_HEIGHT - 12,
           paddingBottom: HEADER_HEIGHT - 12,
@@ -152,6 +133,16 @@ export default function Sync({}: SyncProps) {
         }}
         ListHeaderComponent={
           <>
+            <Button
+              mb={3}
+              key="1"
+              leftIcon={<Icon as={FontAwesome} name="refresh" />}
+              colorScheme={"green"}
+              onPress={() => mutate()}
+              isLoading={isMutating}
+            >
+              Sync
+            </Button>
             <Heading mb={3} fontSize={"md"} key="2">
               Latest readings
             </Heading>
@@ -161,7 +152,7 @@ export default function Sync({}: SyncProps) {
         renderItem={({ item }) => <ReadingItem item={item} />}
         keyExtractor={(item) => item.id}
       />
-    </>
+    </Box>
   );
 }
 
@@ -177,24 +168,11 @@ function ReadingItem({
     unit: string;
   };
 }) {
-  const { refreshToken } = useAuth();
-  const { isSuccess, mutate, error, isError, isMutating } = useMutation(
-    sendReading,
-    {
-      async beforeRequest() {
-        if (getToken() == null) await refreshToken();
-      },
-    }
-  );
-
-  if (isSuccess) return <></>;
-
   return (
     <AnimatedHStack
       key={item.id}
       p={5}
       bg={"red.500"}
-      opacity={isMutating ? 0.5 : 1}
       rounded="lg"
       alignItems="center"
       space={5}
@@ -210,18 +188,10 @@ function ReadingItem({
             addSuffix: true,
           })}
         </Text>
-        {isError ? <Text color="white">{error?.message}</Text> : null}
       </VStack>
       <Text color="white" fontWeight={"bold"}>
         {item.value} {item.unit}
       </Text>
-      <IconButton
-        colorScheme={"white"}
-        variant={"ghost"}
-        isDisabled={isMutating}
-        onPress={() => mutate(item)}
-        _icon={{ as: FontAwesome, name: "refresh", color: "white" }}
-      />
     </AnimatedHStack>
   );
 }

@@ -1,4 +1,12 @@
-import { DependencyList, useEffect, useMemo, useRef, useState } from "react";
+import { useFocusEffect } from "@react-navigation/native";
+import {
+  DependencyList,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 
 export default function useQuery<T>(
   fn: () => T | Promise<T>,
@@ -10,7 +18,6 @@ export default function useQuery<T>(
   const isDisabled = options?.isDisabled || false;
 
   const wrappedFunc = useMemo(() => {
-    console.log(deps);
     return fn;
   }, deps);
 
@@ -30,6 +37,12 @@ export default function useQuery<T>(
       isLoading.current = false;
     }
   };
+
+  useFocusEffect(
+    useCallback(() => {
+      fetch();
+    }, [])
+  );
 
   useEffect(() => {
     fetch();

@@ -22,7 +22,7 @@ export default function TabBar({
       <HStack
         bg="primary.400"
         py={2}
-        px={5}
+        px={2}
         space={3}
         borderBottomWidth={1}
         borderBottomColor={"primary.600"}
