@@ -2,6 +2,7 @@ import { deleteDatabase, dbQuery } from "../../util/db";
 import {
   Box,
   Button,
+  Center,
   FlatList,
   HStack,
   Heading,
@@ -41,6 +42,8 @@ const getReadings = () =>
     "SELECT readings.*, meters.unit FROM readings JOIN meters ON readings.meterId = meters.id WHERE readings.synchedAt IS NULL;"
   );
 
+const HEADER_HEIGHT = 150;
+
 export default function Sync({}: SyncProps) {
   const toast = useToast();
   const { refreshToken } = useAuth();
@@ -77,12 +80,58 @@ export default function Sync({}: SyncProps) {
   return (
     <>
       <FocusAwareStatusBar style="dark" />
+      <Center
+        h={HEADER_HEIGHT}
+        position={"absolute"}
+        top={0}
+        left={0}
+        right={0}
+        key="1"
+        bg={{
+          linearGradient: {
+            colors: ["primary.400", "secondary.400"],
+            start: [0, 0],
+            end: [0, 1],
+          },
+        }}
+        p={8}
+        pb={10}
+      >
+        <HStack
+          w="full"
+          space={3}
+          justifyContent={"space-between"}
+          alignItems={"center"}
+        >
+          <Box key="1">
+            <Heading color="white">Sync</Heading>
+            <Text color="white" opacity={0.7}>
+              Last synchronization:
+            </Text>
+            <Text color="white" opacity={0.8}>
+              {lastSync
+                ? formatDistanceToNow(lastSync, {
+                    addSuffix: true,
+                  })
+                : "never"}
+            </Text>
+          </Box>
+          <Button
+            key="2"
+            leftIcon={<Icon as={FontAwesome} name="refresh" />}
+            colorScheme={"green"}
+            onPress={() => mutate()}
+            isLoading={isMutating}
+          >
+            Sync
+          </Button>
+        </HStack>
+      </Center>
       <FlatList
         flex={1}
-        contentContainerStyle={{ flexGrow: 1 }}
-        ListFooterComponentStyle={{ flex: 1, justifyContent: "flex-end" }}
+        ItemSeparatorComponent={() => <Box mb={3}></Box>}
         ListFooterComponent={
-          <Box p={3}>
+          <Box my={3}>
             <DeleteDBButton
               onSuccess={() => {
                 refetchLastSync();
@@ -91,51 +140,16 @@ export default function Sync({}: SyncProps) {
             />
           </Box>
         }
+        _contentContainerStyle={{
+          marginTop: HEADER_HEIGHT - 12,
+          paddingBottom: HEADER_HEIGHT - 12,
+          backgroundColor: "light.100",
+          p: 3,
+          borderTopRadius: "lg",
+        }}
         ListHeaderComponent={
           <>
-            <Box
-              key="1"
-              bg={{
-                linearGradient: {
-                  colors: ["primary.400", "secondary.400"],
-                  start: [0, 0],
-                  end: [0, 1],
-                },
-              }}
-              p={8}
-              pb={10}
-            >
-              <HStack
-                space={3}
-                justifyContent={"space-between"}
-                alignItems={"center"}
-              >
-                <Box key="1">
-                  <Heading color="white">Sync</Heading>
-                  <Text color="white" opacity={0.7}>
-                    Last synchronization:
-                  </Text>
-                  <Text color="white" opacity={0.8}>
-                    {lastSync
-                      ? formatDistanceToNow(lastSync, {
-                          addSuffix: true,
-                        })
-                      : "never"}
-                  </Text>
-                </Box>
-                <Button
-                  key="2"
-                  leftIcon={<Icon as={FontAwesome} name="refresh" />}
-                  colorScheme={"green"}
-                  onPress={() => mutate()}
-                  isLoading={isMutating}
-                >
-                  Sync
-                </Button>
-              </HStack>
-            </Box>
-
-            <Heading m={3} fontSize={"md"} key="2">
+            <Heading mb={3} fontSize={"md"} key="2">
               Latest readings
             </Heading>
           </>
@@ -169,8 +183,6 @@ function ReadingItem({
     <AnimatedHStack
       key={item.id}
       p={5}
-      mb={3}
-      mx={3}
       bg={"red.500"}
       opacity={isMutating ? 0.5 : 1}
       rounded="lg"

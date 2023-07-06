@@ -6,24 +6,17 @@ import {
   Box,
   Button,
   Center,
-  Fab,
-  FlatList,
   HStack,
-  Heading,
   Icon,
   Image,
   Spinner,
   Text,
-  VStack,
 } from "native-base";
 import Animated, { FadeInLeft } from "react-native-reanimated";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { formatDistanceToNow, intlFormat } from "date-fns";
-import { useIsFocused } from "@react-navigation/native";
 import useQuery from "../hooks/useQuery";
 import { dbQuery } from "../util/db";
-import * as FileSystem from "expo-file-system";
-import { useEffect } from "react";
 import trpc from "../util/trpc";
 import { getToken } from "../util/authToken";
 import useAuth from "../hooks/useAuth";
@@ -33,7 +26,6 @@ export type ReadingProps = NativeStackScreenProps<
   "Reading"
 >;
 
-const AnimatedBox = Animated.createAnimatedComponent(Box);
 const AnimatedHStack = Animated.createAnimatedComponent(HStack);
 
 export default function Reading({
