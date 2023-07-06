@@ -22,6 +22,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useState } from "react";
 import { syncData } from "../../util/sync/sync";
 import { sendReading } from "../../util/sync/readings";
+import useAuth from "../../hooks/useAuth";
+import { getToken } from "../../util/authToken";
 
 export type SyncProps = {};
 
@@ -41,6 +43,7 @@ const getReadings = () =>
 
 export default function Sync({}: SyncProps) {
   const toast = useToast();
+  const { refreshToken } = useAuth();
   const { data: readings, refetch: refetchReadings } = useQuery(getReadings);
   const { data: lastSync, refetch: refetchLastSync } = useQuery(async () => {
     const lastSync = await AsyncStorage.getItem("last-sync");
@@ -49,8 +52,8 @@ export default function Sync({}: SyncProps) {
     return new Date(lastSync);
   });
 
-  const { mutate, isMutating, error, isError } = useMutation(syncData, {
-    onSuccess: () => {
+  const { mutate, isMutating } = useMutation(syncData, {
+    onSuccess() {
       toast.show({
         title: "Success",
         description: "Data synchronized successfully",
@@ -59,12 +62,25 @@ export default function Sync({}: SyncProps) {
       refetchReadings();
       refetchLastSync();
     },
+    onError() {
+      toast.show({
+        title: "Error",
+        description: "Something went wrong while synchronizing",
+        colorScheme: "danger",
+      });
+    },
+    async beforeRequest() {
+      if (getToken() == null) await refreshToken();
+    },
   });
 
   return (
     <>
       <FocusAwareStatusBar style="dark" />
       <FlatList
+        flex={1}
+        contentContainerStyle={{ flexGrow: 1 }}
+        ListFooterComponentStyle={{ flex: 1, justifyContent: "flex-end" }}
         ListFooterComponent={
           <Box p={3}>
             <DeleteDBButton

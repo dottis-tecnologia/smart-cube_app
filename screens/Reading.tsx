@@ -25,6 +25,8 @@ import { dbQuery } from "../util/db";
 import * as FileSystem from "expo-file-system";
 import { useEffect } from "react";
 import trpc from "../util/trpc";
+import { getToken } from "../util/authToken";
+import useAuth from "../hooks/useAuth";
 
 export type ReadingProps = NativeStackScreenProps<
   RootStackParamList,
@@ -39,6 +41,7 @@ export default function Reading({
   navigation,
 }: ReadingProps) {
   const { id } = params;
+  const { refreshToken } = useAuth();
   const { data: meterData } = useQuery(() =>
     dbQuery<{
       id: string;
@@ -53,9 +56,10 @@ export default function Reading({
       [id]
     )
   );
-  const { data: remoteImageUrl } = useQuery(() =>
-    trpc.readings.image.query(id)
-  );
+  const { data: remoteImageUrl } = useQuery(async () => {
+    if (getToken() == null) await refreshToken();
+    return await trpc.readings.image.query(id);
+  });
 
   if (meterData == null) {
     return (

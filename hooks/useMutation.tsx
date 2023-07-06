@@ -5,9 +5,11 @@ export default function useMutation<T extends any[] | [], R, E extends Error>(
   {
     onSuccess,
     onError,
+    beforeRequest,
   }: {
     onSuccess?: () => void;
     onError?: (error: E) => void;
+    beforeRequest?: (...args: T) => void | Promise<void>;
   } = {}
 ) {
   const [isMutating, setIsMutating] = useState(false);
@@ -17,6 +19,7 @@ export default function useMutation<T extends any[] | [], R, E extends Error>(
   const mutate = async (...args: T) => {
     try {
       setIsMutating(true);
+      await beforeRequest?.(...args);
       await fn(...args);
       onSuccess?.();
     } catch (e) {

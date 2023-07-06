@@ -1,10 +1,8 @@
-import React, { useCallback, useEffect, useMemo, useState } from "react";
 import {
   Box,
   Center,
   HStack,
   Heading,
-  Icon,
   IconButton,
   ScrollView,
   Text,
@@ -16,7 +14,6 @@ import { formatDistanceToNow, intlFormat } from "date-fns";
 import { FontAwesome } from "@expo/vector-icons";
 import FocusAwareStatusBar from "../../components/util/FocusAwareStatusBar";
 import Animated, {
-  FadeInDown,
   FadeInLeft,
   FadeInUp,
   SlideInLeft,
@@ -26,6 +23,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../Root";
 import useQuery from "../../hooks/useQuery";
 import { dbQuery } from "../../util/db";
+import useAuth from "../../hooks/useAuth";
 
 export type HomeProps = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, "Home">,
@@ -53,6 +51,7 @@ export default function Home({ navigation }: HomeProps) {
       "SELECT COUNT(*) as count FROM readings WHERE date(createdAt) = date('now');"
     )
   );
+  const auth = useAuth();
 
   return (
     <Box flex={1} bg="primary.400" safeArea>
@@ -72,12 +71,21 @@ export default function Home({ navigation }: HomeProps) {
           <Center p={3}>
             <Heading color="white">LOGO</Heading>
           </Center>
-          <AnimatedBox entering={FadeInLeft.delay(100)}>
-            <Text color="light.100">Welcome,</Text>
-            <Heading fontStyle="italic" mb={5} color="white">
-              John Smith
-            </Heading>
-          </AnimatedBox>
+          <HStack alignItems={"center"} justifyContent={"space-between"}>
+            <AnimatedBox entering={FadeInLeft.delay(100)}>
+              <Text color="light.100">Welcome,</Text>
+              <Heading fontStyle="italic" mb={5} color="white">
+                {auth.userData?.name}
+              </Heading>
+            </AnimatedBox>
+            <AnimatedBox entering={FadeInLeft.delay(200)}>
+              <IconButton
+                colorScheme={"light"}
+                _icon={{ as: FontAwesome, name: "sign-out", color: "white" }}
+                onPress={() => auth.signOut()}
+              />
+            </AnimatedBox>
+          </HStack>
         </AnimatedBox>
         <AnimatedBox
           bg="white"
@@ -113,7 +121,7 @@ export default function Home({ navigation }: HomeProps) {
             >
               <IconButton
                 _icon={{ as: FontAwesome, name: "eye" }}
-                variant={"outline"}
+                variant={"ghost"}
                 onPress={() =>
                   navigation.navigate("Reading", { id: reading.id })
                 }
