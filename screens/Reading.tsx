@@ -8,6 +8,7 @@ import {
   Center,
   HStack,
   Icon,
+  IconButton,
   Image,
   Spinner,
   Text,
@@ -34,24 +35,26 @@ export default function Reading({
 }: ReadingProps) {
   const { id } = params;
   const { refreshToken } = useAuth();
-  const { data: meterData } = useQuery(() =>
-    dbQuery<{
-      id: string;
-      meterId: string;
-      value: number;
-      createdAt: string;
-      synchedAt?: string;
-      imagePath?: string;
-      unit: string;
-    }>(
-      "SELECT readings.*, meters.unit FROM readings JOIN meters ON readings.meterId = meters.id WHERE readings.id = ?;",
-      [id]
-    )
+  const { data: meterData } = useQuery(
+    () =>
+      dbQuery<{
+        id: string;
+        meterId: string;
+        value: number;
+        createdAt: string;
+        synchedAt?: string;
+        imagePath?: string;
+        unit: string;
+      }>(
+        "SELECT readings.*, meters.unit FROM readings JOIN meters ON readings.meterId = meters.id WHERE readings.id = ?;",
+        [id]
+      ),
+    [id]
   );
   const { data: remoteImageUrl } = useQuery(async () => {
     if (getToken() == null) await refreshToken();
     return await trpc.readings.image.query(id);
-  });
+  }, [id]);
 
   if (meterData == null) {
     return (
@@ -127,6 +130,12 @@ export default function Reading({
             >
               {reading.meterId}
             </Text>
+            <IconButton
+              onPress={() =>
+                navigation.navigate("Meter", { id: reading.meterId })
+              }
+              _icon={{ as: FontAwesome, name: "arrow-right" }}
+            ></IconButton>
             {/* For some reason RN is complaining about the missing key parameter here, don't know why */}
           </AnimatedHStack>
           <AnimatedHStack

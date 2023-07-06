@@ -47,11 +47,13 @@ const getMeters = () =>
     "SELECT readings.*, meters.unit, meters.location FROM readings JOIN meters ON readings.meterId = meters.id ORDER BY createdAt DESC LIMIT 12;"
   );
 export default function Home({ navigation }: HomeProps) {
-  const { data: readings } = useQuery(getMeters);
-  const { data: readingCount } = useQuery(() =>
-    dbQuery<{ count: 5 }>(
-      "SELECT COUNT(*) as count FROM readings WHERE date(createdAt) = date('now');"
-    )
+  const { data: readings } = useQuery(getMeters, []);
+  const { data: readingCount } = useQuery(
+    () =>
+      dbQuery<{ count: 5 }>(
+        "SELECT COUNT(*) as count FROM readings WHERE date(createdAt) = date('now');"
+      ),
+    []
   );
   const auth = useAuth();
 

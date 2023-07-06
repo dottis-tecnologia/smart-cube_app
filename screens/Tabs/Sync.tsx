@@ -42,18 +42,21 @@ const getReadings = () =>
     "SELECT readings.*, meters.unit FROM readings JOIN meters ON readings.meterId = meters.id WHERE readings.synchedAt IS NULL;"
   );
 
-const HEADER_HEIGHT = 150;
+const HEADER_HEIGHT = 200;
 
 export default function Sync({}: SyncProps) {
   const toast = useToast();
   const { refreshToken } = useAuth();
-  const { data: readings, refetch: refetchReadings } = useQuery(getReadings);
+  const { data: readings, refetch: refetchReadings } = useQuery(
+    getReadings,
+    []
+  );
   const { data: lastSync, refetch: refetchLastSync } = useQuery(async () => {
     const lastSync = await AsyncStorage.getItem("last-sync");
     if (lastSync == null) return null;
 
     return new Date(lastSync);
-  });
+  }, []);
 
   const { mutate, isMutating } = useMutation(syncData, {
     onSuccess() {
@@ -104,7 +107,7 @@ export default function Sync({}: SyncProps) {
           alignItems={"center"}
         >
           <Box key="1">
-            <Heading color="white">Sync</Heading>
+            <Heading color="white">SYNC</Heading>
             <Text color="white" opacity={0.7}>
               Last synchronization:
             </Text>
@@ -174,8 +177,15 @@ function ReadingItem({
     unit: string;
   };
 }) {
-  const { isSuccess, mutate, error, isError, isMutating } =
-    useMutation(sendReading);
+  const { refreshToken } = useAuth();
+  const { isSuccess, mutate, error, isError, isMutating } = useMutation(
+    sendReading,
+    {
+      async beforeRequest() {
+        if (getToken() == null) await refreshToken();
+      },
+    }
+  );
 
   if (isSuccess) return <></>;
 

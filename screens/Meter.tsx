@@ -31,25 +31,29 @@ const AnimatedHStack = Animated.createAnimatedComponent(HStack);
 
 export default function Meter({ route: { params }, navigation }: MeterProps) {
   const { id } = params;
-  const { data: meterData } = useQuery(() =>
-    dbQuery<{
-      id: string;
-      location: string;
-      unit: string;
-      imagePath: string;
-    }>("SELECT * FROM meters WHERE id = ?;", [id])
+  const { data: meterData } = useQuery(
+    () =>
+      dbQuery<{
+        id: string;
+        location: string;
+        unit: string;
+        imagePath: string;
+      }>("SELECT * FROM meters WHERE id = ?;", [id]),
+    [id]
   );
-  const { data: readings } = useQuery(() =>
-    dbQuery<{
-      id: string;
-      meterId: string;
-      value: number;
-      createdAt: string;
-      synchedAt?: string;
-      imagePath: string;
-    }>("SELECT * FROM readings WHERE meterId = ? ORDER BY createdAt DESC;", [
-      id,
-    ])
+  const { data: readings } = useQuery(
+    () =>
+      dbQuery<{
+        id: string;
+        meterId: string;
+        value: number;
+        createdAt: string;
+        synchedAt?: string;
+        imagePath: string;
+      }>("SELECT * FROM readings WHERE meterId = ? ORDER BY createdAt DESC;", [
+        id,
+      ]),
+    [id]
   );
 
   const isFocused = useIsFocused();

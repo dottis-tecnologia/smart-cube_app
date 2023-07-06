@@ -9,12 +9,15 @@ import FocusAwareStatusBar from "../../components/util/FocusAwareStatusBar";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../Root";
 import Sync from "./Sync";
+import Locations from "./Locations";
+import Search from "./Search";
 
 export type TabParamList = {
   Home: undefined;
+  Locations: { filter?: string } | undefined;
   ReadCode: undefined;
+  Search: { filter?: string } | undefined;
   Sync: undefined;
-  Meter: { id: string };
 };
 
 const Tab = createBottomTabNavigator<TabParamList>();
@@ -39,12 +42,30 @@ export default function Tabs({}: TabsProps) {
         }}
       />
       <Tab.Screen
+        name="Locations"
+        component={Locations}
+        options={{
+          tabBarIcon: tabBarIcon("list"),
+          tabBarLabel: "Locations",
+          title: "Locations",
+        }}
+      />
+      <Tab.Screen
         name="ReadCode"
         component={ReadCode}
         options={{
           tabBarIcon: tabBarIcon("qrcode"),
           tabBarLabel: "Read",
           title: "Read QR Code",
+        }}
+      />
+      <Tab.Screen
+        name="Search"
+        component={Search}
+        options={{
+          tabBarIcon: tabBarIcon("search"),
+          tabBarLabel: "Search",
+          title: "Find Meter",
         }}
       />
       <Tab.Screen

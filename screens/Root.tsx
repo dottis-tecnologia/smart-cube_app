@@ -9,6 +9,7 @@ import Reading from "./Reading";
 import Login from "./NoAuth/Login";
 import useAuth from "../hooks/useAuth";
 import { Center, Spinner } from "native-base";
+import ListMeters from "./ListMeters";
 
 export type RootProps = {};
 
@@ -17,6 +18,7 @@ export type RootStackParamList = {
   Meter: { id: string };
   Reading: { id: string };
   CreateReading: { meterId: string };
+  ListMeters: { location: string };
   Login: undefined;
 };
 
@@ -40,6 +42,7 @@ export default function Root({}: RootProps) {
             options={{ headerShown: false }}
           />
           <Stack.Screen name="Meter" component={Meter} />
+          <Stack.Screen name="ListMeters" component={ListMeters} />
           <Stack.Screen name="Reading" component={Reading} />
           <Stack.Screen name="CreateReading" component={CreateReading} />
         </>
