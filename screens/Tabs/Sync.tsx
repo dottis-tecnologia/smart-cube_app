@@ -22,7 +22,6 @@ import { formatDistanceToNow } from "date-fns";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useState } from "react";
 import { syncData } from "../../util/sync/sync";
-import { sendReading } from "../../util/sync/readings";
 import useAuth from "../../hooks/useAuth";
 import { getToken } from "../../util/authToken";
 
@@ -143,6 +142,14 @@ export default function Sync({}: SyncProps) {
             >
               Sync
             </Button>
+
+            <DeleteDBButton
+              key="3"
+              onSuccess={() => {
+                refetchLastSync();
+                refetchReadings();
+              }}
+            />
             <Heading mb={3} fontSize={"md"} key="2">
               Latest readings
             </Heading>
@@ -225,6 +232,7 @@ function DeleteDBButton({ onSuccess }: DeleteDBButtonProps) {
           <Button
             {...triggerProps}
             colorScheme="danger"
+            mb={3}
             isLoading={isDeletingDb}
           >
             Delete Database

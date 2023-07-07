@@ -1,6 +1,6 @@
 import trpc from "../trpc";
 import * as FileSystem from "expo-file-system";
-import { isBefore } from "date-fns";
+import { isAfter } from "date-fns";
 import { dbQuery } from "../db";
 
 export type Meter = {
@@ -13,7 +13,7 @@ export type Meter = {
 export const syncMeter = async (meter: Meter, lastSync?: Date) => {
   const createdAt = new Date(meter.createdAt);
 
-  if (lastSync == null || isBefore(createdAt, lastSync)) {
+  if (lastSync == null || isAfter(createdAt, lastSync)) {
     await dbQuery(
       "INSERT INTO meters (id, location, unit, synchedAt) VALUES (?, ?, ?, ?)",
       [meter.id, meter.location, meter.unit, new Date().toISOString()],
