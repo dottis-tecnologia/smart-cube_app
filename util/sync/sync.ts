@@ -12,11 +12,6 @@ export const syncData = async () => {
     lastSync = new Date(lastSyncRaw);
   }
 
-  const meters = await trpc.meters.sync.query(lastSync);
-  for (const meter of meters) {
-    await syncMeter(meter, lastSync);
-  }
-
   const readings = await trpc.readings.sync.query(lastSync);
   for (const reading of readings) {
     await syncReading(reading, lastSync);
@@ -34,6 +29,11 @@ export const syncData = async () => {
 
   for (const reading of unsentReadings?.rows) {
     await sendReading(reading);
+  }
+
+  const meters = await trpc.meters.sync.query(lastSync);
+  for (const meter of meters) {
+    await syncMeter(meter, lastSync);
   }
 
   await AsyncStorage.setItem("last-sync", new Date().toISOString());
