@@ -30,6 +30,7 @@ export async function getDatabase() {
             createdAt TEXT,
             synchedAt TEXT,
             imagePath TEXT,
+            technicianName TEXT,
             FOREIGN KEY(meterId) REFERENCES meters(id)
           )`
         );

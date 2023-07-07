@@ -10,6 +10,7 @@ import { Button, Center, Modal, Spinner, Text } from "native-base";
 import * as FileSystem from "expo-file-system";
 import { useEffect, useState } from "react";
 import { isAfter, sub } from "date-fns";
+import useAuth from "../hooks/useAuth";
 
 export type CreateReadingProps = NativeStackScreenProps<
   RootStackParamList,
@@ -21,6 +22,7 @@ export default function CreateReading({
   route: { params },
 }: CreateReadingProps) {
   const { meterId } = params;
+  const { userData } = useAuth();
   const { isMutating, mutate } = useMutation(
     async (snapshot: CameraCapturedPicture, reading: number) => {
       const readingId = randomUUID();
@@ -36,8 +38,15 @@ export default function CreateReading({
       });
 
       await dbQuery(
-        "INSERT INTO readings (id, meterId, value, createdAt, imagePath) VALUES (?, ?, ?, ?, ?)",
-        [readingId, meterId, reading, new Date().toISOString(), filePath],
+        "INSERT INTO readings (id, meterId, value, createdAt, imagePath, technicianName) VALUES (?, ?, ?, ?, ?, ?)",
+        [
+          readingId,
+          meterId,
+          reading,
+          new Date().toISOString(),
+          filePath,
+          userData?.name,
+        ],
         false
       );
     },

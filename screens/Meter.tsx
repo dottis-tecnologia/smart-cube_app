@@ -50,6 +50,7 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
         createdAt: string;
         synchedAt?: string;
         imagePath: string;
+        technicianName?: string;
       }>("SELECT * FROM readings WHERE meterId = ? ORDER BY createdAt DESC;", [
         id,
       ]),
@@ -162,7 +163,7 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
                 <HStack alignItems={"center"}>
                   <VStack flex={1}>
                     <Text color="white" fontWeight="bold">
-                      John Smith
+                      {item.technicianName}
                     </Text>
                     <Text color="white">
                       {formatDistanceToNow(new Date(item.createdAt), {

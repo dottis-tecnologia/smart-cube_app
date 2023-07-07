@@ -45,7 +45,7 @@ export default function ListMeters({
         id: string;
         createdAt?: string;
       }>(
-        "SELECT meters.id, MAX(readings.createdAt) as createdAt FROM meters LEFT JOIN readings ON readings.meterId = meters.id WHERE meters.location = ? GROUP BY readings.meterId",
+        "SELECT meters.id, MAX(readings.createdAt) as createdAt FROM meters LEFT JOIN readings ON readings.meterId = meters.id WHERE meters.location = ? GROUP BY meters.id",
         [location]
       ),
     [location]

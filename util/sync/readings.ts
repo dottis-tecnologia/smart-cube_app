@@ -1,5 +1,5 @@
 import trpc from "../trpc";
-import { isBefore } from "date-fns";
+import { isAfter, isBefore } from "date-fns";
 import { dbQuery } from "../db";
 import uploadFile from "../uploadFile";
 import * as FileSystem from "expo-file-system";
@@ -8,20 +8,22 @@ type Reading = {
   id: string;
   meterId: string;
   value: string;
+  technician: { id: string; name: string } | null;
   createdAt: string;
   updatedAt: string;
 };
 export const syncReading = async (reading: Reading, lastSync?: Date) => {
   const createdAt = new Date(reading.createdAt);
-  if (lastSync == null || isBefore(createdAt, lastSync)) {
+  if (lastSync == null || isAfter(createdAt, lastSync)) {
     await dbQuery(
-      "INSERT OR IGNORE INTO readings (id, meterId, value, createdAt, synchedAt) VALUES (?, ?, ?, ?, ?)",
+      "INSERT INTO readings (id, meterId, value, createdAt, synchedAt, technicianName) VALUES (?, ?, ?, ?, ?, ?)",
       [
         reading.id,
         reading.meterId,
         +reading.value,
         new Date(reading.createdAt).toISOString(),
         new Date().toISOString(),
+        reading.technician?.name,
       ],
       false
     );

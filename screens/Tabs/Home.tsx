@@ -43,6 +43,7 @@ const getMeters = () =>
     createdAt: string;
     unit: string;
     location: string;
+    technicianName: string;
   }>(
     "SELECT readings.*, meters.unit, meters.location FROM readings JOIN meters ON readings.meterId = meters.id ORDER BY createdAt DESC LIMIT 12;"
   );
@@ -140,8 +141,8 @@ export default function Home({ navigation }: HomeProps) {
                   }
                 ></IconButton>
                 <VStack flex={1}>
-                  <Text color="emphasis.500">{reading.meterId}</Text>
-                  <Text>{reading.location}</Text>
+                  <Text color="emphasis.500">{reading.technicianName}</Text>
+                  <Text>{reading.meterId}</Text>
                   <Text color="light.500">
                     {formatDistanceToNow(new Date(reading.createdAt), {
                       addSuffix: true,

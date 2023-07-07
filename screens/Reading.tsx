@@ -45,6 +45,7 @@ export default function Reading({
         synchedAt?: string;
         imagePath?: string;
         unit: string;
+        technicianName?: string;
       }>(
         "SELECT readings.*, meters.unit FROM readings JOIN meters ON readings.meterId = meters.id WHERE readings.id = ?;",
         [id]
@@ -137,6 +138,22 @@ export default function Reading({
               _icon={{ as: FontAwesome, name: "arrow-right" }}
             ></IconButton>
             {/* For some reason RN is complaining about the missing key parameter here, don't know why */}
+          </AnimatedHStack>
+          <AnimatedHStack
+            entering={FadeInLeft.delay(200).randomDelay()}
+            space={1}
+            alignItems={"center"}
+          >
+            <Icon as={FontAwesome} name="map-pin" color="primary.400" key="1" />
+            <Text key="2">Done by: </Text>
+            <Text
+              fontWeight={"bold"}
+              color="primary.400"
+              fontSize={"lg"}
+              key="3"
+            >
+              {reading.technicianName}
+            </Text>
           </AnimatedHStack>
           <AnimatedHStack
             entering={FadeInLeft.delay(200).randomDelay()}
