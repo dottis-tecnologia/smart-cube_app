@@ -42,7 +42,11 @@ export default function Root({}: RootProps) {
             options={{ headerShown: false }}
           />
           <Stack.Screen name="Meter" component={Meter} />
-          <Stack.Screen name="ListMeters" component={ListMeters} />
+          <Stack.Screen
+            name="ListMeters"
+            options={({ route }) => ({ title: route.params.location })}
+            component={ListMeters}
+          />
           <Stack.Screen name="Reading" component={Reading} />
           <Stack.Screen name="CreateReading" component={CreateReading} />
         </>

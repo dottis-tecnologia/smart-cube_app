@@ -4,26 +4,25 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 const dbPath = "db.db";
 
-export async function getDatabase() {
-  const file = await FileSystem.getInfoAsync(
-    `${FileSystem.documentDirectory}SQLite/${dbPath}`
-  );
-  const db = SQLite.openDatabase(dbPath);
+export const getDatabase = () => SQLite.openDatabase(dbPath);
 
-  if (!file.exists) {
-    db.transaction(
-      (tx) => {
-        tx.executeSql(
-          `CREATE TABLE meters (
+export async function createTables() {
+  const db = getDatabase();
+
+  db.transaction(
+    (tx) => {
+      tx.executeSql(
+        `CREATE TABLE IF NOT EXISTS meters (
             id TEXT PRIMARY KEY NOT NULL,
+            name TEXT,
             location TEXT, 
             unit TEXT,
             synchedAt TEXT,
             imagePath TEXT
           )`
-        );
-        tx.executeSql(
-          `CREATE TABLE readings (
+      );
+      tx.executeSql(
+        `CREATE TABLE IF NOT EXISTS readings (
             id TEXT PRIMARY KEY NOT NULL,
             meterId TEXT, 
             value REAL,
@@ -33,13 +32,10 @@ export async function getDatabase() {
             technicianName TEXT,
             FOREIGN KEY(meterId) REFERENCES meters(id)
           )`
-        );
-      },
-      (e) => console.log(e)
-    );
-  }
-
-  return db;
+      );
+    },
+    (e) => console.log(e)
+  );
 }
 
 type Result<T> = {
@@ -53,7 +49,7 @@ export async function dbQuery<T>(
   args: unknown[] = [],
   readOnly: boolean = true
 ) {
-  const db = await getDatabase();
+  const db = getDatabase();
 
   return new Promise<Result<T> | null>((resolve, reject) => {
     db.exec([{ sql, args }], readOnly, (err, res) => {
@@ -93,4 +89,6 @@ export async function deleteDatabase() {
     await FileSystem.deleteAsync(picturesPath);
   }
   await AsyncStorage.removeItem("last-sync");
+
+  await createTables();
 }

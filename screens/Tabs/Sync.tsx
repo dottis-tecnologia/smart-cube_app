@@ -8,10 +8,11 @@ import {
   Heading,
   Icon,
   IconButton,
+  Modal,
   Popover,
+  ScrollView,
   Text,
   VStack,
-  useToast,
 } from "native-base";
 import FocusAwareStatusBar from "../../components/util/FocusAwareStatusBar";
 import { FontAwesome } from "@expo/vector-icons";
@@ -41,10 +42,7 @@ const getReadings = () =>
     "SELECT readings.*, meters.unit FROM readings JOIN meters ON readings.meterId = meters.id WHERE readings.synchedAt IS NULL;"
   );
 
-const HEADER_HEIGHT = 200;
-
 export default function Sync({}: SyncProps) {
-  const toast = useToast();
   const { refreshToken } = useAuth();
   const { data: readings, refetch: refetchReadings } = useQuery(
     getReadings,
@@ -59,20 +57,8 @@ export default function Sync({}: SyncProps) {
 
   const { mutate, isMutating } = useMutation(syncData, {
     onSuccess() {
-      toast.show({
-        title: "Success",
-        description: "Data synchronized successfully",
-        colorScheme: "green",
-      });
       refetchReadings();
       refetchLastSync();
-    },
-    onError(e) {
-      toast.show({
-        title: "Error",
-        description: e.message,
-        colorScheme: "danger",
-      });
     },
     async beforeRequest() {
       if (getToken() == null) await refreshToken();
@@ -82,59 +68,40 @@ export default function Sync({}: SyncProps) {
   return (
     <Box flex={1} bg="light.100">
       <FocusAwareStatusBar style="dark" />
-      <Center
-        h={HEADER_HEIGHT}
-        position={"absolute"}
-        top={0}
-        left={0}
-        right={0}
-        key="1"
-        bg={{
-          linearGradient: {
-            colors: ["primary.400", "secondary.400"],
-            start: [0, 0],
-            end: [0, 1],
-          },
-        }}
-        p={8}
-        pb={10}
-      >
-        <HStack
-          w="full"
-          space={3}
-          justifyContent={"space-between"}
-          alignItems={"center"}
+      <ScrollView flex={1}>
+        <Center
+          bg={{
+            linearGradient: {
+              colors: ["primary.400", "secondary.400"],
+              start: [0, 0],
+              end: [0, 1],
+            },
+          }}
+          p={8}
+          pb={10}
         >
-          <Box key="1">
-            <Heading color="white">SYNC</Heading>
-            <Text color="white" opacity={0.7}>
-              Last synchronization:
-            </Text>
-            <Text color="white" opacity={0.8}>
-              {lastSync
-                ? formatDistanceToNow(lastSync, {
-                    addSuffix: true,
-                  })
-                : "never"}
-            </Text>
-          </Box>
-        </HStack>
-      </Center>
-      <FlatList
-        flex={1}
-        ItemSeparatorComponent={() => <Box mb={3}></Box>}
-        _contentContainerStyle={{
-          marginTop: HEADER_HEIGHT - 12,
-          paddingBottom: HEADER_HEIGHT - 12,
-          backgroundColor: "light.100",
-          p: 3,
-          borderTopRadius: "lg",
-        }}
-        ListHeaderComponent={
-          <>
+          <HStack
+            w="full"
+            space={3}
+            justifyContent={"space-between"}
+            alignItems={"center"}
+          >
+            <Box key="1">
+              <Heading color="white">SYNC</Heading>
+              <Text color="white" opacity={0.7}>
+                Last synchronization:
+              </Text>
+              <Text color="white" opacity={0.8}>
+                {lastSync
+                  ? formatDistanceToNow(lastSync, {
+                      addSuffix: true,
+                    })
+                  : "never"}
+              </Text>
+            </Box>
             <Button
               mb={3}
-              key="1"
+              key="2"
               leftIcon={<Icon as={FontAwesome} name="refresh" />}
               colorScheme={"green"}
               onPress={() => mutate()}
@@ -142,23 +109,25 @@ export default function Sync({}: SyncProps) {
             >
               Sync
             </Button>
+          </HStack>
+        </Center>
+        <Box p={3} borderTopRadius={"lg"} mt={-3} bg="light.100">
+          <Heading mb={3} fontSize={"md"} key="2">
+            Latest readings
+          </Heading>
 
-            <DeleteDBButton
-              key="3"
-              onSuccess={() => {
-                refetchLastSync();
-                refetchReadings();
-              }}
-            />
-            <Heading mb={3} fontSize={"md"} key="2">
-              Latest readings
-            </Heading>
-          </>
-        }
-        data={readings?.rows}
-        renderItem={({ item }) => <ReadingItem item={item} />}
-        keyExtractor={(item) => item.id}
-      />
+          {readings?.rows.map((item) => (
+            <ReadingItem key={item.id} item={item} />
+          ))}
+          <DeleteDBButton
+            key="3"
+            onSuccess={() => {
+              refetchLastSync();
+              refetchReadings();
+            }}
+          />
+        </Box>
+      </ScrollView>
     </Box>
   );
 }
@@ -208,68 +177,56 @@ type DeleteDBButtonProps = {
 };
 function DeleteDBButton({ onSuccess }: DeleteDBButtonProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const toast = useToast();
   const { mutate: deleteDb, isMutating: isDeletingDb } = useMutation(
     deleteDatabase,
     {
       onSuccess: () => {
         onSuccess?.();
-        toast.show({
-          title: "Success",
-          description: "Database deleted successfully",
-        });
       },
     }
   );
 
   return (
-    <Popover
-      isOpen={isOpen}
-      onClose={() => setIsOpen(false)}
-      onOpen={() => setIsOpen(true)}
-      trigger={(triggerProps) => {
-        return (
-          <Button
-            {...triggerProps}
-            colorScheme="danger"
-            mb={3}
-            isLoading={isDeletingDb}
-          >
-            Delete Database
-          </Button>
-        );
-      }}
-    >
-      <Popover.Content accessibilityLabel="Delete Database" m={3}>
-        <Popover.Arrow />
-        <Popover.CloseButton />
-        <Popover.Header>Delete Customer</Popover.Header>
-        <Popover.Body>
-          This action will delete the local database and all the data stored in
-          this device, any unsynchronized data will be lost, be careful when
-          using this option
-        </Popover.Body>
-        <Popover.Footer justifyContent="flex-end">
-          <Button.Group space={2}>
-            <Button
-              colorScheme="coolGray"
-              variant="ghost"
-              onPress={() => setIsOpen(false)}
-            >
-              Cancel
-            </Button>
-            <Button
-              colorScheme="danger"
-              onPress={() => {
-                deleteDb();
-                setIsOpen(false);
-              }}
-            >
-              Delete
-            </Button>
-          </Button.Group>
-        </Popover.Footer>
-      </Popover.Content>
-    </Popover>
+    <>
+      <Button
+        colorScheme="danger"
+        mb={3}
+        isLoading={isDeletingDb}
+        onPress={() => setIsOpen(true)}
+      >
+        Delete Database
+      </Button>
+      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} safeArea>
+        <Modal.Content accessibilityLabel="Delete Database" m={3}>
+          <Modal.CloseButton />
+          <Modal.Header>Delete Customer</Modal.Header>
+          <Modal.Body>
+            This action will delete the local database and all the data stored
+            in this device, any unsynchronized data will be lost, be careful
+            when using this option
+          </Modal.Body>
+          <Modal.Footer justifyContent="flex-end">
+            <Button.Group space={2}>
+              <Button
+                colorScheme="coolGray"
+                variant="ghost"
+                onPress={() => setIsOpen(false)}
+              >
+                Cancel
+              </Button>
+              <Button
+                colorScheme="danger"
+                onPress={() => {
+                  deleteDb();
+                  setIsOpen(false);
+                }}
+              >
+                Delete
+              </Button>
+            </Button.Group>
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal>
+    </>
   );
 }

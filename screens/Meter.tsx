@@ -35,6 +35,7 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
     () =>
       dbQuery<{
         id: string;
+        name: string;
         location: string;
         unit: string;
         imagePath: string;
@@ -112,7 +113,7 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
           <Icon as={FontAwesome} name="tag" color="primary.400" key="1" />
           <Text key="2">Meter ID: </Text>
           <Text fontWeight={"bold"} color="primary.400" fontSize={"lg"} key="3">
-            {meter.id}
+            {meter.name}
           </Text>
         </AnimatedHStack>
         <AnimatedHStack

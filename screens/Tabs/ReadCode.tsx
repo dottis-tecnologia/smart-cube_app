@@ -11,7 +11,7 @@ import {
   Text,
   VStack,
 } from "native-base";
-import { CompositeScreenProps, useIsFocused } from "@react-navigation/native";
+import { CompositeScreenProps } from "@react-navigation/native";
 import { TabParamList } from "./Tabs";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import FocusAwareStatusBar from "../../components/util/FocusAwareStatusBar";
@@ -20,7 +20,6 @@ import { RootStackParamList } from "../Root";
 import { FontAwesome } from "@expo/vector-icons";
 import { TextInput } from "react-native";
 import Animated, { FadeInLeft } from "react-native-reanimated";
-import ScanIcon from "../../assets/qr-code-scan-icon.svg";
 
 export type ReadCodeProps = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, "ReadCode">,

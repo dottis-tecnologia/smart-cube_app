@@ -1,7 +1,7 @@
 import { INativebaseConfig, extendTheme } from "native-base";
 import { LinearGradient } from "expo-linear-gradient";
 
-export const apiUrl = "http://172.16.0.19:5000"; //"http://cloud.dotspot.com.br:9009";
+export const apiUrl = "http://cloud.dotspot.com.br:9009";
 
 // extend the theme
 export const theme = extendTheme({

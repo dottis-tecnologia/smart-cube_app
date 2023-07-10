@@ -39,6 +39,7 @@ export default function Reading({
     () =>
       dbQuery<{
         id: string;
+        meterName: string;
         meterId: string;
         value: number;
         createdAt: string;
@@ -47,7 +48,7 @@ export default function Reading({
         unit: string;
         technicianName?: string;
       }>(
-        "SELECT readings.*, meters.unit FROM readings JOIN meters ON readings.meterId = meters.id WHERE readings.id = ?;",
+        "SELECT readings.*, meters.name as meterName, meters.unit FROM readings JOIN meters ON readings.meterId = meters.id WHERE readings.id = ?;",
         [id]
       ),
     [id]
@@ -129,15 +130,8 @@ export default function Reading({
               fontSize={"lg"}
               key="3"
             >
-              {reading.meterId}
+              {reading.meterName}
             </Text>
-            <IconButton
-              onPress={() =>
-                navigation.navigate("Meter", { id: reading.meterId })
-              }
-              _icon={{ as: FontAwesome, name: "arrow-right" }}
-            ></IconButton>
-            {/* For some reason RN is complaining about the missing key parameter here, don't know why */}
           </AnimatedHStack>
           <AnimatedHStack
             entering={FadeInLeft.delay(200).randomDelay()}
@@ -190,6 +184,14 @@ export default function Reading({
             <Text fontSize={"4xl"} key="3">
               {reading.value} {reading.unit}
             </Text>
+            <Button
+              onPress={() =>
+                navigation.navigate("Meter", { id: reading.meterId })
+              }
+              rightIcon={<Icon as={FontAwesome} name="arrow-right" />}
+            >
+              Go to meter
+            </Button>
           </Center>
         </Box>
       </Box>

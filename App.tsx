@@ -3,8 +3,14 @@ import Root from "./screens/Root";
 import { NativeBaseProvider } from "native-base";
 import { theme, themeConfig } from "./config";
 import AuthWrapper from "./components/AuthWrapper";
+import { useEffect } from "react";
+import { createTables } from "./util/db";
 
 export default function App() {
+  useEffect(() => {
+    createTables();
+  }, []);
+
   return (
     <>
       <NativeBaseProvider theme={theme} config={themeConfig}>

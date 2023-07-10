@@ -7,6 +7,7 @@ export type Meter = {
   id: string;
   location: string;
   unit: string;
+  name: string;
   createdAt: string;
   updatedAt: string;
 };
@@ -15,14 +16,26 @@ export const syncMeter = async (meter: Meter, lastSync?: Date) => {
 
   if (lastSync == null || isAfter(createdAt, lastSync)) {
     await dbQuery(
-      "INSERT INTO meters (id, location, unit, synchedAt) VALUES (?, ?, ?, ?)",
-      [meter.id, meter.location, meter.unit, new Date().toISOString()],
+      "INSERT INTO meters (id, name, location, unit, synchedAt) VALUES (?, ?, ?, ?, ?)",
+      [
+        meter.id,
+        meter.name,
+        meter.location,
+        meter.unit,
+        new Date().toISOString(),
+      ],
       false
     );
   } else {
     await dbQuery(
-      "UPDATE meters SET location = ?, unit = ?, synchedAt = ? WHERE id = ?",
-      [meter.location, meter.unit, new Date().toISOString(), meter.id],
+      "UPDATE meters SET name = ?, location = ?, unit = ?, synchedAt = ? WHERE id = ?",
+      [
+        meter.name,
+        meter.location,
+        meter.unit,
+        new Date().toISOString(),
+        meter.id,
+      ],
       false
     );
   }

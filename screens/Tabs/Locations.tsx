@@ -15,6 +15,7 @@ import {
   VStack,
   Pressable,
   Input,
+  ScrollView,
 } from "native-base";
 import useQuery from "../../hooks/useQuery";
 import { dbQuery } from "../../util/db";
@@ -25,8 +26,6 @@ export type LocationsProps = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, "Locations">,
   NativeStackScreenProps<RootStackParamList>
 >;
-
-const HEADER_HEIGHT = 200;
 
 export default function Locations({ navigation, route }: LocationsProps) {
   const filter = route.params?.filter || "";
@@ -40,121 +39,105 @@ export default function Locations({ navigation, route }: LocationsProps) {
   );
 
   return (
-    <>
+    <Box bg="light.100" flex={1}>
       <FocusAwareStatusBar style="dark" />
-      <Center
-        h={HEADER_HEIGHT}
-        position={"absolute"}
-        top={0}
-        left={0}
-        right={0}
-        bg={{
-          linearGradient: {
-            colors: ["primary.400", "secondary.400"],
-            start: [0, 0],
-            end: [0, 1],
-          },
-        }}
-        p={8}
-        pb={10}
-      >
-        <Box w="full" key="1">
-          <Heading color="white" mb={3}>
-            LOCATION
-          </Heading>
-        </Box>
-      </Center>
-
-      <FlatList
-        flex={1}
-        _contentContainerStyle={{
-          marginTop: HEADER_HEIGHT - 12,
-          paddingBottom: HEADER_HEIGHT - 12,
-          backgroundColor: "light.100",
-          p: 3,
-          borderTopRadius: "lg",
-        }}
-        ListHeaderComponent={
-          <Box mb={3}>
-            <Heading mb={3} fontSize={"md"} key="2">
-              Locations
+      <ScrollView flex={1}>
+        <Center
+          bg={{
+            linearGradient: {
+              colors: ["primary.400", "secondary.400"],
+              start: [0, 0],
+              end: [0, 1],
+            },
+          }}
+          p={8}
+          pb={10}
+        >
+          <Box w="full" key="1">
+            <Heading color="white" mb={3}>
+              LOCATION
             </Heading>
-
-            <Input
-              bg="white"
-              placeholder="Type the location..."
-              defaultValue={filter}
-              onSubmitEditing={(e) => {
-                navigation.setParams({ filter: e.nativeEvent.text });
-              }}
-            />
           </Box>
-        }
-        data={data?.rows}
-        renderItem={({ item }) => (
-          <Pressable
-            onPress={() =>
-              navigation.navigate("ListMeters", { location: item.location })
-            }
-          >
-            {({ isPressed }) => (
-              <VStack
-                opacity={isPressed ? 0.5 : 1}
-                rounded={"lg"}
-                mb={3}
-                bg="white"
-              >
-                <HStack
-                  alignItems={"center"}
-                  p={5}
-                  borderBottomWidth={1}
-                  borderBottomColor={"light.200"}
+          <Input
+            bg="white"
+            placeholder="Type the location..."
+            defaultValue={filter}
+            onSubmitEditing={(e) => {
+              navigation.setParams({ filter: e.nativeEvent.text });
+            }}
+          />
+        </Center>
+
+        <Box p={3} borderTopRadius={"lg"} mt={-3} bg="light.100">
+          <Heading mb={3} fontSize={"md"} key="2">
+            Locations
+          </Heading>
+
+          {data?.rows.map((item) => (
+            <Pressable
+              key={item.location}
+              onPress={() =>
+                navigation.navigate("ListMeters", { location: item.location })
+              }
+            >
+              {({ isPressed }) => (
+                <VStack
+                  opacity={isPressed ? 0.5 : 1}
+                  rounded={"lg"}
+                  mb={3}
+                  bg="white"
                 >
-                  <Icon
-                    as={FontAwesome}
-                    color="primary.500"
-                    name="info"
-                    mr={2}
-                  />
-                  <Text fontSize="lg" fontStyle={"italic"}>
-                    Meters
-                  </Text>
-                  <Text
-                    flexGrow={1}
-                    textAlign={"right"}
-                    fontWeight={"bold"}
-                    color="primary.500"
-                    fontSize="lg"
+                  <HStack
+                    alignItems={"center"}
+                    p={5}
+                    borderBottomWidth={1}
+                    borderBottomColor={"light.200"}
                   >
-                    {item.meterCount}
-                  </Text>
-                </HStack>
-                <HStack p={5} alignItems={"center"}>
-                  <Icon
-                    as={FontAwesome}
-                    color="primary.500"
-                    name="building"
-                    mr={2}
-                  />
-                  <Text fontSize="lg" fontStyle={"italic"}>
-                    Location
-                  </Text>
-                  <Text
-                    flexGrow={1}
-                    textAlign={"right"}
-                    fontWeight={"bold"}
-                    color="primary.500"
-                    fontSize="lg"
-                  >
-                    {item.location}
-                  </Text>
-                </HStack>
-              </VStack>
-            )}
-          </Pressable>
-        )}
-        keyExtractor={(item) => item.location}
-      />
-    </>
+                    <Icon
+                      as={FontAwesome}
+                      color="primary.500"
+                      name="info"
+                      mr={2}
+                    />
+                    <Text fontSize="lg" fontStyle={"italic"}>
+                      Meters
+                    </Text>
+                    <Text
+                      flexGrow={1}
+                      textAlign={"right"}
+                      fontWeight={"bold"}
+                      color="primary.500"
+                      fontSize="lg"
+                    >
+                      {item.meterCount}
+                    </Text>
+                  </HStack>
+                  <HStack p={5} alignItems={"center"}>
+                    <Icon
+                      as={FontAwesome}
+                      color="primary.500"
+                      name="building"
+                      mr={2}
+                    />
+                    <Text fontSize="lg" fontStyle={"italic"}>
+                      Location
+                    </Text>
+                    <Text
+                      flexGrow={1}
+                      textAlign={"right"}
+                      fontWeight={"bold"}
+                      color="primary.500"
+                      fontSize="lg"
+                    >
+                      {item.location}
+                    </Text>
+                  </HStack>
+                </VStack>
+              )}
+            </Pressable>
+          ))}
+        </Box>
+      </ScrollView>
+    </Box>
   );
 }
