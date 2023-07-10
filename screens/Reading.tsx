@@ -53,10 +53,6 @@ export default function Reading({
       ),
     [id]
   );
-  const { data: remoteImageUrl } = useQuery(async () => {
-    if (getToken() == null) await refreshToken();
-    return await trpc.readings.image.query(id);
-  }, [id]);
 
   if (meterData == null) {
     return (
@@ -85,7 +81,7 @@ export default function Reading({
 
   const reading = meterData.rows[0];
 
-  const imagePath = reading.imagePath ?? remoteImageUrl;
+  const imagePath = reading.imagePath;
 
   return (
     <>

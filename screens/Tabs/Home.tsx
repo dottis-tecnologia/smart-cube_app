@@ -64,6 +64,7 @@ export default function Home({ navigation }: HomeProps) {
 
       <ScrollView flex={1}>
         <AnimatedBox
+          safeAreaTop
           bg={{
             linearGradient: {
               colors: ["primary.400", "secondary.400"],

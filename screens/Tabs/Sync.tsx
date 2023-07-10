@@ -150,6 +150,7 @@ function ReadingItem({
       p={5}
       bg={"red.500"}
       rounded="lg"
+      mb={3}
       alignItems="center"
       space={5}
       entering={SlideInLeft.delay(200).randomDelay()}

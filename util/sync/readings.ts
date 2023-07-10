@@ -44,20 +44,20 @@ type ReadingPayload = {
   imagePath: string;
 };
 export const sendReading = async (payload: ReadingPayload) => {
-  const uploadedImagePath = await uploadFile(
-    payload.imagePath,
-    `${payload.meterId}/readings`
-  );
+  const { outUrl } = await uploadFile(payload.imagePath, "image/jpg", {
+    dimensions: { height: 300, width: 300 },
+  });
 
+  console.log(outUrl);
   const data = await trpc.readings.create.mutate({
     ...payload,
     createdAt: new Date(payload.createdAt),
-    imagePath: uploadedImagePath,
+    imagePath: outUrl,
   });
 
   await dbQuery(
     "UPDATE readings SET synchedAt = ?, imagePath = ? WHERE id = ?",
-    [data.createdAt, null, payload.id],
+    [data.createdAt, outUrl, payload.id],
     false
   );
 

@@ -5,6 +5,7 @@ import { dbQuery } from "../db";
 
 export type Meter = {
   id: string;
+  imagePath: string | null;
   location: string;
   unit: string;
   name: string;
@@ -56,14 +57,13 @@ async function tryAndDownloadImage(meter: Meter) {
     await FileSystem.makeDirectoryAsync(folder, { intermediates: true });
   }
 
-  const image = await trpc.meters.image.query(meter.id);
-  if (image == null) return null;
+  if (meter.imagePath == null) return null;
 
-  const imageUrl = image.split("?")[0];
+  const imageUrl = meter.imagePath.split("?")[0];
   const extSplit = imageUrl.split(".");
   const ext = extSplit[extSplit.length - 1];
   const filePath = `${folder}/image.${ext}`;
-  await FileSystem.downloadAsync(image, filePath);
+  await FileSystem.downloadAsync(meter.imagePath, filePath);
 
   return filePath;
 }
