@@ -17,7 +17,12 @@ type Payload = {
 };
 
 export default function AuthWrapper({ children }: AuthWrapperProps) {
-  const [user, setUser, clearUser] = usePersistentState<{
+  const {
+    value: user,
+    setValue: setUser,
+    clear: clearUser,
+    isLoading,
+  } = usePersistentState<{
     id: string;
     name: string;
     email: string;
@@ -69,7 +74,7 @@ export default function AuthWrapper({ children }: AuthWrapperProps) {
 
   return (
     <AuthContext.Provider
-      value={{ refreshToken, signIn, signOut, userData: user }}
+      value={{ refreshToken, signIn, signOut, userData: user, isLoading }}
     >
       {children}
     </AuthContext.Provider>

@@ -25,7 +25,15 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function Root({}: RootProps) {
-  const { userData } = useAuth();
+  const { userData, isLoading } = useAuth();
+
+  if (isLoading) {
+    return (
+      <Center flex={1}>
+        <Spinner />
+      </Center>
+    );
+  }
 
   return (
     <Stack.Navigator

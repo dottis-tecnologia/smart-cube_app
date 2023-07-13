@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "smart-cube",
+    "name": "Smart Cube Meters",
     "slug": "smart-cube",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -28,10 +28,6 @@
         "android.permission.RECORD_AUDIO"
       ],
       "package": "com.dottis.smartcube"
-    },
-    "web": {
-      "favicon": "./assets/favicon.png",
-      "bundler": "metro"
     },
     "plugins": [
       [

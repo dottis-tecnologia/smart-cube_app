@@ -61,7 +61,7 @@ export default function Search({ navigation, route }: SearchProps) {
             </Heading>
           </Box>
           <Input
-            bg="white"
+            variant={"filled"}
             placeholder="Type the id..."
             defaultValue={filter}
             onSubmitEditing={(e) => {

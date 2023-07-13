@@ -1,19 +1,19 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useEffect, useState } from "react";
 
-export default function usePersistentState<T>(
-  key: string,
-  defaultValue: T
-): [T, (v: T) => void, () => Promise<void>] {
+export default function usePersistentState<T>(key: string, defaultValue: T) {
   const [value, setValue] = useState<T>(defaultValue);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchData = async () => {
       const data = await AsyncStorage.getItem(key);
 
-      if (data == null) return;
+      if (data != null) {
+        setValue(JSON.parse(data));
+      }
 
-      setValue(JSON.parse(data));
+      setIsLoading(false);
     };
 
     fetchData();
@@ -24,12 +24,13 @@ export default function usePersistentState<T>(
     AsyncStorage.setItem(key, JSON.stringify(newValue));
   };
 
-  return [
+  return {
     value,
-    setPersistentValue,
-    async () => {
+    setValue: setPersistentValue,
+    clear: async () => {
       await AsyncStorage.removeItem(key);
       setValue(defaultValue);
     },
-  ];
+    isLoading,
+  };
 }

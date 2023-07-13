@@ -1,4 +1,5 @@
 import {
+  AspectRatio,
   Box,
   Center,
   HStack,
@@ -76,7 +77,9 @@ export default function Home({ navigation }: HomeProps) {
           entering={FadeInUp}
         >
           <Center p={3}>
-            <Logo />
+            <AspectRatio ratio={1} w="40%">
+              <Logo width={"100%"} height={"100%"} />
+            </AspectRatio>
           </Center>
           <HStack alignItems={"center"} justifyContent={"space-between"}>
             <AnimatedBox entering={FadeInLeft.delay(100)}>

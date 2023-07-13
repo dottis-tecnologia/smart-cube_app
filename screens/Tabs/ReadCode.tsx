@@ -69,7 +69,7 @@ export default function ReadCode({ navigation }: ReadCodeProps) {
           <AnimatedBox entering={FadeInLeft.delay(500)} flex={1}>
             <Input
               size="lg"
-              bg="white"
+              variant={"filled"}
               placeholder="Meter ID..."
               onFocus={() => setFocus(true)}
               onBlur={() => setFocus(false)}

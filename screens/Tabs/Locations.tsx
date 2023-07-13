@@ -59,7 +59,7 @@ export default function Locations({ navigation, route }: LocationsProps) {
             </Heading>
           </Box>
           <Input
-            bg="white"
+            variant={"filled"}
             placeholder="Type the location..."
             defaultValue={filter}
             onSubmitEditing={(e) => {
