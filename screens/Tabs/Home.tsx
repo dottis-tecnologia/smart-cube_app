@@ -7,6 +7,7 @@ import {
   IconButton,
   ScrollView,
   Text,
+  Pressable,
   VStack,
 } from "native-base";
 import { TabParamList } from "./Tabs";
@@ -19,7 +20,7 @@ import Animated, {
   FadeInUp,
   SlideInLeft,
 } from "react-native-reanimated";
-import { CompositeScreenProps, useFocusEffect } from "@react-navigation/native";
+import { CompositeScreenProps } from "@react-navigation/native";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../Root";
 import useQuery from "../../hooks/useQuery";
@@ -35,7 +36,7 @@ export type HomeProps = CompositeScreenProps<
 const AnimatedBox = Animated.createAnimatedComponent(Box);
 const AnimatedHStack = Animated.createAnimatedComponent(HStack);
 
-const getMeters = () =>
+const getMeters = (userId: string) =>
   dbQuery<{
     id: string;
     meterName: string;
@@ -46,10 +47,16 @@ const getMeters = () =>
     location: string;
     technicianName: string;
   }>(
-    "SELECT readings.*, meters.name as meterName, meters.unit, meters.location FROM readings JOIN meters ON readings.meterId = meters.id ORDER BY createdAt DESC LIMIT 12;"
+    "SELECT readings.*, meters.name as meterName, meters.unit, meters.location FROM readings JOIN meters ON readings.meterId = meters.id WHERE readings.technicianId = ? ORDER BY createdAt DESC LIMIT 12;",
+    [userId]
   );
+
 export default function Home({ navigation }: HomeProps) {
-  const { data: readings } = useQuery(getMeters, []);
+  const auth = useAuth();
+  const { data: readings } = useQuery(
+    () => auth.userData && getMeters(auth.userData.id),
+    [auth.userData]
+  );
   const { data: readingCount } = useQuery(
     () =>
       dbQuery<{ count: 5 }>(
@@ -57,7 +64,6 @@ export default function Home({ navigation }: HomeProps) {
       ),
     []
   );
-  const auth = useAuth();
 
   return (
     <Box flex={1}>
@@ -120,36 +126,43 @@ export default function Home({ navigation }: HomeProps) {
               Latest readings
             </Heading>
             {readings?.rows.map((reading, index) => (
-              <AnimatedHStack
+              <AnimatedBox
                 key={reading.id}
-                p={5}
-                mb={3}
-                bg="white"
-                rounded="lg"
-                alignItems="center"
-                space={5}
                 entering={SlideInLeft.delay(index * 100)}
               >
-                <IconButton
-                  _icon={{ as: FontAwesome, name: "eye" }}
-                  variant={"ghost"}
+                <Pressable
                   onPress={() =>
                     navigation.navigate("Reading", { id: reading.id })
                   }
-                ></IconButton>
-                <VStack flex={1}>
-                  <Text color="emphasis.500">{reading.technicianName}</Text>
-                  <Text>{reading.meterName}</Text>
-                  <Text color="light.500">
-                    {formatDistanceToNow(new Date(reading.createdAt), {
-                      addSuffix: true,
-                    })}
-                  </Text>
-                </VStack>
-                <Text color="red.500" fontWeight={"bold"}>
-                  {reading.value} {reading.unit}
-                </Text>
-              </AnimatedHStack>
+                >
+                  {({ isPressed }) => (
+                    <HStack
+                      alignItems="center"
+                      space={5}
+                      opacity={isPressed ? 0.5 : 1}
+                      p={5}
+                      mb={3}
+                      bg="white"
+                      rounded="lg"
+                    >
+                      <VStack flex={1}>
+                        <Text color="emphasis.500">
+                          {reading.technicianName}
+                        </Text>
+                        <Text>{reading.meterName}</Text>
+                        <Text color="light.500">
+                          {formatDistanceToNow(new Date(reading.createdAt), {
+                            addSuffix: true,
+                          })}
+                        </Text>
+                      </VStack>
+                      <Text color="red.500" fontWeight={"bold"}>
+                        {reading.value} {reading.unit}
+                      </Text>
+                    </HStack>
+                  )}
+                </Pressable>
+              </AnimatedBox>
             ))}
           </Box>
         </Box>

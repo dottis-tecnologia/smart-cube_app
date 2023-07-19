@@ -38,7 +38,7 @@ export default function CreateReading({
       });
 
       await dbQuery(
-        "INSERT INTO readings (id, meterId, value, createdAt, imagePath, technicianName) VALUES (?, ?, ?, ?, ?, ?)",
+        "INSERT INTO readings (id, meterId, value, createdAt, imagePath, technicianName, technicianId) VALUES (?, ?, ?, ?, ?, ?, ?)",
         [
           readingId,
           meterId,
@@ -46,6 +46,7 @@ export default function CreateReading({
           new Date().toISOString(),
           filePath,
           userData?.name,
+          userData?.id,
         ],
         false
       );

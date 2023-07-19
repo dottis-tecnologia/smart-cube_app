@@ -72,15 +72,13 @@ export default function Search({ navigation, route }: SearchProps) {
 
         <Box p={3} borderTopRadius={"lg"} mt={-3} bg="light.100">
           <Heading mb={3} fontSize={"md"} key="2">
-            Locations
+            Meters
           </Heading>
 
           {data?.rows.map((item) => (
             <Pressable
-              key={item.location}
-              onPress={() =>
-                navigation.navigate("ListMeters", { location: item.location })
-              }
+              key={item.id}
+              onPress={() => navigation.navigate("Meter", { id: item.id })}
             >
               {({ isPressed }) => (
                 <VStack
@@ -105,7 +103,10 @@ export default function Search({ navigation, route }: SearchProps) {
                       Meter
                     </Text>
                     <Text
-                      flexGrow={1}
+                      flex={1}
+                      ml={5}
+                      ellipsizeMode="tail"
+                      numberOfLines={1}
                       textAlign={"right"}
                       fontWeight={"bold"}
                       color="primary.500"
@@ -114,7 +115,7 @@ export default function Search({ navigation, route }: SearchProps) {
                       {item.name}
                     </Text>
                   </HStack>
-                  <HStack p={5} alignItems={"center"}>
+                  <HStack p={5} alignItems={"center"} flexGrow={1}>
                     <Icon
                       as={FontAwesome}
                       color="primary.500"
@@ -125,7 +126,10 @@ export default function Search({ navigation, route }: SearchProps) {
                       Location
                     </Text>
                     <Text
-                      flexGrow={1}
+                      flex={1}
+                      ml={5}
+                      ellipsizeMode="tail"
+                      numberOfLines={1}
                       textAlign={"right"}
                       fontWeight={"bold"}
                       color="primary.500"

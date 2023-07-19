@@ -34,7 +34,6 @@ export default function Reading({
   navigation,
 }: ReadingProps) {
   const { id } = params;
-  const { refreshToken } = useAuth();
   const { data: meterData } = useQuery(
     () =>
       dbQuery<{
@@ -80,13 +79,14 @@ export default function Reading({
   }
 
   const reading = meterData.rows[0];
+  console.log(reading);
 
   const imagePath = reading.imagePath;
 
   return (
     <>
       <FocusAwareStatusBar style="dark" />
-      <Box>
+      <Box flex={1}>
         <AspectRatio ratio={1}>
           {imagePath ? (
             <Image
@@ -109,10 +109,7 @@ export default function Reading({
             </Center>
           )}
         </AspectRatio>
-        <Text mx={1} color="gray.400" fontSize={"sm"} key="3">
-          {reading.id}
-        </Text>
-        <Box p={3}>
+        <Box p={3} flex={1}>
           <AnimatedHStack
             entering={FadeInLeft.delay(200).randomDelay()}
             space={1}
@@ -176,19 +173,19 @@ export default function Reading({
             )}
             {/* For some reason RN is complaining about the missing key parameter here, don't know why */}
           </AnimatedHStack>
-          <Center p={3} mb={3}>
+          <Center p={3} mb={3} flex={1}>
             <Text fontSize={"4xl"} key="3">
               {reading.value} {reading.unit}
             </Text>
-            <Button
-              onPress={() =>
-                navigation.navigate("Meter", { id: reading.meterId })
-              }
-              rightIcon={<Icon as={FontAwesome} name="arrow-right" />}
-            >
-              Go to meter
-            </Button>
           </Center>
+          <Button
+            onPress={() =>
+              navigation.navigate("Meter", { id: reading.meterId })
+            }
+            rightIcon={<Icon as={FontAwesome} name="arrow-right" />}
+          >
+            Go to meter
+          </Button>
         </Box>
       </Box>
     </>

@@ -19,6 +19,7 @@ import trpc from "../../util/trpc";
 import { TRPCError } from "@trpc/server";
 import { TRPCClientError } from "@trpc/client";
 import useAuth from "../../hooks/useAuth";
+import FocusAwareStatusBar from "../../components/util/FocusAwareStatusBar";
 
 export type LoginProps = NativeStackScreenProps<RootStackParamList, "Login">;
 
@@ -42,7 +43,7 @@ export default function Login({}: LoginProps) {
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
-      await auth.signIn(data);
+      await auth.signIn({ email: data.email.trim(), password: data.password });
     } catch (e) {
       if (e instanceof TRPCClientError) {
         const message = e.message;
@@ -63,6 +64,7 @@ export default function Login({}: LoginProps) {
 
   return (
     <Box flex={1} safeArea>
+      <FocusAwareStatusBar style="dark" />
       <Center flex={1} alignItems={"stretch"} w="80%" mx="auto">
         <Heading fontWeight={"normal"} mb={5} fontSize={"4xl"}>
           Log In

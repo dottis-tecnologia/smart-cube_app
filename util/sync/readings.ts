@@ -8,6 +8,7 @@ type Reading = {
   id: string;
   meterId: string;
   value: string;
+  imagePath: string | null;
   technician: { id: string; name: string } | null;
   createdAt: string;
   updatedAt: string;
@@ -16,13 +17,15 @@ export const syncReading = async (reading: Reading, lastSync?: Date) => {
   const createdAt = new Date(reading.createdAt);
   if (lastSync == null || isAfter(createdAt, lastSync)) {
     await dbQuery(
-      "INSERT INTO readings (id, meterId, value, createdAt, synchedAt, technicianName) VALUES (?, ?, ?, ?, ?, ?)",
+      "INSERT INTO readings (id, meterId, value, createdAt, imagePath, synchedAt, technicianId, technicianName) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
       [
         reading.id,
         reading.meterId,
         +reading.value,
         new Date(reading.createdAt).toISOString(),
+        reading.imagePath,
         new Date().toISOString(),
+        reading.technician?.id,
         reading.technician?.name,
       ],
       false
@@ -48,7 +51,6 @@ export const sendReading = async (payload: ReadingPayload) => {
     dimensions: { height: 300, width: 300 },
   });
 
-  console.log(outUrl);
   const data = await trpc.readings.create.mutate({
     ...payload,
     createdAt: new Date(payload.createdAt),

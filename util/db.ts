@@ -30,6 +30,7 @@ export async function createTables() {
             synchedAt TEXT,
             imagePath TEXT,
             technicianName TEXT,
+            technicianId TEXT,
             FOREIGN KEY(meterId) REFERENCES meters(id)
           )`
       );
