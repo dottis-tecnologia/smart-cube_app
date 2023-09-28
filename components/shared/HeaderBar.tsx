@@ -33,7 +33,7 @@ export default function HeaderBar({
             />
           </AnimatedBox>
         )}
-        <Heading>{title}</Heading>
+        <Heading numberOfLines={1}>{title}</Heading>
       </Center>
     </AnimatedBox>
   );

@@ -7,7 +7,6 @@ import FocusAwareStatusBar from "../../components/util/FocusAwareStatusBar";
 import {
   Box,
   Center,
-  FlatList,
   Text,
   Heading,
   HStack,
@@ -20,7 +19,6 @@ import {
 import useQuery from "../../hooks/useQuery";
 import { dbQuery } from "../../util/db";
 import { FontAwesome } from "@expo/vector-icons";
-import { useState } from "react";
 
 export type LocationsProps = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, "Locations">,
@@ -33,7 +31,7 @@ export default function Locations({ navigation, route }: LocationsProps) {
     () =>
       dbQuery<{ location: string; meterCount: number }>(
         "SELECT count(id) as meterCount, location FROM meters WHERE UPPER(location) LIKE UPPER(?) GROUP BY location",
-        [`%${filter}%`] // Implement filtering here
+        [`%${filter}%`]
       ),
     [filter]
   );
@@ -99,7 +97,7 @@ export default function Locations({ navigation, route }: LocationsProps) {
                       name="info"
                       mr={2}
                     />
-                    <Text fontSize="lg" fontStyle={"italic"}>
+                    <Text fontSize="lg" fontStyle={"italic"} mr={1}>
                       Meters
                     </Text>
                     <Text
@@ -119,15 +117,17 @@ export default function Locations({ navigation, route }: LocationsProps) {
                       name="building"
                       mr={2}
                     />
-                    <Text fontSize="lg" fontStyle={"italic"}>
+                    <Text fontSize="lg" fontStyle={"italic"} mr={1}>
                       Location
                     </Text>
                     <Text
+                      flex={1}
                       flexGrow={1}
                       textAlign={"right"}
                       fontWeight={"bold"}
                       color="primary.500"
                       fontSize="lg"
+                      numberOfLines={1}
                     >
                       {item.location}
                     </Text>

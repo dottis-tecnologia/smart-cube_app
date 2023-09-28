@@ -34,12 +34,13 @@ const getReadings = () =>
   dbQuery<{
     id: string;
     meterId: string;
+    meterName: string;
     value: number;
     unit: string;
     createdAt: string;
     imagePath: string;
   }>(
-    "SELECT readings.*, meters.unit FROM readings JOIN meters ON readings.meterId = meters.id WHERE readings.synchedAt IS NULL;"
+    "SELECT readings.*, meters.unit, meters.name as meterName FROM readings JOIN meters ON readings.meterId = meters.id WHERE readings.synchedAt IS NULL;"
   );
 
 export default function Sync({}: SyncProps) {

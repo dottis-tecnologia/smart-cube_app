@@ -73,8 +73,7 @@ export default function Login({}: LoginProps) {
           Enter your credentials
         </Text>
         <Text color="dark.400" mb={5}>
-          Lorem Ipsum is simply dummy text of the printing and typesetting
-          industry.
+          You need internet access to login for the first time
         </Text>
         <Box mb={5}>
           <Controller
