@@ -24,18 +24,22 @@ export default function CreateReading({
   const { meterId } = params;
   const { userData } = useAuth();
   const { isMutating, mutate } = useMutation(
-    async (snapshot: CameraCapturedPicture, reading: number) => {
+    async (snapshot: CameraCapturedPicture | null, reading: number) => {
       const readingId = randomUUID();
 
-      const uri = snapshot.uri;
-      const extSplit = uri.split(".");
-      const ext = extSplit[extSplit.length - 1];
-      const filePath = `${FileSystem.documentDirectory}pictures/${meterId}/${readingId}.${ext}`;
+      let filePath: string | null = null;
 
-      await FileSystem.copyAsync({
-        from: uri,
-        to: filePath,
-      });
+      if (snapshot != null) {
+        const uri = snapshot.uri;
+        const extSplit = uri.split(".");
+        const ext = extSplit[extSplit.length - 1];
+        filePath = `${FileSystem.documentDirectory}pictures/${meterId}/${readingId}.${ext}`;
+
+        await FileSystem.copyAsync({
+          from: uri,
+          to: filePath,
+        });
+      }
 
       await dbQuery(
         "INSERT INTO readings (id, meterId, value, createdAt, imagePath, technicianName, technicianId) VALUES (?, ?, ?, ?, ?, ?, ?)",

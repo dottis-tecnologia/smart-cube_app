@@ -14,7 +14,7 @@ import {
 import { useState } from "react";
 
 export type InputReadingProps = {
-  snapshot: CameraCapturedPicture;
+  snapshot: CameraCapturedPicture | null;
   onReturn?: () => void;
   onConfirm?: (value: number) => void;
 };
@@ -28,15 +28,17 @@ export default function InputReading({
 
   return (
     <Box flex={1}>
-      <Image
-        bg="black"
-        flex={1}
-        source={snapshot}
-        resizeMode="contain"
-        w={"100%"}
-        h={"100%"}
-        alt="snapshot"
-      />
+      {snapshot && (
+        <Image
+          bg="black"
+          flex={1}
+          source={snapshot}
+          resizeMode="contain"
+          w={"100%"}
+          h={"100%"}
+          alt="snapshot"
+        />
+      )}
       <Center p={3}>
         <Text mb={3}>Please input the current reading of the meter</Text>
         <Input

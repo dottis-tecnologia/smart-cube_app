@@ -16,6 +16,7 @@ import {
   Spinner,
   Text,
   VStack,
+  Badge,
 } from "native-base";
 import Animated, { FadeInLeft } from "react-native-reanimated";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
@@ -39,6 +40,8 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
         location: string;
         unit: string;
         imagePath: string;
+        notes: string;
+        type: string;
       }>("SELECT * FROM meters WHERE id = ?;", [id]),
     [id]
   );
@@ -57,6 +60,7 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
       ]),
     [id]
   );
+  console.log(meterData);
 
   const isFocused = useIsFocused();
 
@@ -91,23 +95,55 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
     <>
       <FocusAwareStatusBar style="dark" />
 
-      <AspectRatio ratio={1}>
-        {meter.imagePath ? (
-          <Image
-            source={{
-              uri: meter.imagePath,
-            }}
-            resizeMode="cover"
-            w={"100%"}
-            h={"100%"}
-            alt="meter picture"
-          />
-        ) : (
-          <Center flex={1} bg="black">
-            <Icon as={FontAwesome5} name="image" size={24} color="light.800" />
-          </Center>
-        )}
-      </AspectRatio>
+      <Box position={"relative"}>
+        <AspectRatio ratio={1}>
+          {meter.imagePath ? (
+            <Image
+              source={{
+                uri: meter.imagePath,
+              }}
+              resizeMode="cover"
+              w={"100%"}
+              h={"100%"}
+              alt="meter picture"
+            />
+          ) : (
+            <Center flex={1} bg="black">
+              <Icon
+                as={FontAwesome5}
+                name="image"
+                size={24}
+                color="light.800"
+              />
+            </Center>
+          )}
+        </AspectRatio>
+        {meter.notes ? (
+          <Box
+            position={"absolute"}
+            bottom={0}
+            left={0}
+            right={0}
+            m={1}
+            p={2}
+            bg="#550000bb"
+            borderRadius={"md"}
+          >
+            <Text color="white">{meter.notes}</Text>
+          </Box>
+        ) : null}
+        {meter.type ? (
+          <Badge
+            position={"absolute"}
+            top={0}
+            left={0}
+            m={2}
+            colorScheme={"yellow"}
+          >
+            {meter.type}
+          </Badge>
+        ) : null}
+      </Box>
       <Box p={3}>
         <AnimatedHStack entering={FadeInLeft} space={1} alignItems={"center"}>
           <Icon as={FontAwesome} name="tag" color="primary.400" key="1" />

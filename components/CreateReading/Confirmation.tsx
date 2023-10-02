@@ -3,7 +3,7 @@ import { CameraCapturedPicture } from "expo-camera";
 import { Box, Button, Center, HStack, Icon, Image, Text } from "native-base";
 
 export type ConfirmationProps = {
-  snapshot: CameraCapturedPicture;
+  snapshot: CameraCapturedPicture | null;
   reading: number;
   onReturn?: () => void;
   onConfirm?: () => void;
@@ -17,15 +17,17 @@ export default function Confirmation({
 }: ConfirmationProps) {
   return (
     <Box flex={1}>
-      <Image
-        flex={1}
-        source={snapshot}
-        resizeMode="contain"
-        bg="black"
-        w={"100%"}
-        h={"100%"}
-        alt="snapshot"
-      />
+      {snapshot && (
+        <Image
+          flex={1}
+          source={snapshot}
+          resizeMode="contain"
+          bg="black"
+          w={"100%"}
+          h={"100%"}
+          alt="snapshot"
+        />
+      )}
       <Center p={3}>
         <Text mb={5} fontSize={"4xl"}>
           {reading}

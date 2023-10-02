@@ -1,14 +1,15 @@
 import { Camera as BaseCamera, CameraCapturedPicture } from "expo-camera";
 import { useRef, useState } from "react";
-import { Box, Button, Center, Icon, Spinner, Text } from "native-base";
+import { Box, Button, Center, HStack, Icon, Spinner, Text } from "native-base";
 import Camera from "../Camera";
 import { FontAwesome5 } from "@expo/vector-icons";
 
 export type SnapProps = {
   onSnapshot?: (picture: CameraCapturedPicture) => void;
+  onSkip?: () => void;
 };
 
-export default function Snap({ onSnapshot }: SnapProps) {
+export default function Snap({ onSnapshot, onSkip }: SnapProps) {
   const [isReady, setIsReady] = useState(false);
   const [isTakingPicture, setIsTakingPicture] = useState(false);
 
@@ -21,21 +22,26 @@ export default function Snap({ onSnapshot }: SnapProps) {
         <Text textAlign="center" color="dark.400" mb={3}>
           Point your camera to the meter and press the button to take a snapshot
         </Text>
-        <Button
-          size="lg"
-          isDisabled={!isReady}
-          leftIcon={<Icon as={FontAwesome5} name="camera" />}
-          onPress={async () => {
-            if (cameraRef.current == null) return;
+        <HStack space={3} alignItems={"center"}>
+          <Button colorScheme={"muted"} size="sm" onPress={() => onSkip?.()}>
+            Skip
+          </Button>
+          <Button
+            size="lg"
+            isDisabled={!isReady}
+            leftIcon={<Icon as={FontAwesome5} name="camera" />}
+            onPress={async () => {
+              if (cameraRef.current == null) return;
 
-            setIsTakingPicture(true);
-            const picture = await cameraRef.current.takePictureAsync();
-            setIsTakingPicture(false);
-            onSnapshot?.(picture);
-          }}
-        >
-          Take snap
-        </Button>
+              setIsTakingPicture(true);
+              const picture = await cameraRef.current.takePictureAsync();
+              setIsTakingPicture(false);
+              onSnapshot?.(picture);
+            }}
+          >
+            Take snap
+          </Button>
+        </HStack>
       </Center>
     </Box>
   );

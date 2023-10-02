@@ -44,24 +44,38 @@ type ReadingPayload = {
   meterId: string;
   value: number;
   createdAt: string;
-  imagePath: string;
+  imagePath: string | null;
 };
 export const sendReading = async (payload: ReadingPayload) => {
-  const { outUrl } = await uploadFile(payload.imagePath, "image/jpg", {
-    dimensions: { height: 300, width: 300 },
-  });
+  if (payload.imagePath != null) {
+    const { outUrl } = await uploadFile(payload.imagePath, "image/jpg", {
+      dimensions: { height: 300, width: 300 },
+    });
 
-  const data = await trpc.readings.create.mutate({
-    ...payload,
-    createdAt: new Date(payload.createdAt),
-    imagePath: outUrl,
-  });
+    const data = await trpc.readings.create.mutate({
+      ...payload,
+      createdAt: new Date(payload.createdAt),
+      imagePath: outUrl,
+    });
 
-  await dbQuery(
-    "UPDATE readings SET synchedAt = ?, imagePath = ? WHERE id = ?",
-    [data.createdAt, outUrl, payload.id],
-    false
-  );
+    await dbQuery(
+      "UPDATE readings SET synchedAt = ?, imagePath = ? WHERE id = ?",
+      [data.createdAt, outUrl, payload.id],
+      false
+    );
 
-  FileSystem.deleteAsync(payload.imagePath);
+    FileSystem.deleteAsync(payload.imagePath);
+  } else {
+    const data = await trpc.readings.create.mutate({
+      ...payload,
+      createdAt: new Date(payload.createdAt),
+      imagePath: null,
+    });
+
+    await dbQuery(
+      "UPDATE readings SET synchedAt = ? WHERE id = ?",
+      [data.createdAt, payload.id],
+      false
+    );
+  }
 };

@@ -5,15 +5,15 @@ import InputReading from "./InputReading";
 import Confirmation from "./Confirmation";
 
 export type NewReadingProps = {
-  onConfirm: (snapshot: CameraCapturedPicture, reading: number) => void;
+  onConfirm: (snapshot: CameraCapturedPicture | null, reading: number) => void;
 };
 
 export default function NewReading({ onConfirm }: NewReadingProps) {
-  const [snapshot, setSnapshot] = useState<CameraCapturedPicture | null>(null);
+  const [snapshot, setSnapshot] = useState<CameraCapturedPicture | null>();
   const [reading, setReading] = useState<number | null>(null);
 
-  if (snapshot == null) {
-    return <Snap onSnapshot={setSnapshot} />;
+  if (snapshot === undefined) {
+    return <Snap onSnapshot={setSnapshot} onSkip={() => setSnapshot(null)} />;
   }
 
   if (reading == null) {

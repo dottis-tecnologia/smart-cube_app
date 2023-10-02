@@ -17,7 +17,7 @@ export default function App() {
   useEffect(() => {
     async function prepare() {
       try {
-        createTables();
+        await createTables();
         await Promise.all([
           Font.loadAsync(FontAwesome.font),
           Font.loadAsync(FontAwesome5.font),

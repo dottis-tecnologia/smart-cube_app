@@ -18,6 +18,8 @@ export async function createTables() {
             location TEXT, 
             unit TEXT,
             synchedAt TEXT,
+            notes TEXT,
+            type TEXT,
             imagePath TEXT
           )`
       );
