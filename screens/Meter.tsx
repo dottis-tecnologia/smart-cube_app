@@ -17,6 +17,7 @@ import {
   Text,
   VStack,
   Badge,
+  ScrollView,
 } from "native-base";
 import Animated, { FadeInLeft } from "react-native-reanimated";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
@@ -92,79 +93,44 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
   const meter = meterData.rows[0];
 
   return (
-    <>
+    <ScrollView>
       <FocusAwareStatusBar style="dark" />
 
-      <Box position={"relative"}>
-        <AspectRatio ratio={1}>
-          {meter.imagePath ? (
-            <Image
-              source={{
-                uri: meter.imagePath,
-              }}
-              resizeMode="cover"
-              w={"100%"}
-              h={"100%"}
-              alt="meter picture"
-            />
-          ) : (
-            <Center flex={1} bg="black">
-              <Icon
-                as={FontAwesome5}
-                name="image"
-                size={24}
-                color="light.800"
-              />
-            </Center>
-          )}
-        </AspectRatio>
-        {meter.notes ? (
-          <Box
-            position={"absolute"}
-            bottom={0}
-            left={0}
-            right={0}
-            m={1}
-            p={2}
-            bg="#550000bb"
-            borderRadius={"md"}
-          >
-            <Text color="white">{meter.notes}</Text>
-          </Box>
-        ) : null}
-        {meter.type ? (
-          <Badge
-            position={"absolute"}
-            top={0}
-            left={0}
-            m={2}
-            colorScheme={"yellow"}
-          >
-            {meter.type}
-          </Badge>
-        ) : null}
+      <AspectRatio ratio={1} mb={3}>
+        {meter.imagePath ? (
+          <Image
+            source={{
+              uri: meter.imagePath,
+            }}
+            resizeMode="cover"
+            w={"100%"}
+            h={"100%"}
+            alt="meter picture"
+          />
+        ) : (
+          <Center flex={1} bg="black">
+            <Icon as={FontAwesome5} name="image" size={24} color="light.800" />
+          </Center>
+        )}
+      </AspectRatio>
+      <Box mx={3}>
+        <Label label="Meter ID:" iconName="tag" text={meter.name} />
+        <Label label="Location:" iconName="map-pin" text={meter.location} />
+        <Label
+          label="Type:"
+          iconName="map-pin"
+          text={meter.type.toUpperCase()}
+        />
       </Box>
-      <Box p={3}>
-        <AnimatedHStack entering={FadeInLeft} space={1} alignItems={"center"}>
-          <Icon as={FontAwesome} name="tag" color="primary.400" key="1" />
-          <Text key="2">Meter ID: </Text>
-          <Text fontWeight={"bold"} color="primary.400" fontSize={"lg"} key="3">
-            {meter.name}
-          </Text>
-        </AnimatedHStack>
-        <AnimatedHStack
-          entering={FadeInLeft.delay(200)}
-          space={1}
-          alignItems={"center"}
-        >
-          <Icon as={FontAwesome} name="map-pin" color="primary.400" key="1" />
-          <Text key="2">Location: </Text>
-          <Text fontWeight={"bold"} color="primary.400" fontSize={"lg"} key="3">
-            {meter.location}
-          </Text>
-          {/* For some reason RN is complaining about the missing key parameter here, don't know why */}
-        </AnimatedHStack>
-      </Box>
+
+      <Heading m={3} fontSize={"md"}>
+        Notes
+      </Heading>
+      <AnimatedBox entering={FadeInLeft} mb={3}>
+        <Text fontSize={"lg"} mx={3} flex={1}>
+          {meter.notes}
+        </Text>
+      </AnimatedBox>
 
       {isFocused && (
         <Fab
@@ -175,49 +141,68 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
           onPress={() => navigation.navigate("CreateReading", { meterId: id })}
         />
       )}
-      <FlatList
-        ListHeaderComponent={
-          <Heading m={3} fontSize={"md"}>
-            Latest readings
-          </Heading>
-        }
-        data={readings?.rows}
-        renderItem={({ item }) => (
-          <Pressable
-            onPress={() => navigation.navigate("Reading", { id: item.id })}
-          >
-            {({ isPressed }) => (
-              <AnimatedBox
-                entering={FadeInLeft.delay(300).randomDelay()}
-                px={5}
-                py={3}
-                mx={3}
-                mb={3}
-                opacity={isPressed ? 0.5 : 1}
-                bg={item.synchedAt ? "green.500" : "red.500"}
-                rounded="lg"
-              >
-                <HStack alignItems={"center"}>
-                  <VStack flex={1}>
-                    <Text color="white" fontWeight="bold">
-                      {item.technicianName}
-                    </Text>
-                    <Text color="white">
-                      {formatDistanceToNow(new Date(item.createdAt), {
-                        addSuffix: true,
-                      })}
-                    </Text>
-                  </VStack>
-                  <Text color="white" fontWeight={"bold"}>
-                    {item.value} {meter.unit}
+      <Heading m={3} fontSize={"md"}>
+        Latest readings
+      </Heading>
+      {readings?.rows.map((item) => (
+        <Pressable
+          key={item.id}
+          onPress={() => navigation.navigate("Reading", { id: item.id })}
+        >
+          {({ isPressed }) => (
+            <AnimatedBox
+              entering={FadeInLeft.delay(300).randomDelay()}
+              px={5}
+              py={3}
+              mx={3}
+              mb={3}
+              opacity={isPressed ? 0.5 : 1}
+              bg={item.synchedAt ? "green.500" : "red.500"}
+              rounded="lg"
+            >
+              <HStack alignItems={"center"}>
+                <VStack flex={1}>
+                  <Text color="white" fontWeight="bold">
+                    {item.technicianName}
                   </Text>
-                </HStack>
-              </AnimatedBox>
-            )}
-          </Pressable>
-        )}
-        keyExtractor={(item) => item.id.toString()}
-      ></FlatList>
-    </>
+                  <Text color="white">
+                    {formatDistanceToNow(new Date(item.createdAt), {
+                      addSuffix: true,
+                    })}
+                  </Text>
+                </VStack>
+                <Text color="white" fontWeight={"bold"}>
+                  {item.value} {meter.unit}
+                </Text>
+              </HStack>
+            </AnimatedBox>
+          )}
+        </Pressable>
+      ))}
+    </ScrollView>
+  );
+}
+
+type LabelProps = {
+  iconName: string;
+  label: string;
+  text: string;
+};
+
+function Label({ iconName, label, text }: LabelProps) {
+  return (
+    <AnimatedHStack space={2} entering={FadeInLeft} alignItems={"center"}>
+      <Icon as={FontAwesome} name={iconName} color="primary.400" key="1" />
+      <Text key="2">{label}</Text>
+      <Text
+        fontWeight={"bold"}
+        color="primary.400"
+        fontSize={"lg"}
+        key="3"
+        flex={1}
+      >
+        {text}
+      </Text>
+    </AnimatedHStack>
   );
 }
