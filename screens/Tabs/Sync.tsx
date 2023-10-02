@@ -25,6 +25,7 @@ import { useState } from "react";
 import { syncData } from "../../util/sync/sync";
 import useAuth from "../../hooks/useAuth";
 import { getToken } from "../../util/authToken";
+import ParallaxScroll from "../../components/ParallaxScroll";
 
 export type SyncProps = {};
 
@@ -69,49 +70,53 @@ export default function Sync({}: SyncProps) {
   return (
     <Box flex={1} bg="light.100">
       <FocusAwareStatusBar style="dark" />
-      <ScrollView flex={1}>
-        <Center
-          bg={{
-            linearGradient: {
-              colors: ["primary.400", "secondary.400"],
-              start: [0, 0],
-              end: [0, 1],
-            },
-          }}
-          p={8}
-          pb={10}
-        >
-          <HStack
-            w="full"
-            space={3}
-            justifyContent={"space-between"}
-            alignItems={"center"}
+      <ParallaxScroll
+        header={
+          <Center
+            bg={{
+              linearGradient: {
+                colors: ["primary.400", "secondary.400"],
+                start: [0, 0],
+                end: [0, 1],
+              },
+            }}
+            p={8}
+            pb={10}
           >
-            <Box key="1">
-              <Heading color="white">SYNC</Heading>
-              <Text color="white" opacity={0.7}>
-                Last synchronization:
-              </Text>
-              <Text color="white" opacity={0.8}>
-                {lastSync
-                  ? formatDistanceToNow(lastSync, {
-                      addSuffix: true,
-                    })
-                  : "never"}
-              </Text>
-            </Box>
-            <Button
-              mb={3}
-              key="2"
-              leftIcon={<Icon as={FontAwesome} name="refresh" />}
-              colorScheme={"green"}
-              onPress={() => mutate()}
-              isLoading={isMutating}
+            <HStack
+              w="full"
+              space={3}
+              justifyContent={"space-between"}
+              alignItems={"center"}
             >
-              Sync
-            </Button>
-          </HStack>
-        </Center>
+              <Box key="1">
+                <Heading color="white">SYNC</Heading>
+                <Text color="white" opacity={0.7}>
+                  Last synchronization:
+                </Text>
+                <Text color="white" opacity={0.8}>
+                  {lastSync
+                    ? formatDistanceToNow(lastSync, {
+                        addSuffix: true,
+                      })
+                    : "never"}
+                </Text>
+              </Box>
+              <Button
+                mb={3}
+                key="2"
+                leftIcon={<Icon as={FontAwesome} name="refresh" />}
+                colorScheme={"green"}
+                onPress={() => mutate()}
+                isLoading={isMutating}
+              >
+                Sync
+              </Button>
+            </HStack>
+          </Center>
+        }
+        flex={1}
+      >
         <Box p={3} borderTopRadius={"lg"} mt={-3} bg="light.100">
           <Heading mb={3} fontSize={"md"} key="2">
             Latest readings
@@ -128,7 +133,7 @@ export default function Sync({}: SyncProps) {
             }}
           />
         </Box>
-      </ScrollView>
+      </ParallaxScroll>
     </Box>
   );
 }

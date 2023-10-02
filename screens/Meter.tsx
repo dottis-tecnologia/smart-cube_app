@@ -26,7 +26,6 @@ import { useIsFocused } from "@react-navigation/native";
 import useQuery from "../hooks/useQuery";
 import { dbQuery } from "../util/db";
 import ParallaxScroll from "../components/ParallaxScroll";
-import { useWindowDimensions } from "react-native";
 
 export type MeterProps = NativeStackScreenProps<RootStackParamList, "Meter">;
 
@@ -35,7 +34,6 @@ const AnimatedHStack = Animated.createAnimatedComponent(HStack);
 
 export default function Meter({ route: { params }, navigation }: MeterProps) {
   const { id } = params;
-  const { width } = useWindowDimensions();
   const { data: meterData } = useQuery(
     () =>
       dbQuery<{
@@ -64,7 +62,6 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
       ]),
     [id]
   );
-  console.log(meterData);
 
   const isFocused = useIsFocused();
 
@@ -97,7 +94,6 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
 
   return (
     <ParallaxScroll
-      headerHeight={width}
       header={
         <AspectRatio ratio={1}>
           {meter.imagePath ? (
@@ -130,21 +126,24 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
         <Label label="Location:" iconName="map-pin" text={meter.location} />
         <Label label="Type:" iconName="info" text={meter.type.toUpperCase()} />
       </Box>
-
-      <Heading m={3} fontSize={"md"}>
-        Notes
-      </Heading>
-      <AnimatedBox
-        entering={FadeInLeft}
-        m={3}
-        p={3}
-        bg="yellow.200"
-        borderRadius={"lg"}
-      >
-        <Text fontSize={"lg"} textAlign={"justify"} flex={1}>
-          {meter.notes}
-        </Text>
-      </AnimatedBox>
+      {meter.notes && (
+        <>
+          <Heading m={3} fontSize={"md"}>
+            Notes
+          </Heading>
+          <AnimatedBox
+            entering={FadeInLeft}
+            m={3}
+            p={3}
+            bg="yellow.200"
+            borderRadius={"lg"}
+          >
+            <Text fontSize={"lg"} textAlign={"justify"}>
+              {meter.notes}
+            </Text>
+          </AnimatedBox>
+        </>
+      )}
 
       {isFocused && (
         <Fab

@@ -2,36 +2,23 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "./Root";
 import FocusAwareStatusBar from "../components/util/FocusAwareStatusBar";
 import {
-  AspectRatio,
   Box,
-  Button,
   Center,
-  FlatList,
   HStack,
   Heading,
-  Icon,
-  Image,
   Pressable,
-  ScrollView,
-  Spinner,
   Text,
   VStack,
 } from "native-base";
-import Animated, { FadeInLeft } from "react-native-reanimated";
-import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-import { formatDistanceToNow, intlFormat, isToday } from "date-fns";
+import { formatDistanceToNow, isToday } from "date-fns";
 import useQuery from "../hooks/useQuery";
 import { dbQuery } from "../util/db";
-import trpc from "../util/trpc";
-import { getToken } from "../util/authToken";
-import useAuth from "../hooks/useAuth";
+import ParallaxScroll from "../components/ParallaxScroll";
 
 export type ListMetersProps = NativeStackScreenProps<
   RootStackParamList,
   "ListMeters"
 >;
-
-const AnimatedHStack = Animated.createAnimatedComponent(HStack);
 
 export default function ListMeters({
   route: { params },
@@ -64,32 +51,36 @@ export default function ListMeters({
   return (
     <Box flex={1} bg="light.100">
       <FocusAwareStatusBar style="dark" />
-      <ScrollView flex={1}>
-        <Center
-          key="1"
-          bg={{
-            linearGradient: {
-              colors: ["primary.400", "secondary.400"],
-              start: [0, 0],
-              end: [0, 1],
-            },
-          }}
-          p={8}
-          pb={10}
-        >
-          <Box w="full" key="1">
-            <Heading color="white">
-              <Text fontWeight={"normal"} fontStyle={"italic"}>
-                LOCATION:
-              </Text>{" "}
-              {location}
-            </Heading>
-            <Text color="white">
-              Readings today: {readingsToday?.rows[0].count}/{data?.rows.length}
-            </Text>
-          </Box>
-        </Center>
-
+      <ParallaxScroll
+        header={
+          <Center
+            key="1"
+            bg={{
+              linearGradient: {
+                colors: ["primary.400", "secondary.400"],
+                start: [0, 0],
+                end: [0, 1],
+              },
+            }}
+            p={8}
+            pb={10}
+          >
+            <Box w="full" key="1">
+              <Heading color="white">
+                <Text fontWeight={"normal"} fontStyle={"italic"}>
+                  LOCATION:
+                </Text>{" "}
+                {location}
+              </Heading>
+              <Text color="white">
+                Readings today: {readingsToday?.rows[0].count}/
+                {data?.rows.length}
+              </Text>
+            </Box>
+          </Center>
+        }
+        flex={1}
+      >
         <Box p={3} borderTopRadius={"lg"} mt={-3} bg="light.100">
           <Heading mb={3} fontSize={"md"} key="2">
             Meters
@@ -129,7 +120,7 @@ export default function ListMeters({
             </Pressable>
           ))}
         </Box>
-      </ScrollView>
+      </ParallaxScroll>
     </Box>
   );
 }

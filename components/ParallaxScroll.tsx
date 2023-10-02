@@ -1,7 +1,7 @@
 import { View, ScrollView, Box } from "native-base";
+import type { InterfaceScrollViewProps } from "native-base/lib/typescript/components/basic/ScrollView/types";
 import type { ColorType } from "native-base/lib/typescript/components/types";
-import type { ReactNode } from "react";
-import { ScrollViewProps } from "react-native";
+import { useState, type ReactNode } from "react";
 import Animated, {
   Extrapolate,
   interpolate,
@@ -10,8 +10,7 @@ import Animated, {
   useSharedValue,
 } from "react-native-reanimated";
 
-export type ParallaxScrollProps = ScrollViewProps & {
-  headerHeight: number;
+export type ParallaxScrollProps = InterfaceScrollViewProps & {
   header?: ReactNode | ReactNode[];
   bg?: ColorType;
 };
@@ -22,8 +21,7 @@ const AnimatedBox = Animated.createAnimatedComponent(Box);
 export default function ParallaxScroll({
   children,
   header,
-  headerHeight,
-  bg,
+  bg = "light.100",
   ...props
 }: ParallaxScrollProps) {
   const scrollY = useSharedValue(0);
@@ -32,19 +30,14 @@ export default function ParallaxScroll({
       scrollY.value = e.contentOffset.y;
     },
   });
+  const [headerHeight, setHeaderHeight] = useState(0);
 
   const animatedStyles = useAnimatedStyle(() => {
-    const scale = interpolate(
-      scrollY.value,
-      [0, headerHeight],
-      [1, 1.5],
-      Extrapolate.CLAMP
-    );
     const translateY = interpolate(
       scrollY.value,
       [0, headerHeight],
-      [0, headerHeight * 0.5],
-      Extrapolate.CLAMP
+      [0, headerHeight * 0.9],
+      Extrapolate.EXTEND
     );
     const opacity = interpolate(
       scrollY.value,
@@ -53,23 +46,18 @@ export default function ParallaxScroll({
       Extrapolate.CLAMP
     );
 
-    return { transform: [{ translateY }, { scale }], opacity };
+    return { transform: [{ translateY }], opacity };
   });
 
   return (
     <AnimatedScrollView onScroll={scrollHandler} bg={bg} {...props}>
       <AnimatedBox
-        style={[
-          {
-            height: headerHeight,
-            overflow: "hidden",
-          },
-          animatedStyles,
-        ]}
+        style={[animatedStyles]}
+        onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height)}
       >
         {header}
       </AnimatedBox>
-      <View bg={bg || "white"}>{children}</View>
+      <View bg={bg}>{children}</View>
     </AnimatedScrollView>
   );
 }

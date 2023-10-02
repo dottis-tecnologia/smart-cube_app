@@ -19,6 +19,7 @@ import {
 import useQuery from "../../hooks/useQuery";
 import { dbQuery } from "../../util/db";
 import { FontAwesome } from "@expo/vector-icons";
+import ParallaxScroll from "../../components/ParallaxScroll";
 
 export type LocationsProps = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, "Locations">,
@@ -39,33 +40,36 @@ export default function Locations({ navigation, route }: LocationsProps) {
   return (
     <Box bg="light.100" flex={1}>
       <FocusAwareStatusBar style="dark" />
-      <ScrollView flex={1}>
-        <Center
-          bg={{
-            linearGradient: {
-              colors: ["primary.400", "secondary.400"],
-              start: [0, 0],
-              end: [0, 1],
-            },
-          }}
-          p={8}
-          pb={10}
-        >
-          <Box w="full" key="1">
-            <Heading color="white" mb={3}>
-              LOCATION
-            </Heading>
-          </Box>
-          <Input
-            variant={"filled"}
-            placeholder="Type the location..."
-            defaultValue={filter}
-            onSubmitEditing={(e) => {
-              navigation.setParams({ filter: e.nativeEvent.text });
+      <ParallaxScroll
+        header={
+          <Center
+            bg={{
+              linearGradient: {
+                colors: ["primary.400", "secondary.400"],
+                start: [0, 0],
+                end: [0, 1],
+              },
             }}
-          />
-        </Center>
-
+            p={8}
+            pb={10}
+          >
+            <Box w="full" key="1">
+              <Heading color="white" mb={3}>
+                LOCATION
+              </Heading>
+            </Box>
+            <Input
+              variant={"filled"}
+              placeholder="Type the location..."
+              defaultValue={filter}
+              onSubmitEditing={(e) => {
+                navigation.setParams({ filter: e.nativeEvent.text });
+              }}
+            />
+          </Center>
+        }
+        flex={1}
+      >
         <Box p={3} borderTopRadius={"lg"} mt={-3} bg="light.100">
           <Heading mb={3} fontSize={"md"} key="2">
             Locations
@@ -137,7 +141,7 @@ export default function Locations({ navigation, route }: LocationsProps) {
             </Pressable>
           ))}
         </Box>
-      </ScrollView>
+      </ParallaxScroll>
     </Box>
   );
 }

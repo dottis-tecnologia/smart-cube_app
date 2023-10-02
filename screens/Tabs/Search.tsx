@@ -21,6 +21,7 @@ import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../Root";
 import { FontAwesome } from "@expo/vector-icons";
 import { useCallback, useEffect, useState } from "react";
+import ParallaxScroll from "../../components/ParallaxScroll";
 
 export type SearchProps = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, "Search">,
@@ -43,33 +44,36 @@ export default function Search({ navigation, route }: SearchProps) {
   return (
     <Box bg="light.100" flex={1}>
       <FocusAwareStatusBar style="dark" />
-      <ScrollView flex={1}>
-        <Center
-          bg={{
-            linearGradient: {
-              colors: ["primary.400", "secondary.400"],
-              start: [0, 0],
-              end: [0, 1],
-            },
-          }}
-          p={8}
-          pb={10}
-        >
-          <Box w="full" key="1">
-            <Heading color="white" mb={3}>
-              SEARCH
-            </Heading>
-          </Box>
-          <Input
-            variant={"filled"}
-            placeholder="Type the id..."
-            defaultValue={filter}
-            onSubmitEditing={(e) => {
-              navigation.setParams({ filter: e.nativeEvent.text });
+      <ParallaxScroll
+        header={
+          <Center
+            bg={{
+              linearGradient: {
+                colors: ["primary.400", "secondary.400"],
+                start: [0, 0],
+                end: [0, 1],
+              },
             }}
-          />
-        </Center>
-
+            p={8}
+            pb={10}
+          >
+            <Box w="full" key="1">
+              <Heading color="white" mb={3}>
+                SEARCH
+              </Heading>
+            </Box>
+            <Input
+              variant={"filled"}
+              placeholder="Type the id..."
+              defaultValue={filter}
+              onSubmitEditing={(e) => {
+                navigation.setParams({ filter: e.nativeEvent.text });
+              }}
+            />
+          </Center>
+        }
+        flex={1}
+      >
         <Box p={3} borderTopRadius={"lg"} mt={-3} bg="light.100">
           <Heading mb={3} fontSize={"md"} key="2">
             Meters
@@ -143,7 +147,7 @@ export default function Search({ navigation, route }: SearchProps) {
             </Pressable>
           ))}
         </Box>
-      </ScrollView>
+      </ParallaxScroll>
     </Box>
   );
 }

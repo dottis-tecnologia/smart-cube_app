@@ -79,7 +79,6 @@ export default function Reading({
   }
 
   const reading = meterData.rows[0];
-  console.log(reading);
 
   const imagePath = reading.imagePath;
 

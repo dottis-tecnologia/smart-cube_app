@@ -27,6 +27,7 @@ import useQuery from "../../hooks/useQuery";
 import { dbQuery } from "../../util/db";
 import useAuth from "../../hooks/useAuth";
 import Logo from "../../assets/logo-w.svg";
+import ParallaxScroll from "../../components/ParallaxScroll";
 
 export type HomeProps = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, "Home">,
@@ -34,7 +35,6 @@ export type HomeProps = CompositeScreenProps<
 >;
 
 const AnimatedBox = Animated.createAnimatedComponent(Box);
-const AnimatedHStack = Animated.createAnimatedComponent(HStack);
 
 const getMeters = (userId: string) =>
   dbQuery<{
@@ -69,40 +69,44 @@ export default function Home({ navigation }: HomeProps) {
     <Box flex={1}>
       <FocusAwareStatusBar style="light" />
 
-      <ScrollView flex={1}>
-        <AnimatedBox
-          safeAreaTop
-          bg={{
-            linearGradient: {
-              colors: ["primary.400", "secondary.400"],
-              start: [0, 0],
-              end: [0, 1],
-            },
-          }}
-          p={3}
-          entering={FadeInUp}
-        >
-          <Center p={3}>
-            <AspectRatio ratio={1} w="40%">
-              <Logo width={"100%"} height={"100%"} />
-            </AspectRatio>
-          </Center>
-          <HStack alignItems={"center"} justifyContent={"space-between"}>
-            <AnimatedBox entering={FadeInLeft.delay(100)}>
-              <Text color="light.100">Welcome,</Text>
-              <Heading fontStyle="italic" mb={5} color="white">
-                {auth.userData?.name}
-              </Heading>
-            </AnimatedBox>
-            <AnimatedBox entering={FadeInLeft.delay(200)}>
-              <IconButton
-                colorScheme={"light"}
-                _icon={{ as: FontAwesome, name: "sign-out", color: "white" }}
-                onPress={() => auth.signOut()}
-              />
-            </AnimatedBox>
-          </HStack>
-        </AnimatedBox>
+      <ParallaxScroll
+        header={
+          <AnimatedBox
+            safeAreaTop
+            bg={{
+              linearGradient: {
+                colors: ["primary.400", "secondary.400"],
+                start: [0, 0],
+                end: [0, 1],
+              },
+            }}
+            p={3}
+            entering={FadeInUp}
+          >
+            <Center p={3} flex={1}>
+              <AspectRatio ratio={1} w="40%">
+                <Logo width={"100%"} height={"100%"} />
+              </AspectRatio>
+            </Center>
+            <HStack alignItems={"center"} justifyContent={"space-between"}>
+              <AnimatedBox entering={FadeInLeft.delay(100)}>
+                <Text color="light.100">Welcome,</Text>
+                <Heading fontStyle="italic" mb={5} color="white">
+                  {auth.userData?.name}
+                </Heading>
+              </AnimatedBox>
+              <AnimatedBox entering={FadeInLeft.delay(200)}>
+                <IconButton
+                  colorScheme={"light"}
+                  _icon={{ as: FontAwesome, name: "sign-out", color: "white" }}
+                  onPress={() => auth.signOut()}
+                />
+              </AnimatedBox>
+            </HStack>
+          </AnimatedBox>
+        }
+        flex={1}
+      >
         <Box bg="light.100" roundedTop={"lg"}>
           <AnimatedBox
             bg="white"
@@ -166,7 +170,7 @@ export default function Home({ navigation }: HomeProps) {
             ))}
           </Box>
         </Box>
-      </ScrollView>
+      </ParallaxScroll>
     </Box>
   );
 }
