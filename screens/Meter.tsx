@@ -25,6 +25,8 @@ import { formatDistanceToNow, intlFormat } from "date-fns";
 import { useIsFocused } from "@react-navigation/native";
 import useQuery from "../hooks/useQuery";
 import { dbQuery } from "../util/db";
+import ParallaxScroll from "../components/ParallaxScroll";
+import { useWindowDimensions } from "react-native";
 
 export type MeterProps = NativeStackScreenProps<RootStackParamList, "Meter">;
 
@@ -33,6 +35,7 @@ const AnimatedHStack = Animated.createAnimatedComponent(HStack);
 
 export default function Meter({ route: { params }, navigation }: MeterProps) {
   const { id } = params;
+  const { width } = useWindowDimensions();
   const { data: meterData } = useQuery(
     () =>
       dbQuery<{
@@ -93,41 +96,52 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
   const meter = meterData.rows[0];
 
   return (
-    <ScrollView>
+    <ParallaxScroll
+      headerHeight={width}
+      header={
+        <AspectRatio ratio={1}>
+          {meter.imagePath ? (
+            <Image
+              source={{
+                uri: meter.imagePath,
+              }}
+              resizeMode="cover"
+              w={"100%"}
+              h={"100%"}
+              alt="meter picture"
+            />
+          ) : (
+            <Center flex={1} bg="black">
+              <Icon
+                as={FontAwesome5}
+                name="image"
+                size={24}
+                color="light.800"
+              />
+            </Center>
+          )}
+        </AspectRatio>
+      }
+    >
       <FocusAwareStatusBar style="dark" />
 
-      <AspectRatio ratio={1} mb={3}>
-        {meter.imagePath ? (
-          <Image
-            source={{
-              uri: meter.imagePath,
-            }}
-            resizeMode="cover"
-            w={"100%"}
-            h={"100%"}
-            alt="meter picture"
-          />
-        ) : (
-          <Center flex={1} bg="black">
-            <Icon as={FontAwesome5} name="image" size={24} color="light.800" />
-          </Center>
-        )}
-      </AspectRatio>
-      <Box mx={3}>
+      <Box m={3}>
         <Label label="Meter ID:" iconName="tag" text={meter.name} />
         <Label label="Location:" iconName="map-pin" text={meter.location} />
-        <Label
-          label="Type:"
-          iconName="map-pin"
-          text={meter.type.toUpperCase()}
-        />
+        <Label label="Type:" iconName="info" text={meter.type.toUpperCase()} />
       </Box>
 
       <Heading m={3} fontSize={"md"}>
         Notes
       </Heading>
-      <AnimatedBox entering={FadeInLeft} mb={3}>
-        <Text fontSize={"lg"} mx={3} flex={1}>
+      <AnimatedBox
+        entering={FadeInLeft}
+        m={3}
+        p={3}
+        bg="yellow.200"
+        borderRadius={"lg"}
+      >
+        <Text fontSize={"lg"} textAlign={"justify"} flex={1}>
           {meter.notes}
         </Text>
       </AnimatedBox>
@@ -179,7 +193,7 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
           )}
         </Pressable>
       ))}
-    </ScrollView>
+    </ParallaxScroll>
   );
 }
 
