@@ -201,7 +201,7 @@ function DeleteDBButton({ onSuccess }: DeleteDBButtonProps) {
         isLoading={isDeletingDb}
         onPress={() => setIsOpen(true)}
       >
-        Delete Database
+        Delete Local Data
       </Button>
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} safeArea>
         <Modal.Content accessibilityLabel="Delete Database" m={3}>

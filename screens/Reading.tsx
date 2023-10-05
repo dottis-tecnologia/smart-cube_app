@@ -114,7 +114,7 @@ export default function Reading({
             space={1}
             alignItems={"center"}
           >
-            <Icon as={FontAwesome} name="map-pin" color="primary.400" key="1" />
+            <Icon as={FontAwesome} name="tag" color="primary.400" key="1" />
             <Text key="2">Meter ID: </Text>
             <Text
               fontWeight={"bold"}
@@ -130,7 +130,7 @@ export default function Reading({
             space={1}
             alignItems={"center"}
           >
-            <Icon as={FontAwesome} name="map-pin" color="primary.400" key="1" />
+            <Icon as={FontAwesome} name="gear" color="primary.400" key="1" />
             <Text key="2">Done by: </Text>
             <Text
               fontWeight={"bold"}
@@ -146,7 +146,7 @@ export default function Reading({
             space={1}
             alignItems={"center"}
           >
-            <Icon as={FontAwesome} name="map-pin" color="primary.400" key="1" />
+            <Icon as={FontAwesome} name="info" color="primary.400" key="1" />
             <Text key="2">Status: </Text>
             {reading.synchedAt ? (
               <Text

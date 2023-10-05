@@ -22,6 +22,9 @@ export const theme = extendTheme({
     Input: {
       baseStyle: {
         rounded: "lg",
+        _focus: {
+          backgroundColor: "light.100",
+        },
       },
     },
   },
