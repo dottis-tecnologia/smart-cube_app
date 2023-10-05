@@ -1,7 +1,6 @@
 import { View, ScrollView, Box } from "native-base";
-import type { InterfaceScrollViewProps } from "native-base/lib/typescript/components/basic/ScrollView/types";
 import type { ColorType } from "native-base/lib/typescript/components/types";
-import { useState, type ReactNode } from "react";
+import { ComponentProps, useState, type ReactNode } from "react";
 import Animated, {
   Extrapolate,
   interpolate,
@@ -10,13 +9,13 @@ import Animated, {
   useSharedValue,
 } from "react-native-reanimated";
 
-export type ParallaxScrollProps = InterfaceScrollViewProps & {
+const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
+const AnimatedBox = Animated.createAnimatedComponent(Box);
+
+export type ParallaxScrollProps = ComponentProps<typeof ScrollView> & {
   header?: ReactNode | ReactNode[];
   bg?: ColorType;
 };
-
-const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
-const AnimatedBox = Animated.createAnimatedComponent(Box);
 
 export default function ParallaxScroll({
   children,
@@ -46,7 +45,7 @@ export default function ParallaxScroll({
       Extrapolate.CLAMP
     );
 
-    return { transform: [{ translateY }], opacity };
+    return { opacity, transform: [] };
   });
 
   return (

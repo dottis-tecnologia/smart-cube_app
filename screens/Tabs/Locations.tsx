@@ -20,6 +20,7 @@ import useQuery from "../../hooks/useQuery";
 import { dbQuery } from "../../util/db";
 import { FontAwesome } from "@expo/vector-icons";
 import ParallaxScroll from "../../components/ParallaxScroll";
+import useInfiniteQuery from "../../hooks/useInfiniteQuery";
 
 export type LocationsProps = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, "Locations">,
@@ -31,7 +32,7 @@ export default function Locations({ navigation, route }: LocationsProps) {
   const { data } = useQuery(
     () =>
       dbQuery<{ location: string; meterCount: number }>(
-        "SELECT count(id) as meterCount, location FROM meters WHERE UPPER(location) LIKE UPPER(?) GROUP BY location",
+        "SELECT count(id) as meterCount, location FROM meters WHERE UPPER(location) LIKE UPPER(?) GROUP BY location ORDER BY location",
         [`%${filter}%`]
       ),
     [filter]

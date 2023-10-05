@@ -14,7 +14,7 @@ export default function useQuery<T>(
   options?: { isDisabled?: boolean }
 ) {
   const [data, setData] = useState<T | null>(null);
-  const isLoading = useRef(false);
+  const [isLoading, setIsLoading] = useState(false);
   const isDisabled = options?.isDisabled || false;
 
   const wrappedFunc = useMemo(() => {
@@ -27,15 +27,10 @@ export default function useQuery<T>(
       return;
     }
 
-    if (isLoading.current) return;
-    isLoading.current = true;
-
-    try {
-      const result = await wrappedFunc();
-      setData(result);
-    } finally {
-      isLoading.current = false;
-    }
+    setIsLoading(true);
+    const result = await wrappedFunc();
+    setData(result);
+    setIsLoading(false);
   };
 
   useFocusEffect(
