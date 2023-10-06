@@ -45,7 +45,7 @@ export default function ParallaxScroll({
       Extrapolate.CLAMP
     );
 
-    return { opacity, transform: [] };
+    return { opacity, transform: [{ translateY }] };
   });
 
   return (
