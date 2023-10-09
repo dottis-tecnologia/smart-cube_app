@@ -14,135 +14,166 @@ import {
   VStack,
   Pressable,
   Input,
-  ScrollView,
+  FlatList,
+  Spinner,
 } from "native-base";
-import useQuery from "../../hooks/useQuery";
 import { dbQuery } from "../../util/db";
 import { FontAwesome } from "@expo/vector-icons";
-import ParallaxScroll from "../../components/ParallaxScroll";
 import useInfiniteQuery from "../../hooks/useInfiniteQuery";
+import { memo } from "react";
 
 export type LocationsProps = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, "Locations">,
   NativeStackScreenProps<RootStackParamList>
 >;
 
+const perPage = 8;
+type DataType = { location: string; meterCount: number };
+
 export default function Locations({ navigation, route }: LocationsProps) {
   const filter = route.params?.filter || "";
-  const { data } = useQuery(
-    () =>
-      dbQuery<{ location: string; meterCount: number }>(
-        "SELECT count(id) as meterCount, location FROM meters WHERE UPPER(location) LIKE UPPER(?) GROUP BY location ORDER BY location",
-        [`%${filter}%`]
-      ),
-    [filter]
+  const { data, fetchNextPage, isFinished, isRefreshing, refresh } =
+    useInfiniteQuery(
+      (pageParam: string) =>
+        dbQuery<DataType>(
+          "SELECT count(id) as meterCount, location FROM meters WHERE UPPER(location) LIKE UPPER(?) GROUP BY location HAVING location > ? ORDER BY location LIMIT ?",
+          [`%${filter}%`, pageParam, perPage]
+        ),
+      (lastPage) => {
+        if (lastPage == null) {
+          return "";
+        }
+
+        if (lastPage.rows.length < perPage) {
+          console.log(lastPage.rows);
+          return null;
+        }
+
+        return lastPage.rows[lastPage.rows.length - 1].location;
+      },
+      [filter]
+    );
+
+  const flatData = data.reduce<DataType[]>(
+    (prev, curr) => [...prev, ...curr.rows],
+    []
   );
 
   return (
     <Box bg="light.100" flex={1}>
       <FocusAwareStatusBar style="dark" />
-      <ParallaxScroll
-        header={
-          <Center
-            bg={{
-              linearGradient: {
-                colors: ["primary.400", "secondary.400"],
-                start: [0, 0],
-                end: [0, 1],
-              },
-            }}
-            p={8}
-            pb={10}
-          >
-            <Box w="full" key="1">
-              <Heading color="white" mb={3}>
-                LOCATION
-              </Heading>
-            </Box>
-            <Input
-              variant={"filled"}
-              placeholder="Type the location..."
-              defaultValue={filter}
-              onSubmitEditing={(e) => {
-                navigation.setParams({ filter: e.nativeEvent.text });
+      <FlatList
+        ListHeaderComponent={
+          <>
+            <Center
+              key="heading"
+              bg={{
+                linearGradient: {
+                  colors: ["primary.400", "secondary.400"],
+                  start: [0, 0],
+                  end: [0, 1],
+                },
               }}
-            />
-          </Center>
-        }
-        flex={1}
-      >
-        <Box p={3} borderTopRadius={"lg"} mt={-3} bg="light.100">
-          <Heading mb={3} fontSize={"md"} key="2">
-            Locations
-          </Heading>
-
-          {data?.rows.map((item) => (
-            <Pressable
-              key={item.location}
-              onPress={() =>
-                navigation.navigate("ListMeters", { location: item.location })
-              }
+              p={8}
+              pb={10}
             >
-              {({ isPressed }) => (
-                <VStack
-                  opacity={isPressed ? 0.5 : 1}
-                  rounded={"lg"}
-                  mb={3}
-                  bg="white"
-                >
-                  <HStack
-                    alignItems={"center"}
-                    p={5}
-                    borderBottomWidth={1}
-                    borderBottomColor={"light.200"}
-                  >
-                    <Icon
-                      as={FontAwesome}
-                      color="primary.500"
-                      name="info"
-                      mr={2}
-                    />
-                    <Text fontSize="lg" fontStyle={"italic"} mr={1}>
-                      Meters
-                    </Text>
-                    <Text
-                      flexGrow={1}
-                      textAlign={"right"}
-                      fontWeight={"bold"}
-                      color="primary.500"
-                      fontSize="lg"
-                    >
-                      {item.meterCount}
-                    </Text>
-                  </HStack>
-                  <HStack p={5} alignItems={"center"}>
-                    <Icon
-                      as={FontAwesome}
-                      color="primary.500"
-                      name="building"
-                      mr={2}
-                    />
-                    <Text fontSize="lg" fontStyle={"italic"} mr={1}>
-                      Location
-                    </Text>
-                    <Text
-                      flex={1}
-                      flexGrow={1}
-                      textAlign={"right"}
-                      fontWeight={"bold"}
-                      color="primary.500"
-                      fontSize="lg"
-                      numberOfLines={1}
-                    >
-                      {item.location}
-                    </Text>
-                  </HStack>
-                </VStack>
-              )}
-            </Pressable>
-          ))}
-        </Box>
-      </ParallaxScroll>
+              <Box w="full" key="1">
+                <Heading color="white" mb={3}>
+                  LOCATION
+                </Heading>
+              </Box>
+              <Input
+                key="2"
+                variant={"filled"}
+                placeholder="Type the location..."
+                defaultValue={filter}
+                onSubmitEditing={(e) => {
+                  navigation.setParams({ filter: e.nativeEvent.text });
+                }}
+              />
+            </Center>
+            <Heading
+              key="title"
+              mt={-3}
+              bg="light.100"
+              mb={3}
+              fontSize={"md"}
+              p={3}
+              borderTopRadius={"lg"}
+            >
+              Locations
+            </Heading>
+          </>
+        }
+        data={flatData}
+        flex={1}
+        onEndReached={() => !isFinished && fetchNextPage()}
+        refreshing={isRefreshing}
+        onRefresh={refresh}
+        ListFooterComponent={
+          !isFinished ? (
+            <Center p={5}>
+              <Spinner />
+            </Center>
+          ) : null
+        }
+        renderItem={({ item }) => (
+          <ListItem
+            item={item}
+            onPress={() =>
+              navigation.navigate("ListMeters", { location: item.location })
+            }
+          />
+        )}
+      />
     </Box>
   );
 }
+
+const ListItem = memo(
+  ({ item, onPress }: { item: DataType; onPress: () => void }) => (
+    <Pressable key={item.location} onPress={onPress} mx={3} mb={2}>
+      {({ isPressed }) => (
+        <VStack opacity={isPressed ? 0.5 : 1} rounded={"lg"} bg="white">
+          <HStack
+            alignItems={"center"}
+            p={5}
+            borderBottomWidth={1}
+            borderBottomColor={"light.200"}
+          >
+            <Icon as={FontAwesome} color="primary.500" name="info" mr={2} />
+            <Text fontSize="lg" fontStyle={"italic"} mr={1}>
+              Meters
+            </Text>
+            <Text
+              flexGrow={1}
+              textAlign={"right"}
+              fontWeight={"bold"}
+              color="primary.500"
+              fontSize="lg"
+            >
+              {item.meterCount}
+            </Text>
+          </HStack>
+          <HStack p={5} alignItems={"center"}>
+            <Icon as={FontAwesome} color="primary.500" name="building" mr={2} />
+            <Text fontSize="lg" fontStyle={"italic"} mr={1}>
+              Location
+            </Text>
+            <Text
+              flex={1}
+              flexGrow={1}
+              textAlign={"right"}
+              fontWeight={"bold"}
+              color="primary.500"
+              fontSize="lg"
+              numberOfLines={1}
+            >
+              {item.location}
+            </Text>
+          </HStack>
+        </VStack>
+      )}
+    </Pressable>
+  )
+);

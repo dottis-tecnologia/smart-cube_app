@@ -41,7 +41,7 @@ export async function createTables() {
   );
 }
 
-type Result<T> = {
+export type Result<T> = {
   rowsAffected: number;
   insertId?: number | undefined;
   rows: T[];
@@ -54,13 +54,13 @@ export async function dbQuery<T>(
 ) {
   const db = getDatabase();
 
-  return new Promise<Result<T> | null>((resolve, reject) => {
+  return new Promise<Result<T>>((resolve, reject) => {
     db.exec([{ sql, args }], readOnly, (err, res) => {
       if (err) {
         return reject(err);
       }
       if (res == null) {
-        return resolve(null);
+        return reject(new Error("Null response"));
       }
       const row = res[0];
 

@@ -52,11 +52,15 @@ export default function Root({}: RootProps) {
           <Stack.Screen name="Meter" component={Meter} />
           <Stack.Screen
             name="ListMeters"
-            options={({ route }) => ({ title: route.params.location })}
             component={ListMeters}
+            options={{ title: "Meters" }}
           />
           <Stack.Screen name="Reading" component={Reading} />
-          <Stack.Screen name="CreateReading" component={CreateReading} />
+          <Stack.Screen
+            name="CreateReading"
+            component={CreateReading}
+            options={{ title: "Reading" }}
+          />
         </>
       ) : (
         <>
