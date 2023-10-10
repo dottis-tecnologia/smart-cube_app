@@ -129,10 +129,10 @@ export default function Home({ navigation }: HomeProps) {
             <Heading size="sm" mb={3}>
               Latest readings
             </Heading>
-            {readings?.rows.map((reading, index) => (
+            {readings?.rows.map((reading) => (
               <AnimatedBox
                 key={reading.id}
-                entering={SlideInLeft.delay(index * 100)}
+                entering={SlideInLeft.delay(100).randomDelay()}
               >
                 <Pressable
                   onPress={() =>

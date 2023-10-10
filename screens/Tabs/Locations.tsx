@@ -21,6 +21,7 @@ import { dbQuery } from "../../util/db";
 import { FontAwesome } from "@expo/vector-icons";
 import useInfiniteQuery from "../../hooks/useInfiniteQuery";
 import { memo } from "react";
+import Animated, { FadeInLeft } from "react-native-reanimated";
 
 export type LocationsProps = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, "Locations">,
@@ -30,13 +31,20 @@ export type LocationsProps = CompositeScreenProps<
 const perPage = 8;
 type DataType = { location: string; meterCount: number };
 
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
 export default function Locations({ navigation, route }: LocationsProps) {
   const filter = route.params?.filter || "";
   const { data, fetchNextPage, isFinished, isRefreshing, refresh } =
     useInfiniteQuery(
       (pageParam: string) =>
         dbQuery<DataType>(
-          "SELECT count(id) as meterCount, location FROM meters WHERE UPPER(location) LIKE UPPER(?) GROUP BY location HAVING location > ? ORDER BY location LIMIT ?",
+          `SELECT count(id) as meterCount, location 
+          FROM meters 
+          WHERE UPPER(location) LIKE UPPER(?) 
+          GROUP BY location 
+          HAVING location > ? 
+          ORDER BY location LIMIT ?`,
           [`%${filter}%`, pageParam, perPage]
         ),
       (lastPage) => {
@@ -45,7 +53,6 @@ export default function Locations({ navigation, route }: LocationsProps) {
         }
 
         if (lastPage.rows.length < perPage) {
-          console.log(lastPage.rows);
           return null;
         }
 
@@ -119,7 +126,7 @@ export default function Locations({ navigation, route }: LocationsProps) {
         }
         renderItem={({ item }) => (
           <ListItem
-            item={item}
+            {...item}
             onPress={() =>
               navigation.navigate("ListMeters", { location: item.location })
             }
@@ -131,8 +138,21 @@ export default function Locations({ navigation, route }: LocationsProps) {
 }
 
 const ListItem = memo(
-  ({ item, onPress }: { item: DataType; onPress: () => void }) => (
-    <Pressable key={item.location} onPress={onPress} mx={3} mb={2}>
+  ({
+    location,
+    meterCount,
+    onPress,
+  }: {
+    location: string;
+    meterCount: number;
+    onPress: () => void;
+  }) => (
+    <AnimatedPressable
+      onPress={onPress}
+      mx={3}
+      mb={2}
+      entering={FadeInLeft.delay(150).randomDelay()}
+    >
       {({ isPressed }) => (
         <VStack opacity={isPressed ? 0.5 : 1} rounded={"lg"} bg="white">
           <HStack
@@ -152,7 +172,7 @@ const ListItem = memo(
               color="primary.500"
               fontSize="lg"
             >
-              {item.meterCount}
+              {meterCount}
             </Text>
           </HStack>
           <HStack p={5} alignItems={"center"}>
@@ -169,11 +189,11 @@ const ListItem = memo(
               fontSize="lg"
               numberOfLines={1}
             >
-              {item.location}
+              {location}
             </Text>
           </HStack>
         </VStack>
       )}
-    </Pressable>
+    </AnimatedPressable>
   )
 );

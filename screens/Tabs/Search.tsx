@@ -1,153 +1,200 @@
-import {
-  Box,
-  FlatList,
-  HStack,
-  Heading,
-  Icon,
-  Input,
-  Pressable,
-  VStack,
-  Text,
-  ScrollView,
-  Center,
-} from "native-base";
-import FocusAwareStatusBar from "../../components/util/FocusAwareStatusBar";
-import { dbQuery } from "../../util/db";
-import useQuery from "../../hooks/useQuery";
-import { CompositeScreenProps } from "@react-navigation/native";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
+import { CompositeScreenProps } from "@react-navigation/native";
 import { TabParamList } from "./Tabs";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../Root";
+import FocusAwareStatusBar from "../../components/util/FocusAwareStatusBar";
+import {
+  Box,
+  Center,
+  Text,
+  Heading,
+  HStack,
+  Icon,
+  VStack,
+  Pressable,
+  Input,
+  FlatList,
+  Spinner,
+} from "native-base";
+import { dbQuery } from "../../util/db";
 import { FontAwesome } from "@expo/vector-icons";
-import { useCallback, useEffect, useState } from "react";
-import ParallaxScroll from "../../components/ParallaxScroll";
+import useInfiniteQuery from "../../hooks/useInfiniteQuery";
+import { memo } from "react";
+import Animated, { FadeInLeft } from "react-native-reanimated";
 
-export type SearchProps = CompositeScreenProps<
+export type LocationsProps = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, "Search">,
   NativeStackScreenProps<RootStackParamList>
 >;
 
-export default function Search({ navigation, route }: SearchProps) {
+const perPage = 8;
+type DataType = {
+  id: string;
+  name: string;
+  location: string;
+};
+
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+
+export default function Locations({ navigation, route }: LocationsProps) {
   const filter = route.params?.filter || "";
-  const { data } = useQuery(
-    () =>
-      dbQuery<{
-        id: string;
-        name: string;
-        location: string;
-      }>("SELECT * FROM meters WHERE name LIKE ?", [`%${filter}%`]),
-    [filter],
-    { isDisabled: filter.length <= 2 }
+  const { data, fetchNextPage, isFinished, isRefreshing, refresh } =
+    useInfiniteQuery(
+      (pageParam: string) =>
+        dbQuery<DataType>(
+          `SELECT *
+          FROM meters 
+          WHERE UPPER(name) LIKE UPPER(?) AND name > ?
+          ORDER BY name LIMIT ?`,
+          [`%${filter}%`, pageParam, perPage]
+        ),
+      (lastPage) => {
+        if (lastPage == null) {
+          return "";
+        }
+
+        if (lastPage.rows.length < perPage) {
+          return null;
+        }
+
+        return lastPage.rows[lastPage.rows.length - 1].name;
+      },
+      [filter]
+    );
+
+  const flatData = data.reduce<DataType[]>(
+    (prev, curr) => [...prev, ...curr.rows],
+    []
   );
 
   return (
     <Box bg="light.100" flex={1}>
       <FocusAwareStatusBar style="dark" />
-      <ParallaxScroll
-        header={
-          <Center
-            bg={{
-              linearGradient: {
-                colors: ["primary.400", "secondary.400"],
-                start: [0, 0],
-                end: [0, 1],
-              },
-            }}
-            p={8}
-            pb={10}
-          >
-            <Box w="full" key="1">
-              <Heading color="white" mb={3}>
-                SEARCH
-              </Heading>
-            </Box>
-            <Input
-              variant={"filled"}
-              placeholder="Type the id..."
-              defaultValue={filter}
-              onSubmitEditing={(e) => {
-                navigation.setParams({ filter: e.nativeEvent.text });
+      <FlatList
+        ListHeaderComponent={
+          <>
+            <Center
+              key="heading"
+              bg={{
+                linearGradient: {
+                  colors: ["primary.400", "secondary.400"],
+                  start: [0, 0],
+                  end: [0, 1],
+                },
               }}
-            />
-          </Center>
-        }
-        flex={1}
-      >
-        <Box p={3} borderTopRadius={"lg"} mt={-3} bg="light.100">
-          <Heading mb={3} fontSize={"md"} key="2">
-            Meters
-          </Heading>
-
-          {data?.rows.map((item) => (
-            <Pressable
-              key={item.id}
-              onPress={() => navigation.navigate("Meter", { id: item.id })}
+              p={8}
+              pb={10}
             >
-              {({ isPressed }) => (
-                <VStack
-                  opacity={isPressed ? 0.5 : 1}
-                  rounded={"lg"}
-                  mb={3}
-                  bg="white"
-                >
-                  <HStack
-                    alignItems={"center"}
-                    p={5}
-                    borderBottomWidth={1}
-                    borderBottomColor={"light.200"}
-                  >
-                    <Icon
-                      as={FontAwesome}
-                      color="primary.500"
-                      name="info"
-                      mr={2}
-                    />
-                    <Text fontSize="lg" fontStyle={"italic"}>
-                      Meter
-                    </Text>
-                    <Text
-                      flex={1}
-                      ml={5}
-                      ellipsizeMode="tail"
-                      numberOfLines={1}
-                      textAlign={"right"}
-                      fontWeight={"bold"}
-                      color="primary.500"
-                      fontSize="lg"
-                    >
-                      {item.name}
-                    </Text>
-                  </HStack>
-                  <HStack p={5} alignItems={"center"} flexGrow={1}>
-                    <Icon
-                      as={FontAwesome}
-                      color="primary.500"
-                      name="building"
-                      mr={2}
-                    />
-                    <Text fontSize="lg" fontStyle={"italic"}>
-                      Location
-                    </Text>
-                    <Text
-                      flex={1}
-                      ml={5}
-                      ellipsizeMode="tail"
-                      numberOfLines={1}
-                      textAlign={"right"}
-                      fontWeight={"bold"}
-                      color="primary.500"
-                      fontSize="lg"
-                    >
-                      {item.location}
-                    </Text>
-                  </HStack>
-                </VStack>
-              )}
-            </Pressable>
-          ))}
-        </Box>
-      </ParallaxScroll>
+              <Box w="full" key="1">
+                <Heading color="white" mb={3}>
+                  SEARCH
+                </Heading>
+              </Box>
+              <Input
+                key="2"
+                variant={"filled"}
+                placeholder="Type the id..."
+                defaultValue={filter}
+                onSubmitEditing={(e) => {
+                  navigation.setParams({ filter: e.nativeEvent.text });
+                }}
+              />
+            </Center>
+            <Heading
+              key="title"
+              mt={-3}
+              bg="light.100"
+              mb={3}
+              fontSize={"md"}
+              p={3}
+              borderTopRadius={"lg"}
+            >
+              Meters
+            </Heading>
+          </>
+        }
+        data={flatData}
+        flex={1}
+        onEndReached={() => !isFinished && fetchNextPage()}
+        refreshing={isRefreshing}
+        onRefresh={refresh}
+        keyExtractor={({ id }) => id}
+        ListFooterComponent={
+          !isFinished ? (
+            <Center p={5}>
+              <Spinner />
+            </Center>
+          ) : null
+        }
+        renderItem={({ item }) => (
+          <ListItem
+            {...item}
+            onPress={() => navigation.navigate("Meter", { id: item.id })}
+          />
+        )}
+      />
     </Box>
   );
 }
+
+const ListItem = memo(
+  ({
+    location,
+    name,
+    onPress,
+  }: {
+    location: string;
+    name: string;
+    onPress: () => void;
+  }) => (
+    <AnimatedPressable
+      onPress={onPress}
+      mx={3}
+      mb={2}
+      entering={FadeInLeft.delay(150).randomDelay()}
+    >
+      {({ isPressed }) => (
+        <VStack opacity={isPressed ? 0.5 : 1} rounded={"lg"} bg="white">
+          <HStack
+            alignItems={"center"}
+            p={5}
+            borderBottomWidth={1}
+            borderBottomColor={"light.200"}
+          >
+            <Icon as={FontAwesome} color="primary.500" name="info" mr={2} />
+            <Text fontSize="lg" fontStyle={"italic"} mr={1}>
+              Meter
+            </Text>
+            <Text
+              flexGrow={1}
+              textAlign={"right"}
+              fontWeight={"bold"}
+              color="primary.500"
+              fontSize="lg"
+            >
+              {name}
+            </Text>
+          </HStack>
+          <HStack p={5} alignItems={"center"}>
+            <Icon as={FontAwesome} color="primary.500" name="building" mr={2} />
+            <Text fontSize="lg" fontStyle={"italic"} mr={1}>
+              Location
+            </Text>
+            <Text
+              flex={1}
+              flexGrow={1}
+              textAlign={"right"}
+              fontWeight={"bold"}
+              color="primary.500"
+              fontSize="lg"
+              numberOfLines={1}
+            >
+              {location}
+            </Text>
+          </HStack>
+        </VStack>
+      )}
+    </AnimatedPressable>
+  )
+);

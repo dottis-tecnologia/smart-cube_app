@@ -32,8 +32,6 @@ export const syncMeter = async (meter: Meter, lastSync?: Date) => {
       false
     );
   } else {
-    if (meter.id == "33550") console.log(meter);
-
     await dbQuery(
       "UPDATE meters SET name = ?, location = ?, unit = ?, synchedAt = ?, notes = ?, type = ? WHERE id = ?",
       [
