@@ -1,3 +1,5 @@
+import "./i18n";
+
 import { NavigationContainer } from "@react-navigation/native";
 import Root from "./screens/Root";
 import { NativeBaseProvider } from "native-base";

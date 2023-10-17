@@ -20,6 +20,7 @@ import { TRPCError } from "@trpc/server";
 import { TRPCClientError } from "@trpc/client";
 import useAuth from "../../hooks/useAuth";
 import FocusAwareStatusBar from "../../components/util/FocusAwareStatusBar";
+import { useTranslation } from "react-i18next";
 
 export type LoginProps = NativeStackScreenProps<RootStackParamList, "Login">;
 
@@ -40,6 +41,7 @@ export default function Login({}: LoginProps) {
     },
   });
   const auth = useAuth();
+  const { t } = useTranslation();
 
   const onSubmit: SubmitHandler<FormValues> = async (data) => {
     try {
@@ -67,7 +69,7 @@ export default function Login({}: LoginProps) {
       <FocusAwareStatusBar style="dark" />
       <Center flex={1} alignItems={"stretch"} w="80%" mx="auto">
         <Heading fontWeight={"normal"} mb={5} fontSize={"4xl"}>
-          Log In
+          {t("logIn", "Log In")}
         </Heading>
         <Text mb={1} color="primary.500">
           Enter your credentials
