@@ -7,7 +7,6 @@ import {
   Button,
   Center,
   Fab,
-  FlatList,
   HStack,
   Heading,
   Icon,
@@ -16,8 +15,6 @@ import {
   Spinner,
   Text,
   VStack,
-  Badge,
-  ScrollView,
 } from "native-base";
 import Animated, { FadeInLeft } from "react-native-reanimated";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
@@ -57,9 +54,10 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
         synchedAt?: string;
         imagePath: string;
         technicianName?: string;
-      }>("SELECT * FROM readings WHERE meterId = ? ORDER BY createdAt DESC;", [
-        id,
-      ]),
+      }>(
+        "SELECT * FROM readings WHERE meterId = ? ORDER BY createdAt DESC LIMIT 5;",
+        [id]
+      ),
     [id]
   );
 
