@@ -11,6 +11,7 @@ import { RootStackParamList } from "../Root";
 import Sync from "./Sync";
 import Locations from "./Locations";
 import Search from "./Search";
+import type { InterfaceIconProps } from "native-base/lib/typescript/components/primitives/Icon/types";
 
 export type TabParamList = {
   Home: undefined;
@@ -54,7 +55,7 @@ export default function Tabs({}: TabsProps) {
         name="ReadCode"
         component={ReadCode}
         options={{
-          tabBarIcon: tabBarIcon("qrcode"),
+          tabBarIcon: tabBarIcon("qrcode", { marginLeft: 1 }),
           tabBarLabel: "Read",
           title: "Read QR Code",
         }}
@@ -81,6 +82,14 @@ export default function Tabs({}: TabsProps) {
 }
 
 const tabBarIcon =
-  (name: string) =>
+  (name: string, options?: InterfaceIconProps) =>
   ({ color, size }: { color: string; size: number }) =>
-    <Icon as={FontAwesome} name={name} color={color} size={size} />;
+    (
+      <Icon
+        as={FontAwesome}
+        name={name}
+        color={color}
+        size={size}
+        {...options}
+      />
+    );

@@ -180,32 +180,29 @@ const ListItem = memo(
       mx={3}
       mb={3}
     >
-      {({ isPressed }) => (
-        <HStack
-          opacity={isPressed ? 0.5 : 1}
-          bg={
-            createdAt && isToday(new Date(createdAt))
-              ? "success.500"
-              : "warning.500"
-          }
-          rounded={"lg"}
-          p={3}
-        >
-          <VStack>
-            <Text fontWeight={"bold"} fontSize="lg" color="white">
-              {name}
-            </Text>
-            <Text color="white">
-              Last reading{" "}
-              {createdAt
-                ? formatDistanceToNow(new Date(createdAt), {
-                    addSuffix: true,
-                  })
-                : "never"}
-            </Text>
-          </VStack>
-        </HStack>
-      )}
+      <HStack
+        bg={
+          createdAt && isToday(new Date(createdAt))
+            ? "success.500"
+            : "warning.500"
+        }
+        rounded={"lg"}
+        p={3}
+      >
+        <VStack>
+          <Text fontWeight={"bold"} fontSize="lg" color="white">
+            {name}
+          </Text>
+          <Text color="white">
+            Last reading{" "}
+            {createdAt
+              ? formatDistanceToNow(new Date(createdAt), {
+                  addSuffix: true,
+                })
+              : "never"}
+          </Text>
+        </VStack>
+      </HStack>
     </AnimatedPressable>
   )
 );

@@ -60,7 +60,8 @@ export default function Locations({ navigation, route }: LocationsProps) {
 
         return lastPage.rows[lastPage.rows.length - 1].name;
       },
-      [filter]
+      [filter],
+      { isDisabled: filter.length < 3 }
     );
 
   const flatData = data.reduce<DataType[]>(
@@ -129,7 +130,8 @@ export default function Locations({ navigation, route }: LocationsProps) {
         }
         renderItem={({ item }) => (
           <ListItem
-            {...item}
+            location={item.location}
+            name={item.name}
             onPress={() => navigation.navigate("Meter", { id: item.id })}
           />
         )}
@@ -154,47 +156,45 @@ const ListItem = memo(
       mb={2}
       entering={FadeInLeft.delay(150).randomDelay()}
     >
-      {({ isPressed }) => (
-        <VStack opacity={isPressed ? 0.5 : 1} rounded={"lg"} bg="white">
-          <HStack
-            alignItems={"center"}
-            p={5}
-            borderBottomWidth={1}
-            borderBottomColor={"light.200"}
+      <VStack rounded={"lg"} bg="white">
+        <HStack
+          alignItems={"center"}
+          p={5}
+          borderBottomWidth={1}
+          borderBottomColor={"light.200"}
+        >
+          <Icon as={FontAwesome} color="primary.500" name="info" mr={2} />
+          <Text fontSize="lg" fontStyle={"italic"} mr={1}>
+            Meter
+          </Text>
+          <Text
+            flexGrow={1}
+            textAlign={"right"}
+            fontWeight={"bold"}
+            color="primary.500"
+            fontSize="lg"
           >
-            <Icon as={FontAwesome} color="primary.500" name="info" mr={2} />
-            <Text fontSize="lg" fontStyle={"italic"} mr={1}>
-              Meter
-            </Text>
-            <Text
-              flexGrow={1}
-              textAlign={"right"}
-              fontWeight={"bold"}
-              color="primary.500"
-              fontSize="lg"
-            >
-              {name}
-            </Text>
-          </HStack>
-          <HStack p={5} alignItems={"center"}>
-            <Icon as={FontAwesome} color="primary.500" name="building" mr={2} />
-            <Text fontSize="lg" fontStyle={"italic"} mr={1}>
-              Location
-            </Text>
-            <Text
-              flex={1}
-              flexGrow={1}
-              textAlign={"right"}
-              fontWeight={"bold"}
-              color="primary.500"
-              fontSize="lg"
-              numberOfLines={1}
-            >
-              {location}
-            </Text>
-          </HStack>
-        </VStack>
-      )}
+            {name}
+          </Text>
+        </HStack>
+        <HStack p={5} alignItems={"center"}>
+          <Icon as={FontAwesome} color="primary.500" name="building" mr={2} />
+          <Text fontSize="lg" fontStyle={"italic"} mr={1}>
+            Location
+          </Text>
+          <Text
+            flex={1}
+            flexGrow={1}
+            textAlign={"right"}
+            fontWeight={"bold"}
+            color="primary.500"
+            fontSize="lg"
+            numberOfLines={1}
+          >
+            {location}
+          </Text>
+        </HStack>
+      </VStack>
     </AnimatedPressable>
   )
 );

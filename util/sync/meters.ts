@@ -23,7 +23,7 @@ export const syncMeter = async (meter: Meter, lastSync?: Date) => {
       [
         meter.id,
         meter.name,
-        meter.location,
+        meter.location || "-",
         meter.unit,
         new Date().toISOString(),
         meter.notes || "",
@@ -36,7 +36,7 @@ export const syncMeter = async (meter: Meter, lastSync?: Date) => {
       "UPDATE meters SET name = ?, location = ?, unit = ?, synchedAt = ?, notes = ?, type = ? WHERE id = ?",
       [
         meter.name,
-        meter.location,
+        meter.location || "-",
         meter.unit,
         new Date().toISOString(),
         meter.notes || "",
@@ -69,7 +69,12 @@ async function tryAndDownloadImage(meter: Meter) {
   const extSplit = imageUrl.split(".");
   const ext = extSplit[extSplit.length - 1];
   const filePath = `${folder}/image.${ext}`;
-  await FileSystem.downloadAsync(meter.imagePath, filePath);
 
-  return filePath;
+  try {
+    await FileSystem.downloadAsync(meter.imagePath, filePath);
+    return filePath;
+  } catch (e) {
+    console.error(e);
+    return null;
+  }
 }
