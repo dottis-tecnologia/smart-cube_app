@@ -1,3 +1,20 @@
 {
-  "logIn": "Log In"
+  "email": "Email",
+  "error": "Something went wrong",
+  "error_couldNotConnect": "Could not connect to the server",
+  "error_incorrect": "Incorrect",
+  "error_notFound": "Not found",
+  "home": {
+    "latestReadings": "LatestReadings",
+    "readingsToday": "Readings Today"
+  },
+  "logIn": "Log In",
+  "login": {
+    "connect": "CONNECT",
+    "enterCredentials": "Enter your credentials",
+    "internetAccess": "You need internet access to login for the first time",
+    "login": "Log In"
+  },
+  "password": "Password",
+  "welcome": "Welcome"
 }

@@ -5,14 +5,14 @@ import {
   HStack,
   Heading,
   IconButton,
-  ScrollView,
   Text,
   Pressable,
   VStack,
+  Button,
 } from "native-base";
 import { TabParamList } from "./Tabs";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
-import { formatDistanceToNow, intlFormat, subDays } from "date-fns";
+import { formatDistanceToNow, subDays } from "date-fns";
 import { FontAwesome } from "@expo/vector-icons";
 import FocusAwareStatusBar from "../../components/util/FocusAwareStatusBar";
 import Animated, {
@@ -28,6 +28,8 @@ import { dbQuery } from "../../util/db";
 import useAuth from "../../hooks/useAuth";
 import Logo from "../../assets/logo-w.svg";
 import ParallaxScroll from "../../components/ParallaxScroll";
+import { useTranslation } from "react-i18next";
+import dateFnsLocale from "../../util/dateFnsLocale";
 
 export type HomeProps = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, "Home">,
@@ -35,6 +37,11 @@ export type HomeProps = CompositeScreenProps<
 >;
 
 const AnimatedBox = Animated.createAnimatedComponent(Box);
+
+const availableLanguages = {
+  en: "En",
+  fr: "Fr",
+};
 
 const getMeters = (userId: string) =>
   dbQuery<{
@@ -68,6 +75,7 @@ export default function Home({ navigation }: HomeProps) {
       ),
     []
   );
+  const { t, i18n } = useTranslation();
 
   return (
     <Box flex={1}>
@@ -87,6 +95,22 @@ export default function Home({ navigation }: HomeProps) {
             p={3}
             entering={FadeInUp}
           >
+            <Button.Group
+              colorScheme={"primary"}
+              isAttached
+              size={"sm"}
+              alignSelf={"flex-end"}
+            >
+              {Object.entries(availableLanguages).map(([key, value]) => (
+                <Button
+                  key={key}
+                  onPress={() => i18n.changeLanguage(key)}
+                  variant={i18n.resolvedLanguage == key ? "solid" : "subtle"}
+                >
+                  {value}
+                </Button>
+              ))}
+            </Button.Group>
             <Center p={3} flex={1}>
               <AspectRatio ratio={1} w="40%">
                 <Logo width={"100%"} height={"100%"} />
@@ -94,7 +118,7 @@ export default function Home({ navigation }: HomeProps) {
             </Center>
             <HStack alignItems={"center"} justifyContent={"space-between"}>
               <AnimatedBox entering={FadeInLeft.delay(100)}>
-                <Text color="light.100">Welcome,</Text>
+                <Text color="light.100">{t("welcome", "Welcome")},</Text>
                 <Heading fontStyle="italic" mb={5} color="white">
                   {auth.userData?.name}
                 </Heading>
@@ -123,7 +147,9 @@ export default function Home({ navigation }: HomeProps) {
             textAlign={"center"}
             entering={FadeInUp.delay(150)}
           >
-            <Text color="secondary.400">Readings today</Text>
+            <Text color="secondary.400">
+              {t("home.readingsToday", "Readings today")}
+            </Text>
             <Heading color="emphasis.500">
               {readingCount?.rows[0].count || 0}
             </Heading>
@@ -131,7 +157,7 @@ export default function Home({ navigation }: HomeProps) {
 
           <Box p={3}>
             <Heading size="sm" mb={3}>
-              Latest readings
+              {t("home.latestReadings", "Latest Readings")}
             </Heading>
             {readings?.rows.map((reading) => (
               <AnimatedBox
@@ -161,6 +187,7 @@ export default function Home({ navigation }: HomeProps) {
                         <Text color="light.500">
                           {formatDistanceToNow(new Date(reading.createdAt), {
                             addSuffix: true,
+                            locale: dateFnsLocale(i18n.resolvedLanguage),
                           })}
                         </Text>
                       </VStack>

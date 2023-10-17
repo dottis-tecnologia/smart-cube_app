@@ -15,8 +15,6 @@ import {
 } from "native-base";
 import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { FontAwesome } from "@expo/vector-icons";
-import trpc from "../../util/trpc";
-import { TRPCError } from "@trpc/server";
 import { TRPCClientError } from "@trpc/client";
 import useAuth from "../../hooks/useAuth";
 import FocusAwareStatusBar from "../../components/util/FocusAwareStatusBar";
@@ -51,11 +49,11 @@ export default function Login({}: LoginProps) {
         const message = e.message;
 
         if (message === "Invalid email") {
-          setError("email", { message: "Email not found" });
+          setError("email", { type: "notFound" });
         } else if (message === "Incorrect password") {
-          setError("password", { message: "Password is incorrect" });
+          setError("password", { message: "incorrect" });
         } else if (message === "Network request failed") {
-          setError("root", { message: "Could not connect to the server" });
+          setError("root", { message: "couldNotConnect" });
         }
 
         return;
@@ -69,13 +67,16 @@ export default function Login({}: LoginProps) {
       <FocusAwareStatusBar style="dark" />
       <Center flex={1} alignItems={"stretch"} w="80%" mx="auto">
         <Heading fontWeight={"normal"} mb={5} fontSize={"4xl"}>
-          {t("logIn", "Log In")}
+          {t("login.login", "Log In")}
         </Heading>
         <Text mb={1} color="primary.500">
-          Enter your credentials
+          {t("login.enterCredentials", "Enter your credentials")}
         </Text>
         <Text color="dark.400" mb={5}>
-          You need internet access to login for the first time
+          {t(
+            "login.internetAccess",
+            "You need internet access to login for the first time"
+          )}
         </Text>
         <Box mb={5}>
           <Controller
@@ -90,7 +91,7 @@ export default function Login({}: LoginProps) {
                   bgColor={"light.200"}
                   p={3}
                   size="xl"
-                  placeholder="E-mail"
+                  placeholder={t("email", "Email")}
                   onBlur={onBlur}
                   onChangeText={onChange}
                   keyboardType="email-address"
@@ -102,7 +103,12 @@ export default function Login({}: LoginProps) {
                     mt={1}
                     leftIcon={<Icon as={FontAwesome} name="info" size="xs" />}
                   >
-                    {errors.email.message}
+                    {
+                      // i18next-extract-mark-context-next-line ["", "notFound"]
+                      t("error", "Something went wrong", {
+                        context: errors.email.type,
+                      })
+                    }
                   </FormControl.ErrorMessage>
                 )}
               </FormControl>
@@ -126,7 +132,7 @@ export default function Login({}: LoginProps) {
                   p={3}
                   variant={"filled"}
                   bgColor={"light.200"}
-                  placeholder="Password"
+                  placeholder={t("password", "Password")}
                   onBlur={onBlur}
                   onChangeText={onChange}
                   secureTextEntry
@@ -137,14 +143,28 @@ export default function Login({}: LoginProps) {
                     mt={1}
                     leftIcon={<Icon as={FontAwesome} name="info" size="xs" />}
                   >
-                    {errors.password.message}
+                    {
+                      // i18next-extract-mark-context-next-line ["", "incorrect"]
+                      t("error", "Something went wrong", {
+                        context: errors.password.type,
+                      })
+                    }
                   </FormControl.ErrorMessage>
                 )}
               </FormControl>
             )}
             name="password"
           />
-          {errors.root && <Text color="danger.500">{errors.root.message}</Text>}
+          {errors.root && (
+            <Text color="danger.500">
+              {
+                // i18next-extract-mark-context-next-line ["", "couldNotConnect"]
+                t("error", "Something went wrong", {
+                  context: errors.root.type,
+                })
+              }
+            </Text>
+          )}
         </Box>
 
         <Pressable onPress={handleSubmit(onSubmit)}>
@@ -157,7 +177,6 @@ export default function Login({}: LoginProps) {
               bg={{
                 linearGradient: {
                   colors: ["primary.500", "cyan.500"],
-
                   start: [1, 0],
                   end: [0, 0],
                 },
@@ -165,7 +184,7 @@ export default function Login({}: LoginProps) {
               p={3}
             >
               {isSubmitting ? <Spinner color={"white"} /> : null}
-              <Text color="white">CONNECT</Text>
+              <Text color="white">{t("login.connect", "CONNECT")}</Text>
             </HStack>
           )}
         </Pressable>
