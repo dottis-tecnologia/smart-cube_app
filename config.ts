@@ -2,7 +2,6 @@ import { INativebaseConfig, extendTheme } from "native-base";
 import { LinearGradient } from "expo-linear-gradient";
 
 export const apiUrl = process.env.EXPO_PUBLIC_API_URL;
-console.log(apiUrl);
 // extend the theme
 export const theme = extendTheme({
   config: {

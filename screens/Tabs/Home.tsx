@@ -12,7 +12,7 @@ import {
 } from "native-base";
 import { TabParamList } from "./Tabs";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
-import { formatDistanceToNow, intlFormat } from "date-fns";
+import { formatDistanceToNow, intlFormat, subDays } from "date-fns";
 import { FontAwesome } from "@expo/vector-icons";
 import FocusAwareStatusBar from "../../components/util/FocusAwareStatusBar";
 import Animated, {
@@ -47,8 +47,12 @@ const getMeters = (userId: string) =>
     location: string;
     technicianName: string;
   }>(
-    "SELECT readings.*, meters.name as meterName, meters.unit, meters.location FROM readings JOIN meters ON readings.meterId = meters.id WHERE readings.technicianId = ? ORDER BY createdAt DESC LIMIT 12;",
-    [userId]
+    `SELECT readings.*, meters.name as meterName, meters.unit, meters.location 
+     FROM readings JOIN meters ON readings.meterId = meters.id 
+     WHERE readings.technicianId = ? AND readings.createdAt > ? 
+     ORDER BY createdAt 
+     DESC LIMIT 12;`,
+    [userId, subDays(new Date(), 7).toISOString()]
   );
 
 export default function Home({ navigation }: HomeProps) {
