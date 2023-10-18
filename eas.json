@@ -11,6 +11,19 @@
       "distribution": "internal",
       "android": {
         "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://smartcube.dottis.dev.br"
+      }
+    },
+    "staging": {
+      "distribution": "internal",
+      "android": {
+        "buildType": "apk"
+      },
+      "env": {
+        "EXPO_PUBLIC_API_URL": "https://staging-smartcube.dottis.dev.br",
+        "EXPO_PUBLIC_STAGING": "true"
       }
     },
     "production": {}

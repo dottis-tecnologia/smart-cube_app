@@ -9,6 +9,8 @@ import {
   Pressable,
   VStack,
   Button,
+  Badge,
+  Stack,
 } from "native-base";
 import { TabParamList } from "./Tabs";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
@@ -31,6 +33,7 @@ import ParallaxScroll from "../../components/ParallaxScroll";
 import { useTranslation } from "react-i18next";
 import dateFnsLocale from "../../util/dateFnsLocale";
 import ChangeLanguageButtons from "../../components/ChangeLanguageButtons";
+import { apiUrl } from "../../config";
 
 export type HomeProps = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, "Home">,
@@ -92,10 +95,14 @@ export default function Home({ navigation }: HomeProps) {
             entering={FadeInUp}
           >
             <ChangeLanguageButtons />
+            <Box safeAreaTop p={3} position={"absolute"}></Box>
             <Center p={3} flex={1}>
               <AspectRatio ratio={1} w="40%">
                 <Logo width={"100%"} height={"100%"} />
               </AspectRatio>
+              {process.env.EXPO_PUBLIC_STAGING ? (
+                <Badge colorScheme={"yellow"}>STAGING</Badge>
+              ) : null}
             </Center>
             <HStack alignItems={"center"} justifyContent={"space-between"}>
               <AnimatedBox entering={FadeInLeft.delay(100)}>

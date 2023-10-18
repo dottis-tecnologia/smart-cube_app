@@ -54,9 +54,9 @@ export default function Login({}: LoginProps) {
         if (message === "Invalid email") {
           setError("email", { type: "notFound" });
         } else if (message === "Incorrect password") {
-          setError("password", { message: "incorrect" });
+          setError("password", { type: "incorrect" });
         } else if (message === "Network request failed") {
-          setError("root", { message: "couldNotConnect" });
+          setError("root", { type: "couldNotConnect" });
         }
 
         return;
