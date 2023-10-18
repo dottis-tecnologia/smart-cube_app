@@ -51,7 +51,11 @@ export default function Root({}: RootProps) {
             component={Tabs}
             options={{ headerShown: false }}
           />
-          <Stack.Screen name="Meter" component={Meter} />
+          <Stack.Screen
+            name="Meter"
+            component={Meter}
+            options={{ title: t("titles.meter", "Meter") }}
+          />
           <Stack.Screen
             name="ListMeters"
             component={ListMeters}

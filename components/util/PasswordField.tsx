@@ -11,6 +11,7 @@ export default function PasswordField({ ...props }: PasswordFieldProps) {
     <Input
       {...props}
       secureTextEntry={!isShown}
+      autoCapitalize="none"
       InputRightElement={
         <IconButton
           colorScheme={"primary"}

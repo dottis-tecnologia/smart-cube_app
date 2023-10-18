@@ -18,7 +18,7 @@ export default function Snap({ onSnapshot, onSkip }: SnapProps) {
   const cameraRef = useRef<BaseCamera>(null);
 
   return (
-    <Box flex={1} opacity={isTakingPicture ? 0.2 : 1}>
+    <Box flex={1}>
       <Camera ref={cameraRef} onCameraReady={() => setIsReady(true)} />
       <Center p={5}>
         <Text textAlign="center" color="dark.400" mb={3}>
@@ -33,7 +33,7 @@ export default function Snap({ onSnapshot, onSkip }: SnapProps) {
           </Button>
           <Button
             size="lg"
-            isDisabled={!isReady}
+            isLoading={!isReady || isTakingPicture}
             leftIcon={<Icon as={FontAwesome5} name="camera" />}
             onPress={async () => {
               if (cameraRef.current == null) return;
