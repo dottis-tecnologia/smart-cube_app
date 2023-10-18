@@ -18,6 +18,8 @@ import { dbQuery } from "../util/db";
 import Animated, { FadeInLeft } from "react-native-reanimated";
 import useInfiniteQuery from "../hooks/useInfiniteQuery";
 import { memo } from "react";
+import { useTranslation } from "react-i18next";
+import dateFnsLocale from "../util/dateFnsLocale";
 
 export type ListMetersProps = NativeStackScreenProps<
   RootStackParamList,
@@ -39,6 +41,7 @@ export default function ListMeters({
   navigation,
 }: ListMetersProps) {
   const { location } = params;
+  const { t } = useTranslation();
 
   const { data, fetchNextPage, isFinished, isRefreshing, refresh } =
     useInfiniteQuery(
@@ -118,13 +121,19 @@ export default function ListMeters({
               <Box w="full">
                 <Heading color="white">
                   <Text key="title" fontWeight={"normal"} fontStyle={"italic"}>
-                    LOCATION:
+                    {t("listMeters.location", "Location").toUpperCase()}:
                   </Text>{" "}
                   {location}
                 </Heading>
                 <Text color="white">
-                  Readings today: {readingsToday?.rows[0].count ?? "-"}/
-                  {readingsTotal?.rows[0]?.count ?? "-"}
+                  {t(
+                    "listMeters.readingsToday",
+                    "Readings today: {{num}}/{{den}}",
+                    {
+                      num: readingsToday?.rows[0].count ?? "-",
+                      den: readingsTotal?.rows[0]?.count ?? "-",
+                    }
+                  )}
                 </Text>
               </Box>
             </Center>
@@ -137,7 +146,7 @@ export default function ListMeters({
               p={3}
               borderTopRadius={"lg"}
             >
-              Meters
+              {t("listMeters.meters", "Meters")}
             </Heading>
           </>
         }
@@ -173,36 +182,41 @@ const ListItem = memo(
     createdAt?: string;
     name: string;
     onPress: () => void;
-  }) => (
-    <AnimatedPressable
-      entering={FadeInLeft.delay(150).randomDelay()}
-      onPress={onPress}
-      mx={3}
-      mb={3}
-    >
-      <HStack
-        bg={
-          createdAt && isToday(new Date(createdAt))
-            ? "success.500"
-            : "warning.500"
-        }
-        rounded={"lg"}
-        p={3}
+  }) => {
+    const { t, i18n } = useTranslation();
+    return (
+      <AnimatedPressable
+        entering={FadeInLeft.delay(150).randomDelay()}
+        onPress={onPress}
+        mx={3}
+        mb={3}
       >
-        <VStack>
-          <Text fontWeight={"bold"} fontSize="lg" color="white">
-            {name}
-          </Text>
-          <Text color="white">
-            Last reading{" "}
-            {createdAt
-              ? formatDistanceToNow(new Date(createdAt), {
-                  addSuffix: true,
-                })
-              : "never"}
-          </Text>
-        </VStack>
-      </HStack>
-    </AnimatedPressable>
-  )
+        <HStack
+          bg={
+            createdAt && isToday(new Date(createdAt))
+              ? "success.500"
+              : "warning.500"
+          }
+          rounded={"lg"}
+          p={3}
+        >
+          <VStack>
+            <Text fontWeight={"bold"} fontSize="lg" color="white">
+              {name}
+            </Text>
+            <Text color="white">
+              {t("listMeters.lastReading", "Last reading {{date}}", {
+                date: createdAt
+                  ? formatDistanceToNow(new Date(createdAt), {
+                      addSuffix: true,
+                      locale: dateFnsLocale(i18n.resolvedLanguage),
+                    })
+                  : "never",
+              })}
+            </Text>
+          </VStack>
+        </HStack>
+      </AnimatedPressable>
+    );
+  }
 );

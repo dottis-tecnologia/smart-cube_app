@@ -8,7 +8,6 @@ import {
   Center,
   HStack,
   Icon,
-  IconButton,
   Image,
   Spinner,
   Text,
@@ -18,9 +17,8 @@ import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { formatDistanceToNow, intlFormat } from "date-fns";
 import useQuery from "../hooks/useQuery";
 import { dbQuery } from "../util/db";
-import trpc from "../util/trpc";
-import { getToken } from "../util/authToken";
-import useAuth from "../hooks/useAuth";
+import { useTranslation } from "react-i18next";
+import dateFnsLocale from "../util/dateFnsLocale";
 
 export type ReadingProps = NativeStackScreenProps<
   RootStackParamList,
@@ -52,6 +50,7 @@ export default function Reading({
       ),
     [id]
   );
+  const { t, i18n } = useTranslation();
 
   if (meterData == null) {
     return (
@@ -66,13 +65,17 @@ export default function Reading({
     return (
       <Center flex={1}>
         <FocusAwareStatusBar style="dark" />
-        <Text mb={3}>The reading with id {id} was not found</Text>
+        <Text mb={3}>
+          {t("reading.notFound", "The reading with id {{id}} was not found", {
+            id,
+          })}
+        </Text>
         <Button
           variant="ghost"
           leftIcon={<Icon as={FontAwesome} name="arrow-left" />}
           onPress={() => navigation.goBack()}
         >
-          Go back
+          {t("back", "Go back")}
         </Button>
       </Center>
     );
@@ -115,7 +118,7 @@ export default function Reading({
             alignItems={"center"}
           >
             <Icon as={FontAwesome} name="tag" color="primary.400" key="1" />
-            <Text key="2">Meter ID: </Text>
+            <Text key="2">{t("reading.meterId", "Meter Id:")} </Text>
             <Text
               fontWeight={"bold"}
               color="primary.400"
@@ -131,7 +134,7 @@ export default function Reading({
             alignItems={"center"}
           >
             <Icon as={FontAwesome} name="gear" color="primary.400" key="1" />
-            <Text key="2">Done by: </Text>
+            <Text key="2">{t("reading.doneBy", "Done By:")} </Text>
             <Text
               fontWeight={"bold"}
               color="primary.400"
@@ -147,7 +150,7 @@ export default function Reading({
             alignItems={"center"}
           >
             <Icon as={FontAwesome} name="info" color="primary.400" key="1" />
-            <Text key="2">Status: </Text>
+            <Text key="2">{t("reading.status", "Status:")} </Text>
             {reading.synchedAt ? (
               <Text
                 fontWeight={"bold"}
@@ -155,9 +158,10 @@ export default function Reading({
                 fontSize={"lg"}
                 key="3"
               >
-                Synchonized{" "}
+                {t("reading.synchronized", "Synchronized:")}{" "}
                 {formatDistanceToNow(new Date(reading.synchedAt), {
                   addSuffix: true,
+                  locale: dateFnsLocale(i18n.resolvedLanguage),
                 })}
               </Text>
             ) : (
@@ -167,7 +171,7 @@ export default function Reading({
                 fontSize={"lg"}
                 key="3"
               >
-                Not synchronized
+                {t("reading.notSynchronized", "Not synchronized")}
               </Text>
             )}
             {/* For some reason RN is complaining about the missing key parameter here, don't know why */}
@@ -183,7 +187,7 @@ export default function Reading({
             }
             rightIcon={<Icon as={FontAwesome} name="arrow-right" />}
           >
-            Go to meter
+            {t("reading.goToMeter", "Go to Meter")}
           </Button>
         </Box>
       </Box>

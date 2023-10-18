@@ -3,6 +3,7 @@ import { useRef, useState } from "react";
 import { Box, Button, Center, HStack, Icon, Spinner, Text } from "native-base";
 import Camera from "../Camera";
 import { FontAwesome5 } from "@expo/vector-icons";
+import { useTranslation } from "react-i18next";
 
 export type SnapProps = {
   onSnapshot?: (picture: CameraCapturedPicture) => void;
@@ -12,6 +13,7 @@ export type SnapProps = {
 export default function Snap({ onSnapshot, onSkip }: SnapProps) {
   const [isReady, setIsReady] = useState(false);
   const [isTakingPicture, setIsTakingPicture] = useState(false);
+  const { t } = useTranslation();
 
   const cameraRef = useRef<BaseCamera>(null);
 
@@ -20,11 +22,14 @@ export default function Snap({ onSnapshot, onSkip }: SnapProps) {
       <Camera ref={cameraRef} onCameraReady={() => setIsReady(true)} />
       <Center p={5}>
         <Text textAlign="center" color="dark.400" mb={3}>
-          Point your camera to the meter and press the button to take a snapshot
+          {t(
+            "createReading.pointCamera",
+            "Point your camera to the meter and press the button to take a snapshot"
+          )}
         </Text>
         <HStack space={3} alignItems={"center"}>
           <Button colorScheme={"muted"} size="sm" onPress={() => onSkip?.()}>
-            Skip
+            {t("skip", "Skip")}
           </Button>
           <Button
             size="lg"
@@ -39,7 +44,7 @@ export default function Snap({ onSnapshot, onSkip }: SnapProps) {
               onSnapshot?.(picture);
             }}
           >
-            Take snap
+            {t("createReading.takeSnap", "Take snap")}
           </Button>
         </HStack>
       </Center>

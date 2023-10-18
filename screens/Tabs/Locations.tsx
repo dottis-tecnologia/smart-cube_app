@@ -22,6 +22,7 @@ import { FontAwesome } from "@expo/vector-icons";
 import useInfiniteQuery from "../../hooks/useInfiniteQuery";
 import { memo } from "react";
 import Animated, { FadeInLeft } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
 
 export type LocationsProps = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, "Locations">,
@@ -34,6 +35,7 @@ type DataType = { location: string; meterCount: number };
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export default function Locations({ navigation, route }: LocationsProps) {
+  const { t } = useTranslation();
   const filter = route.params?.filter || "";
   const { data, fetchNextPage, isFinished, isRefreshing, refresh } =
     useInfiniteQuery(
@@ -86,13 +88,13 @@ export default function Locations({ navigation, route }: LocationsProps) {
             >
               <Box w="full" key="1">
                 <Heading color="white" mb={3}>
-                  LOCATION
+                  {t("location.location", "Location").toUpperCase()}
                 </Heading>
               </Box>
               <Input
                 key="2"
                 variant={"filled"}
-                placeholder="Type the location..."
+                placeholder={t("location.typeLocation", "Type the location...")}
                 defaultValue={filter}
                 onSubmitEditing={(e) => {
                   navigation.setParams({ filter: e.nativeEvent.text });
@@ -108,7 +110,7 @@ export default function Locations({ navigation, route }: LocationsProps) {
               p={3}
               borderTopRadius={"lg"}
             >
-              Locations
+              {t("location.locations", "Locations")}
             </Heading>
           </>
         }
@@ -146,52 +148,55 @@ const ListItem = memo(
     location: string;
     meterCount: number;
     onPress: () => void;
-  }) => (
-    <AnimatedPressable
-      onPress={onPress}
-      mx={3}
-      mb={2}
-      entering={FadeInLeft.delay(150).randomDelay()}
-    >
-      <VStack rounded={"lg"} bg="white">
-        <HStack
-          alignItems={"center"}
-          p={5}
-          borderBottomWidth={1}
-          borderBottomColor={"light.200"}
-        >
-          <Icon as={FontAwesome} color="primary.500" name="info" mr={2} />
-          <Text fontSize="lg" fontStyle={"italic"} mr={1}>
-            Meters
-          </Text>
-          <Text
-            flexGrow={1}
-            textAlign={"right"}
-            fontWeight={"bold"}
-            color="primary.500"
-            fontSize="lg"
+  }) => {
+    const { t } = useTranslation();
+    return (
+      <AnimatedPressable
+        onPress={onPress}
+        mx={3}
+        mb={2}
+        entering={FadeInLeft.delay(150).randomDelay()}
+      >
+        <VStack rounded={"lg"} bg="white">
+          <HStack
+            alignItems={"center"}
+            p={5}
+            borderBottomWidth={1}
+            borderBottomColor={"light.200"}
           >
-            {meterCount}
-          </Text>
-        </HStack>
-        <HStack p={5} alignItems={"center"}>
-          <Icon as={FontAwesome} color="primary.500" name="building" mr={2} />
-          <Text fontSize="lg" fontStyle={"italic"} mr={1}>
-            Location
-          </Text>
-          <Text
-            flex={1}
-            flexGrow={1}
-            textAlign={"right"}
-            fontWeight={"bold"}
-            color="primary.500"
-            fontSize="lg"
-            numberOfLines={1}
-          >
-            {location}
-          </Text>
-        </HStack>
-      </VStack>
-    </AnimatedPressable>
-  )
+            <Icon as={FontAwesome} color="primary.500" name="info" mr={2} />
+            <Text fontSize="lg" fontStyle={"italic"} mr={1}>
+              {t("location.meters", "Meters")}
+            </Text>
+            <Text
+              flexGrow={1}
+              textAlign={"right"}
+              fontWeight={"bold"}
+              color="primary.500"
+              fontSize="lg"
+            >
+              {meterCount}
+            </Text>
+          </HStack>
+          <HStack p={5} alignItems={"center"}>
+            <Icon as={FontAwesome} color="primary.500" name="building" mr={2} />
+            <Text fontSize="lg" fontStyle={"italic"} mr={1}>
+              {t("location.location", "Location")}
+            </Text>
+            <Text
+              flex={1}
+              flexGrow={1}
+              textAlign={"right"}
+              fontWeight={"bold"}
+              color="primary.500"
+              fontSize="lg"
+              numberOfLines={1}
+            >
+              {location}
+            </Text>
+          </HStack>
+        </VStack>
+      </AnimatedPressable>
+    );
+  }
 );

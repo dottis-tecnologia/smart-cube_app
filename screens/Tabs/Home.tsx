@@ -30,6 +30,7 @@ import Logo from "../../assets/logo-w.svg";
 import ParallaxScroll from "../../components/ParallaxScroll";
 import { useTranslation } from "react-i18next";
 import dateFnsLocale from "../../util/dateFnsLocale";
+import ChangeLanguageButtons from "../../components/ChangeLanguageButtons";
 
 export type HomeProps = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, "Home">,
@@ -37,11 +38,6 @@ export type HomeProps = CompositeScreenProps<
 >;
 
 const AnimatedBox = Animated.createAnimatedComponent(Box);
-
-const availableLanguages = {
-  en: "En",
-  fr: "Fr",
-};
 
 const getMeters = (userId: string) =>
   dbQuery<{
@@ -95,22 +91,7 @@ export default function Home({ navigation }: HomeProps) {
             p={3}
             entering={FadeInUp}
           >
-            <Button.Group
-              colorScheme={"primary"}
-              isAttached
-              size={"sm"}
-              alignSelf={"flex-end"}
-            >
-              {Object.entries(availableLanguages).map(([key, value]) => (
-                <Button
-                  key={key}
-                  onPress={() => i18n.changeLanguage(key)}
-                  variant={i18n.resolvedLanguage == key ? "solid" : "subtle"}
-                >
-                  {value}
-                </Button>
-              ))}
-            </Button.Group>
+            <ChangeLanguageButtons />
             <Center p={3} flex={1}>
               <AspectRatio ratio={1} w="40%">
                 <Logo width={"100%"} height={"100%"} />

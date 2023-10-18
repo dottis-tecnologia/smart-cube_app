@@ -11,6 +11,7 @@ import * as FileSystem from "expo-file-system";
 import { useEffect, useState } from "react";
 import { isAfter, sub } from "date-fns";
 import useAuth from "../hooks/useAuth";
+import { useTranslation } from "react-i18next";
 
 export type CreateReadingProps = NativeStackScreenProps<
   RootStackParamList,
@@ -62,6 +63,7 @@ export default function CreateReading({
     }
   );
   const [showAlert, setShowAlert] = useState(false);
+  const { t } = useTranslation();
   useEffect(() => {
     (async () => {
       const result = await dbQuery<{ createdAt: string }>(
@@ -85,11 +87,15 @@ export default function CreateReading({
       <Modal isOpen={showAlert} onClose={() => setShowAlert(false)}>
         <Modal.Content maxWidth="400px">
           <Modal.CloseButton />
-          <Modal.Header>Be careful!</Modal.Header>
+          <Modal.Header>
+            {t("createReading.careful", "Be careful!")}
+          </Modal.Header>
           <Modal.Body>
             <Text>
-              Look's like there's another reading of this meter registered in
-              the last 24 hours, please be careful to not send redundant data
+              {t(
+                "createReading.carefulMessage",
+                "Look's like there's another reading of this meter registered in the last 24 hours, please be careful to not send redundant data"
+              )}
             </Text>
           </Modal.Body>
           <Modal.Footer>
@@ -100,7 +106,7 @@ export default function CreateReading({
                 setShowAlert(false);
               }}
             >
-              I understand
+              {t("createReading.understand", "I understand")}
             </Button>
           </Modal.Footer>
         </Modal.Content>

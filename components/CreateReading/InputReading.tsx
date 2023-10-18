@@ -12,6 +12,7 @@ import {
   Text,
 } from "native-base";
 import { useState } from "react";
+import { useTranslation } from "react-i18next";
 
 export type InputReadingProps = {
   snapshot: CameraCapturedPicture | null;
@@ -25,6 +26,7 @@ export default function InputReading({
   onReturn,
 }: InputReadingProps) {
   const [reading, setReading] = useState(0);
+  const { t } = useTranslation();
 
   return (
     <Box flex={1}>
@@ -40,12 +42,20 @@ export default function InputReading({
         />
       )}
       <Center p={3}>
-        <Text mb={3}>Please input the current reading of the meter</Text>
+        <Text mb={3}>
+          {t(
+            "createReading.pleaseInput",
+            "Please input the current reading of the meter"
+          )}
+        </Text>
         <Input
           mb={5}
           size="2xl"
           keyboardType="numeric"
-          placeholder="Enter the reading here..."
+          placeholder={t(
+            "createReading.enterReading",
+            "Enter the reading here..."
+          )}
           onChangeText={(v) => setReading(+v)}
         />
         <HStack space={3} alignItems={"center"}>
@@ -55,10 +65,10 @@ export default function InputReading({
             size="lg"
             onPress={() => onReturn?.()}
           >
-            Take another picture
+            {t("createReading.anotherPicture", "Take another picture")}
           </Button>
           <Button size="lg" onPress={() => onConfirm?.(reading)}>
-            Confirm
+            {t("confirm", "Confirm")}
           </Button>
         </HStack>
       </Center>

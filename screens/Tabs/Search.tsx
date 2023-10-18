@@ -22,6 +22,8 @@ import { FontAwesome } from "@expo/vector-icons";
 import useInfiniteQuery from "../../hooks/useInfiniteQuery";
 import { memo } from "react";
 import Animated, { FadeInLeft } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
+import { t } from "i18next";
 
 export type LocationsProps = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, "Search">,
@@ -89,13 +91,13 @@ export default function Locations({ navigation, route }: LocationsProps) {
             >
               <Box w="full" key="1">
                 <Heading color="white" mb={3}>
-                  SEARCH
+                  {t("search.search", "Search").toUpperCase()}
                 </Heading>
               </Box>
               <Input
                 key="2"
                 variant={"filled"}
-                placeholder="Type the id..."
+                placeholder={t("search.typeId", "Type the id...")}
                 defaultValue={filter}
                 onSubmitEditing={(e) => {
                   navigation.setParams({ filter: e.nativeEvent.text });
@@ -111,7 +113,7 @@ export default function Locations({ navigation, route }: LocationsProps) {
               p={3}
               borderTopRadius={"lg"}
             >
-              Meters
+              {t("search.meters", "Meters")}
             </Heading>
           </>
         }
@@ -149,52 +151,55 @@ const ListItem = memo(
     location: string;
     name: string;
     onPress: () => void;
-  }) => (
-    <AnimatedPressable
-      onPress={onPress}
-      mx={3}
-      mb={2}
-      entering={FadeInLeft.delay(150).randomDelay()}
-    >
-      <VStack rounded={"lg"} bg="white">
-        <HStack
-          alignItems={"center"}
-          p={5}
-          borderBottomWidth={1}
-          borderBottomColor={"light.200"}
-        >
-          <Icon as={FontAwesome} color="primary.500" name="info" mr={2} />
-          <Text fontSize="lg" fontStyle={"italic"} mr={1}>
-            Meter
-          </Text>
-          <Text
-            flexGrow={1}
-            textAlign={"right"}
-            fontWeight={"bold"}
-            color="primary.500"
-            fontSize="lg"
+  }) => {
+    const { t } = useTranslation();
+    return (
+      <AnimatedPressable
+        onPress={onPress}
+        mx={3}
+        mb={2}
+        entering={FadeInLeft.delay(150).randomDelay()}
+      >
+        <VStack rounded={"lg"} bg="white">
+          <HStack
+            alignItems={"center"}
+            p={5}
+            borderBottomWidth={1}
+            borderBottomColor={"light.200"}
           >
-            {name}
-          </Text>
-        </HStack>
-        <HStack p={5} alignItems={"center"}>
-          <Icon as={FontAwesome} color="primary.500" name="building" mr={2} />
-          <Text fontSize="lg" fontStyle={"italic"} mr={1}>
-            Location
-          </Text>
-          <Text
-            flex={1}
-            flexGrow={1}
-            textAlign={"right"}
-            fontWeight={"bold"}
-            color="primary.500"
-            fontSize="lg"
-            numberOfLines={1}
-          >
-            {location}
-          </Text>
-        </HStack>
-      </VStack>
-    </AnimatedPressable>
-  )
+            <Icon as={FontAwesome} color="primary.500" name="info" mr={2} />
+            <Text fontSize="lg" fontStyle={"italic"} mr={1}>
+              {t("search.meter", "Meter")}
+            </Text>
+            <Text
+              flexGrow={1}
+              textAlign={"right"}
+              fontWeight={"bold"}
+              color="primary.500"
+              fontSize="lg"
+            >
+              {name}
+            </Text>
+          </HStack>
+          <HStack p={5} alignItems={"center"}>
+            <Icon as={FontAwesome} color="primary.500" name="building" mr={2} />
+            <Text fontSize="lg" fontStyle={"italic"} mr={1}>
+              {t("search.location", "Location")}
+            </Text>
+            <Text
+              flex={1}
+              flexGrow={1}
+              textAlign={"right"}
+              fontWeight={"bold"}
+              color="primary.500"
+              fontSize="lg"
+              numberOfLines={1}
+            >
+              {location}
+            </Text>
+          </HStack>
+        </VStack>
+      </AnimatedPressable>
+    );
+  }
 );

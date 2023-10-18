@@ -19,6 +19,7 @@ import { TRPCClientError } from "@trpc/client";
 import useAuth from "../../hooks/useAuth";
 import FocusAwareStatusBar from "../../components/util/FocusAwareStatusBar";
 import { useTranslation } from "react-i18next";
+import ChangeLanguageButtons from "../../components/ChangeLanguageButtons";
 
 export type LoginProps = NativeStackScreenProps<RootStackParamList, "Login">;
 
@@ -65,6 +66,10 @@ export default function Login({}: LoginProps) {
   return (
     <Box flex={1} safeArea>
       <FocusAwareStatusBar style="dark" />
+
+      <Box position={"absolute"} right={4} bottom={4}>
+        <ChangeLanguageButtons />
+      </Box>
       <Center flex={1} alignItems={"stretch"} w="80%" mx="auto">
         <Heading fontWeight={"normal"} mb={5} fontSize={"4xl"}>
           {t("login.login", "Log In")}

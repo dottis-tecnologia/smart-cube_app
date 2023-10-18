@@ -10,6 +10,7 @@ import Login from "./NoAuth/Login";
 import useAuth from "../hooks/useAuth";
 import { Center, Spinner } from "native-base";
 import ListMeters from "./ListMeters";
+import { useTranslation } from "react-i18next";
 
 export type RootProps = {};
 
@@ -26,6 +27,7 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function Root({}: RootProps) {
   const { userData, isLoading } = useAuth();
+  const { t } = useTranslation();
 
   if (isLoading) {
     return (
@@ -53,13 +55,13 @@ export default function Root({}: RootProps) {
           <Stack.Screen
             name="ListMeters"
             component={ListMeters}
-            options={{ title: "Meters" }}
+            options={{ title: t("titles.meters", "Meters") }}
           />
           <Stack.Screen name="Reading" component={Reading} />
           <Stack.Screen
             name="CreateReading"
             component={CreateReading}
-            options={{ title: "Reading" }}
+            options={{ title: t("titles.reading", "Reading") }}
           />
         </>
       ) : (

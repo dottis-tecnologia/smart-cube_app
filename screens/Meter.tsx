@@ -23,6 +23,8 @@ import { useIsFocused } from "@react-navigation/native";
 import useQuery from "../hooks/useQuery";
 import { dbQuery } from "../util/db";
 import ParallaxScroll from "../components/ParallaxScroll";
+import { useTranslation } from "react-i18next";
+import dateFnsLocale from "../util/dateFnsLocale";
 
 export type MeterProps = NativeStackScreenProps<RootStackParamList, "Meter">;
 
@@ -31,6 +33,7 @@ const AnimatedHStack = Animated.createAnimatedComponent(HStack);
 
 export default function Meter({ route: { params }, navigation }: MeterProps) {
   const { id } = params;
+  const { t, i18n } = useTranslation();
   const { data: meterData } = useQuery(
     () =>
       dbQuery<{
@@ -76,13 +79,17 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
     return (
       <Center flex={1}>
         <FocusAwareStatusBar style="dark" />
-        <Text mb={3}>The meter with id {id} was not found</Text>
+        <Text mb={3}>
+          {t("meter.notFound", "The meter with id {{id}} was not found", {
+            id,
+          })}
+        </Text>
         <Button
           variant="ghost"
           leftIcon={<Icon as={FontAwesome} name="arrow-left" />}
           onPress={() => navigation.goBack()}
         >
-          Go back
+          {t("back", "Go back")}
         </Button>
       </Center>
     );
@@ -120,14 +127,26 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
       <FocusAwareStatusBar style="dark" />
 
       <Box m={3}>
-        <Label label="Meter ID:" iconName="tag" text={meter.name} />
-        <Label label="Location:" iconName="map-pin" text={meter.location} />
-        <Label label="Type:" iconName="info" text={meter.type.toUpperCase()} />
+        <Label
+          label={t("meter.meterId", "Meter ID:")}
+          iconName="tag"
+          text={meter.name}
+        />
+        <Label
+          label={t("meter.location", "Location:")}
+          iconName="map-pin"
+          text={meter.location}
+        />
+        <Label
+          label={t("meter.type", "Type:")}
+          iconName="info"
+          text={meter.type.toUpperCase()}
+        />
       </Box>
       {meter.notes && (
         <>
           <Heading m={3} fontSize={"md"}>
-            Notes
+            {t("meter.notes", "Notes")}
           </Heading>
           <AnimatedBox
             entering={FadeInLeft}
@@ -153,7 +172,7 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
         />
       )}
       <Heading m={3} fontSize={"md"}>
-        Latest readings
+        {t("meter.latestReadings", "Latest readings")}
       </Heading>
       {readings?.rows.map((item) => (
         <Pressable
@@ -179,6 +198,7 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
                   <Text color="white">
                     {formatDistanceToNow(new Date(item.createdAt), {
                       addSuffix: true,
+                      locale: dateFnsLocale(i18n.resolvedLanguage),
                     })}
                   </Text>
                 </VStack>

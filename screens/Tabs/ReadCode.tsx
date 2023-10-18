@@ -20,6 +20,7 @@ import { RootStackParamList } from "../Root";
 import { FontAwesome } from "@expo/vector-icons";
 import { TextInput } from "react-native";
 import Animated, { FadeInLeft } from "react-native-reanimated";
+import { useTranslation } from "react-i18next";
 
 export type ReadCodeProps = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, "ReadCode">,
@@ -31,6 +32,7 @@ const AnimatedText = Animated.createAnimatedComponent(Text);
 const AnimatedBox = Animated.createAnimatedComponent(Box);
 
 export default function ReadCode({ navigation }: ReadCodeProps) {
+  const { t } = useTranslation();
   const [isFocused, setFocus] = useState(false);
   const [id, setId] = useState("");
   const inputRef = useRef<TextInput>(null);
@@ -47,13 +49,16 @@ export default function ReadCode({ navigation }: ReadCodeProps) {
       ></Scanner>
       <VStack space={2} p={5} alignItems={"center"} justifyContent={"center"}>
         <AnimatedText entering={FadeInLeft.delay(100)} color={"dark.400"}>
-          Point your camera to the QR Code attached to the meter
+          {t(
+            "read.pointCamera",
+            "Point your camera to the QR Code attached to the meter"
+          )}
         </AnimatedText>
         <AnimatedText entering={FadeInLeft.delay(200)} color={"dark.400"}>
-          OR
+          {t("read.or", "Or").toUpperCase()}
         </AnimatedText>
         <AnimatedText entering={FadeInLeft.delay(300)} color={"dark.400"}>
-          Enter the ID manually below
+          {t("read.enterId", "Enter the ID manually below")}
         </AnimatedText>
         <HStack>
           {isFocused && (
@@ -70,7 +75,7 @@ export default function ReadCode({ navigation }: ReadCodeProps) {
             <Input
               size="lg"
               variant={"filled"}
-              placeholder="Meter ID..."
+              placeholder={t("read.meterId", "Meter ID...")}
               onFocus={() => setFocus(true)}
               onBlur={() => setFocus(false)}
               ref={inputRef}
@@ -89,7 +94,7 @@ export default function ReadCode({ navigation }: ReadCodeProps) {
               navigation.push("Meter", { id });
             }}
           >
-            Confirm
+            {t("confirm", "Confirm")}
           </AnimatedButton>
         )}
       </VStack>

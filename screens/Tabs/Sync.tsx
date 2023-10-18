@@ -3,14 +3,10 @@ import {
   Box,
   Button,
   Center,
-  FlatList,
   HStack,
   Heading,
   Icon,
-  IconButton,
   Modal,
-  Popover,
-  ScrollView,
   Text,
   VStack,
 } from "native-base";
@@ -26,6 +22,8 @@ import { syncData } from "../../util/sync/sync";
 import useAuth from "../../hooks/useAuth";
 import { getToken } from "../../util/authToken";
 import ParallaxScroll from "../../components/ParallaxScroll";
+import { useTranslation } from "react-i18next";
+import dateFnsLocale from "../../util/dateFnsLocale";
 
 export type SyncProps = {};
 
@@ -46,6 +44,7 @@ const getReadings = () =>
 
 export default function Sync({}: SyncProps) {
   const { refreshToken } = useAuth();
+  const { t, i18n } = useTranslation();
   const { data: readings, refetch: refetchReadings } = useQuery(
     getReadings,
     []
@@ -90,14 +89,15 @@ export default function Sync({}: SyncProps) {
               alignItems={"center"}
             >
               <Box key="1">
-                <Heading color="white">SYNC</Heading>
+                <Heading color="white">{t("sync.sync", "Sync")}</Heading>
                 <Text color="white" opacity={0.7}>
-                  Last synchronization:
+                  {t("sync.lastSync", "Last synchronization:")}
                 </Text>
                 <Text color="white" opacity={0.8}>
                   {lastSync
                     ? formatDistanceToNow(lastSync, {
                         addSuffix: true,
+                        locale: dateFnsLocale(i18n.resolvedLanguage),
                       })
                     : "never"}
                 </Text>
@@ -110,7 +110,7 @@ export default function Sync({}: SyncProps) {
                 onPress={() => mutate()}
                 isLoading={isMutating}
               >
-                Sync
+                {t("sync.sync", "Sync")}
               </Button>
             </HStack>
           </Center>
@@ -119,7 +119,7 @@ export default function Sync({}: SyncProps) {
       >
         <Box p={3} borderTopRadius={"lg"} mt={-3} bg="light.100">
           <Heading mb={3} fontSize={"md"} key="2">
-            Latest readings
+            {t("sync.unsentReadings", "Unsent readings")}
           </Heading>
 
           {readings?.rows.map((item) => (
@@ -150,6 +150,8 @@ function ReadingItem({
     unit: string;
   };
 }) {
+  const { i18n } = useTranslation();
+
   return (
     <AnimatedHStack
       key={item.id}
@@ -169,6 +171,7 @@ function ReadingItem({
         <Text color="white" key="2">
           {formatDistanceToNow(new Date(item.createdAt), {
             addSuffix: true,
+            locale: dateFnsLocale(i18n.resolvedLanguage),
           })}
         </Text>
       </VStack>
@@ -192,6 +195,7 @@ function DeleteDBButton({ onSuccess }: DeleteDBButtonProps) {
       },
     }
   );
+  const { t } = useTranslation();
 
   return (
     <>
@@ -201,16 +205,19 @@ function DeleteDBButton({ onSuccess }: DeleteDBButtonProps) {
         isLoading={isDeletingDb}
         onPress={() => setIsOpen(true)}
       >
-        Delete Local Data
+        {t("sync.deleteLocal", "Delete local data")}
       </Button>
       <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} safeArea>
         <Modal.Content accessibilityLabel="Delete Database" m={3}>
           <Modal.CloseButton />
-          <Modal.Header>Delete Customer</Modal.Header>
+          <Modal.Header>
+            {t("sync.deleteDatabaseTitle", "Delete Database")}
+          </Modal.Header>
           <Modal.Body>
-            This action will delete the local database and all the data stored
-            in this device, any unsynchronized data will be lost, be careful
-            when using this option
+            {t(
+              "sync.deleteDatabaseBody",
+              "This action will delete the local database and all the data stored in this device, any unsynchronized data will be lost, be careful when using this option"
+            )}
           </Modal.Body>
           <Modal.Footer justifyContent="flex-end">
             <Button.Group space={2}>
@@ -219,7 +226,7 @@ function DeleteDBButton({ onSuccess }: DeleteDBButtonProps) {
                 variant="ghost"
                 onPress={() => setIsOpen(false)}
               >
-                Cancel
+                {t("cancel", "Cancel")}
               </Button>
               <Button
                 colorScheme="danger"
@@ -228,7 +235,7 @@ function DeleteDBButton({ onSuccess }: DeleteDBButtonProps) {
                   setIsOpen(false);
                 }}
               >
-                Delete
+                {t("delete", "Delete")}
               </Button>
             </Button.Group>
           </Modal.Footer>
