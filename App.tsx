@@ -10,11 +10,16 @@ import { createTables } from "./util/db";
 import * as SplashScreen from "expo-splash-screen";
 import * as Font from "expo-font";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
+import { StatusBar, StatusBarProps } from "expo-status-bar";
+import { StatusBarContext } from "./hooks/useStatusBar";
 
 SplashScreen.preventAutoHideAsync();
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
+  const [statusBarProps, setStatusBarProps] = useState<StatusBarProps>({
+    style: "dark",
+  });
 
   useEffect(() => {
     async function prepare() {
@@ -46,13 +51,22 @@ export default function App() {
 
   return (
     <>
-      <NativeBaseProvider theme={theme} config={themeConfig}>
-        <NavigationContainer onReady={onReady}>
-          <AuthWrapper>
-            <Root />
-          </AuthWrapper>
-        </NavigationContainer>
-      </NativeBaseProvider>
+      <StatusBar {...statusBarProps} />
+      <StatusBarContext.Provider
+        value={{
+          setProps(props) {
+            setStatusBarProps(props);
+          },
+        }}
+      >
+        <NativeBaseProvider theme={theme} config={themeConfig}>
+          <NavigationContainer onReady={onReady}>
+            <AuthWrapper>
+              <Root />
+            </AuthWrapper>
+          </NavigationContainer>
+        </NativeBaseProvider>
+      </StatusBarContext.Provider>
     </>
   );
 }

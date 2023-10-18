@@ -1,6 +1,5 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "./Root";
-import FocusAwareStatusBar from "../components/util/FocusAwareStatusBar";
 import {
   AspectRatio,
   Box,
@@ -25,6 +24,7 @@ import { dbQuery } from "../util/db";
 import ParallaxScroll from "../components/ParallaxScroll";
 import { useTranslation } from "react-i18next";
 import dateFnsLocale from "../util/dateFnsLocale";
+import useStatusBar from "../hooks/useStatusBar";
 
 export type MeterProps = NativeStackScreenProps<RootStackParamList, "Meter">;
 
@@ -63,13 +63,13 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
       ),
     [id]
   );
+  useStatusBar({ style: "dark" });
 
   const isFocused = useIsFocused();
 
   if (meterData == null) {
     return (
       <Center flex={1}>
-        <FocusAwareStatusBar style="dark" />
         <Spinner />
       </Center>
     );
@@ -78,7 +78,6 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
   if (meterData.rows.length === 0) {
     return (
       <Center flex={1}>
-        <FocusAwareStatusBar style="dark" />
         <Text mb={3}>
           {t("meter.notFound", "The meter with id {{id}} was not found", {
             id,
@@ -124,8 +123,6 @@ export default function Meter({ route: { params }, navigation }: MeterProps) {
         </AspectRatio>
       }
     >
-      <FocusAwareStatusBar style="dark" />
-
       <Box m={3}>
         <Label
           label={t("meter.meterId", "Meter ID:")}

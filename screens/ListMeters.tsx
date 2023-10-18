@@ -1,6 +1,5 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "./Root";
-import FocusAwareStatusBar from "../components/util/FocusAwareStatusBar";
 import {
   Box,
   Center,
@@ -20,6 +19,7 @@ import useInfiniteQuery from "../hooks/useInfiniteQuery";
 import { memo } from "react";
 import { useTranslation } from "react-i18next";
 import dateFnsLocale from "../util/dateFnsLocale";
+import useStatusBar from "../hooks/useStatusBar";
 
 export type ListMetersProps = NativeStackScreenProps<
   RootStackParamList,
@@ -42,6 +42,7 @@ export default function ListMeters({
 }: ListMetersProps) {
   const { location } = params;
   const { t } = useTranslation();
+  useStatusBar({ style: "dark" });
 
   const { data, fetchNextPage, isFinished, isRefreshing, refresh } =
     useInfiniteQuery(
@@ -102,7 +103,6 @@ export default function ListMeters({
 
   return (
     <Box flex={1} bg="light.100">
-      <FocusAwareStatusBar style="dark" />
       <FlatList
         ListHeaderComponent={
           <>

@@ -14,13 +14,13 @@ import {
 import { CompositeScreenProps } from "@react-navigation/native";
 import { TabParamList } from "./Tabs";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
-import FocusAwareStatusBar from "../../components/util/FocusAwareStatusBar";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../Root";
 import { FontAwesome } from "@expo/vector-icons";
 import { TextInput } from "react-native";
 import Animated, { FadeInLeft } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
+import useStatusBar from "../../hooks/useStatusBar";
 
 export type ReadCodeProps = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, "ReadCode">,
@@ -32,6 +32,7 @@ const AnimatedText = Animated.createAnimatedComponent(Text);
 const AnimatedBox = Animated.createAnimatedComponent(Box);
 
 export default function ReadCode({ navigation }: ReadCodeProps) {
+  useStatusBar({ style: "dark" });
   const { t } = useTranslation();
   const [isFocused, setFocus] = useState(false);
   const [id, setId] = useState("");
@@ -39,7 +40,6 @@ export default function ReadCode({ navigation }: ReadCodeProps) {
 
   return (
     <Box flex={1}>
-      <FocusAwareStatusBar style="dark" />
       <Scanner
         onBarCodeScanned={(e) => {
           if (e.data == null) return;

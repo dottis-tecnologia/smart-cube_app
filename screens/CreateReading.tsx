@@ -1,6 +1,5 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "./Root";
-import FocusAwareStatusBar from "../components/util/FocusAwareStatusBar";
 import NewReading from "../components/CreateReading/NewReading";
 import { dbQuery } from "../util/db";
 import { randomUUID } from "expo-crypto";
@@ -12,6 +11,7 @@ import { useEffect, useState } from "react";
 import { isAfter, sub } from "date-fns";
 import useAuth from "../hooks/useAuth";
 import { useTranslation } from "react-i18next";
+import useStatusBar from "../hooks/useStatusBar";
 
 export type CreateReadingProps = NativeStackScreenProps<
   RootStackParamList,
@@ -22,6 +22,7 @@ export default function CreateReading({
   navigation,
   route: { params },
 }: CreateReadingProps) {
+  useStatusBar({ style: "dark" });
   const { meterId } = params;
   const { userData } = useAuth();
   const { isMutating, mutate } = useMutation(
@@ -82,8 +83,6 @@ export default function CreateReading({
 
   return (
     <>
-      <FocusAwareStatusBar style="dark" />
-
       <Modal isOpen={showAlert} onClose={() => setShowAlert(false)}>
         <Modal.Content maxWidth="400px">
           <Modal.CloseButton />

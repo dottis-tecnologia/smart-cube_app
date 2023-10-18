@@ -16,7 +16,6 @@ import { TabParamList } from "./Tabs";
 import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
 import { formatDistanceToNow, subDays } from "date-fns";
 import { FontAwesome } from "@expo/vector-icons";
-import FocusAwareStatusBar from "../../components/util/FocusAwareStatusBar";
 import Animated, {
   FadeInLeft,
   FadeInUp,
@@ -34,6 +33,7 @@ import { useTranslation } from "react-i18next";
 import dateFnsLocale from "../../util/dateFnsLocale";
 import ChangeLanguageButtons from "../../components/ChangeLanguageButtons";
 import { apiUrl } from "../../config";
+import useStatusBar from "../../hooks/useStatusBar";
 
 export type HomeProps = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, "Home">,
@@ -62,6 +62,7 @@ const getMeters = (userId: string) =>
   );
 
 export default function Home({ navigation }: HomeProps) {
+  useStatusBar({ style: "light" });
   const auth = useAuth();
   const { data: readings } = useQuery(
     () => auth.userData && getMeters(auth.userData.id),
@@ -78,8 +79,6 @@ export default function Home({ navigation }: HomeProps) {
 
   return (
     <Box flex={1}>
-      <FocusAwareStatusBar style="light" />
-
       <ParallaxScroll
         header={
           <AnimatedBox

@@ -17,10 +17,10 @@ import { Controller, SubmitHandler, useForm } from "react-hook-form";
 import { FontAwesome } from "@expo/vector-icons";
 import { TRPCClientError } from "@trpc/client";
 import useAuth from "../../hooks/useAuth";
-import FocusAwareStatusBar from "../../components/util/FocusAwareStatusBar";
 import { useTranslation } from "react-i18next";
 import ChangeLanguageButtons from "../../components/ChangeLanguageButtons";
 import PasswordField from "../../components/util/PasswordField";
+import useStatusBar from "../../hooks/useStatusBar";
 
 export type LoginProps = NativeStackScreenProps<RootStackParamList, "Login">;
 
@@ -29,6 +29,7 @@ type FormValues = {
   password: string;
 };
 export default function Login({}: LoginProps) {
+  useStatusBar({ style: "dark" });
   const {
     control,
     handleSubmit,
@@ -67,8 +68,6 @@ export default function Login({}: LoginProps) {
 
   return (
     <Box flex={1} safeArea>
-      <FocusAwareStatusBar style="dark" />
-
       <Box position={"absolute"} right={4} bottom={4}>
         <ChangeLanguageButtons />
       </Box>

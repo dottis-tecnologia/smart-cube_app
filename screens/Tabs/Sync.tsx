@@ -10,7 +10,6 @@ import {
   Text,
   VStack,
 } from "native-base";
-import FocusAwareStatusBar from "../../components/util/FocusAwareStatusBar";
 import { FontAwesome } from "@expo/vector-icons";
 import useMutation from "../../hooks/useMutation";
 import useQuery from "../../hooks/useQuery";
@@ -24,6 +23,7 @@ import { getToken } from "../../util/authToken";
 import ParallaxScroll from "../../components/ParallaxScroll";
 import { useTranslation } from "react-i18next";
 import dateFnsLocale from "../../util/dateFnsLocale";
+import useStatusBar from "../../hooks/useStatusBar";
 
 export type SyncProps = {};
 
@@ -43,6 +43,7 @@ const getReadings = () =>
   );
 
 export default function Sync({}: SyncProps) {
+  useStatusBar({ style: "dark" });
   const { refreshToken } = useAuth();
   const { t, i18n } = useTranslation();
   const { data: readings, refetch: refetchReadings } = useQuery(
@@ -68,7 +69,6 @@ export default function Sync({}: SyncProps) {
 
   return (
     <Box flex={1} bg="light.100">
-      <FocusAwareStatusBar style="dark" />
       <ParallaxScroll
         header={
           <Center

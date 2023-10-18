@@ -3,8 +3,6 @@ import Tabs from "./Tabs/Tabs";
 import HeaderBar from "../components/shared/HeaderBar";
 import Meter from "./Meter";
 import CreateReading from "./CreateReading";
-import { useEffect } from "react";
-import { deleteDatabase, getDatabase } from "../util/db";
 import Reading from "./Reading";
 import Login from "./NoAuth/Login";
 import useAuth from "../hooks/useAuth";

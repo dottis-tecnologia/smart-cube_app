@@ -1,6 +1,5 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "./Root";
-import FocusAwareStatusBar from "../components/util/FocusAwareStatusBar";
 import {
   AspectRatio,
   Box,
@@ -19,6 +18,7 @@ import useQuery from "../hooks/useQuery";
 import { dbQuery } from "../util/db";
 import { useTranslation } from "react-i18next";
 import dateFnsLocale from "../util/dateFnsLocale";
+import useStatusBar from "../hooks/useStatusBar";
 
 export type ReadingProps = NativeStackScreenProps<
   RootStackParamList,
@@ -32,6 +32,7 @@ export default function Reading({
   navigation,
 }: ReadingProps) {
   const { id } = params;
+  useStatusBar({ style: "dark" });
   const { data: meterData } = useQuery(
     () =>
       dbQuery<{
@@ -55,7 +56,6 @@ export default function Reading({
   if (meterData == null) {
     return (
       <Center flex={1}>
-        <FocusAwareStatusBar style="dark" />
         <Spinner />
       </Center>
     );
@@ -64,7 +64,6 @@ export default function Reading({
   if (meterData.rows.length === 0) {
     return (
       <Center flex={1}>
-        <FocusAwareStatusBar style="dark" />
         <Text mb={3}>
           {t("reading.notFound", "The reading with id {{id}} was not found", {
             id,
@@ -87,7 +86,6 @@ export default function Reading({
 
   return (
     <>
-      <FocusAwareStatusBar style="dark" />
       <Box flex={1}>
         <AspectRatio ratio={1}>
           {imagePath ? (

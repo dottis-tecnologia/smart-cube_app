@@ -3,7 +3,6 @@ import { CompositeScreenProps } from "@react-navigation/native";
 import { TabParamList } from "./Tabs";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../Root";
-import FocusAwareStatusBar from "../../components/util/FocusAwareStatusBar";
 import {
   Box,
   Center,
@@ -24,6 +23,7 @@ import { memo } from "react";
 import Animated, { FadeInLeft } from "react-native-reanimated";
 import { useTranslation } from "react-i18next";
 import { t } from "i18next";
+import useStatusBar from "../../hooks/useStatusBar";
 
 export type LocationsProps = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, "Search">,
@@ -40,6 +40,7 @@ type DataType = {
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 export default function Locations({ navigation, route }: LocationsProps) {
+  useStatusBar({ style: "dark" });
   const filter = route.params?.filter || "";
   const { data, fetchNextPage, isFinished, isRefreshing, refresh } =
     useInfiniteQuery(
@@ -73,7 +74,6 @@ export default function Locations({ navigation, route }: LocationsProps) {
 
   return (
     <Box bg="light.100" flex={1}>
-      <FocusAwareStatusBar style="dark" />
       <FlatList
         ListHeaderComponent={
           <>
