@@ -1,0 +1,96 @@
+{
+  "createReading": {
+    "careful": "Sois prudent!",
+    "carefulMessage": "Il semblerait qu'un autre relevé de ce compteur ait été enregistré au cours des dernières 24 heures. Veuillez faire attention à ne pas envoyer de données redondantes.",
+    "understand": "Je comprends",
+    "doYouConfirm": "Confirmez-vous ces valeurs ?",
+    "pleaseInput": "Veuillez saisir la lecture actuelle du compteur",
+    "enterReading": "Entrez la lecture ici...",
+    "anotherPicture": "Prends une autre photo",
+    "pointCamera": "Pointez votre appareil photo vers le compteur et appuyez sur le bouton pour prendre un instantané",
+    "takeSnap": "Prenez un cliché"
+  },
+  "titles": {
+    "meters": "Mètres",
+    "reading": "En lisant"
+  },
+  "back": "Retourner",
+  "confirm": "Confirmer",
+  "skip": "Sauter",
+  "listMeters": {
+    "location": "Emplacement",
+    "readingsToday": "Lectures aujourd'hui : {{num}}/{{den}}",
+    "meters": "Mètres",
+    "lastReading": "Dernière lecture {{date}}"
+  },
+  "meter": {
+    "notFound": "Le compteur avec identifiant {{id}} n'a pas été trouvé",
+    "meterId": "ID du compteur :",
+    "location": "Emplacement:",
+    "type": "Taper:",
+    "notes": "Remarques",
+    "latestReadings": "Dernières lectures"
+  },
+  "error": "Quelque chose s'est mal passé",
+  "login": {
+    "login": "Se connecter",
+    "enterCredentials": "Entrez vos identifiants",
+    "internetAccess": "Vous avez besoin d'un accès Internet pour vous connecter pour la première fois",
+    "connect": "CONNECTER"
+  },
+  "email": "E-mail",
+  "error_notFound": "Pas trouvé",
+  "password": "Mot de passe",
+  "error_incorrect": "Incorrect",
+  "error_couldNotConnect": "N'a pas pu se connecter",
+  "reading": {
+    "notFound": "La lecture avec identifiant {{id}} n'a pas été trouvé",
+    "meterId": "Identifiant du compteur :",
+    "doneBy": "Fait par:",
+    "status": "Statut:",
+    "synchronized": "Synchronisé :",
+    "notSynchronized": "Non synchronisé",
+    "goToMeter": "Aller au compteur"
+  },
+  "welcome": "Accueillir",
+  "home": {
+    "readingsToday": "Lectures aujourd'hui",
+    "latestReadings": "Dernières lectures"
+  },
+  "location": {
+    "location": "Emplacement",
+    "typeLocation": "Tapez l'emplacement...",
+    "locations": "Emplacements",
+    "meters": "Mètres"
+  },
+  "read": {
+    "pointCamera": "Pointez votre appareil photo vers le QR Code attaché au compteur",
+    "or": "Ou",
+    "enterId": "Entrez l'ID manuellement ci-dessous",
+    "meterId": "ID du compteur..."
+  },
+  "search": {
+    "search": "Recherche",
+    "typeId": "Tapez l'identifiant...",
+    "meters": "Mètres",
+    "meter": "Mètre",
+    "location": "Emplacement"
+  },
+  "sync": {
+    "sync": "Synch",
+    "lastSync": "Dernière synchronisation :",
+    "unsentReadings": "Lectures non envoyées",
+    "deleteLocal": "Supprimer les données locales",
+    "deleteDatabaseTitle": "Supprimer la base de données",
+    "deleteDatabaseBody": "Cette action supprimera la base de données locale et toutes les données stockées dans cet appareil, toutes les données non synchronisées seront perdues, soyez prudent lorsque vous utilisez cette option"
+  },
+  "cancel": "Annuler",
+  "delete": "Supprimer",
+  "tabs": {
+    "home": "Maison",
+    "locations": "Position",
+    "read": "Lire",
+    "search": "Recherche",
+    "sync": "Synch"
+  }
+}

@@ -49,6 +49,7 @@ export default function Login({}: LoginProps) {
       if (e instanceof TRPCClientError) {
         const message = e.message;
 
+        // t('error', 'Something went wrong')
         if (message === "Invalid email") {
           setError("email", { type: "notFound" });
         } else if (message === "Incorrect password") {
@@ -109,7 +110,7 @@ export default function Login({}: LoginProps) {
                     leftIcon={<Icon as={FontAwesome} name="info" size="xs" />}
                   >
                     {
-                      // i18next-extract-mark-context-next-line ["", "notFound"]
+                      // t('error_notFound', 'Not found')
                       t("error", "Something went wrong", {
                         context: errors.email.type,
                       })
@@ -149,7 +150,7 @@ export default function Login({}: LoginProps) {
                     leftIcon={<Icon as={FontAwesome} name="info" size="xs" />}
                   >
                     {
-                      // i18next-extract-mark-context-next-line ["", "incorrect"]
+                      // t('error_incorrect', 'Incorrect')
                       t("error", "Something went wrong", {
                         context: errors.password.type,
                       })
@@ -163,7 +164,7 @@ export default function Login({}: LoginProps) {
           {errors.root && (
             <Text color="danger.500">
               {
-                // i18next-extract-mark-context-next-line ["", "couldNotConnect"]
+                // t('error_couldNotConnect', 'Could not connect')
                 t("error", "Something went wrong", {
                   context: errors.root.type,
                 })

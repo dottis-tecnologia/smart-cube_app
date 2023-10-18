@@ -1,0 +1,96 @@
+{
+  "createReading": {
+    "careful": "Be careful!",
+    "carefulMessage": "Look's like there's another reading of this meter registered in the last 24 hours, please be careful to not send redundant data",
+    "understand": "I understand",
+    "doYouConfirm": "Do you confirm these values?",
+    "pleaseInput": "Please input the current reading of the meter",
+    "enterReading": "Enter the reading here...",
+    "anotherPicture": "Take another picture",
+    "pointCamera": "Point your camera to the meter and press the button to take a snapshot",
+    "takeSnap": "Take snap"
+  },
+  "titles": {
+    "meters": "Meters",
+    "reading": "Reading"
+  },
+  "back": "Go back",
+  "confirm": "Confirm",
+  "skip": "Skip",
+  "listMeters": {
+    "location": "Location",
+    "readingsToday": "Readings today: {{num}}/{{den}}",
+    "meters": "Meters",
+    "lastReading": "Last reading {{date}}"
+  },
+  "meter": {
+    "notFound": "The meter with id {{id}} was not found",
+    "meterId": "Meter ID:",
+    "location": "Location:",
+    "type": "Type:",
+    "notes": "Notes",
+    "latestReadings": "Latest readings"
+  },
+  "error": "Something went wrong",
+  "login": {
+    "login": "Log In",
+    "enterCredentials": "Enter your credentials",
+    "internetAccess": "You need internet access to login for the first time",
+    "connect": "CONNECT"
+  },
+  "email": "Email",
+  "error_notFound": "Not found",
+  "password": "Password",
+  "error_incorrect": "Incorrect",
+  "error_couldNotConnect": "Could not connect",
+  "reading": {
+    "notFound": "The reading with id {{id}} was not found",
+    "meterId": "Meter Id:",
+    "doneBy": "Done By:",
+    "status": "Status:",
+    "synchronized": "Synchronized:",
+    "notSynchronized": "Not synchronized",
+    "goToMeter": "Go to Meter"
+  },
+  "welcome": "Welcome",
+  "home": {
+    "readingsToday": "Readings today",
+    "latestReadings": "Latest Readings"
+  },
+  "location": {
+    "location": "Location",
+    "typeLocation": "Type the location...",
+    "locations": "Locations",
+    "meters": "Meters"
+  },
+  "read": {
+    "pointCamera": "Point your camera to the QR Code attached to the meter",
+    "or": "Or",
+    "enterId": "Enter the ID manually below",
+    "meterId": "Meter ID..."
+  },
+  "search": {
+    "search": "Search",
+    "typeId": "Type the id...",
+    "meters": "Meters",
+    "meter": "Meter",
+    "location": "Location"
+  },
+  "sync": {
+    "sync": "Sync",
+    "lastSync": "Last synchronization:",
+    "unsentReadings": "Unsent readings",
+    "deleteLocal": "Delete local data",
+    "deleteDatabaseTitle": "Delete Database",
+    "deleteDatabaseBody": "This action will delete the local database and all the data stored in this device, any unsynchronized data will be lost, be careful when using this option"
+  },
+  "cancel": "Cancel",
+  "delete": "Delete",
+  "tabs": {
+    "home": "Home",
+    "locations": "Locations",
+    "read": "Read",
+    "search": "Search",
+    "sync": "Sync"
+  }
+}

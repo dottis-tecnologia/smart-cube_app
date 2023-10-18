@@ -144,7 +144,7 @@ function ReadingItem({
   item: {
     id: string;
     value: number;
-    meterId: string;
+    meterName: string;
     createdAt: string;
     imagePath: string;
     unit: string;
@@ -166,7 +166,7 @@ function ReadingItem({
     >
       <VStack flex={1}>
         <Text color="white" key="1">
-          {item.meterId}
+          {item.meterName}
         </Text>
         <Text color="white" key="2">
           {formatDistanceToNow(new Date(item.createdAt), {
