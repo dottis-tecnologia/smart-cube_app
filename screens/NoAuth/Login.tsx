@@ -20,6 +20,7 @@ import useAuth from "../../hooks/useAuth";
 import FocusAwareStatusBar from "../../components/util/FocusAwareStatusBar";
 import { useTranslation } from "react-i18next";
 import ChangeLanguageButtons from "../../components/ChangeLanguageButtons";
+import PasswordField from "../../components/util/PasswordField";
 
 export type LoginProps = NativeStackScreenProps<RootStackParamList, "Login">;
 
@@ -133,7 +134,7 @@ export default function Login({}: LoginProps) {
                 isInvalid={!!errors.password}
                 mb={3}
               >
-                <Input
+                <PasswordField
                   size="xl"
                   p={3}
                   variant={"filled"}
@@ -141,7 +142,6 @@ export default function Login({}: LoginProps) {
                   placeholder={t("password", "Password")}
                   onBlur={onBlur}
                   onChangeText={onChange}
-                  secureTextEntry
                   value={value}
                 />
                 {errors.password && (
