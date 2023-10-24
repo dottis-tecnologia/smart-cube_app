@@ -93,5 +93,6 @@
     "read": "Lire",
     "search": "Recherche",
     "sync": "Synch"
-  }
+  },
+  "error_required": "Est requis"
 }

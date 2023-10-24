@@ -93,5 +93,6 @@
     "read": "Read",
     "search": "Search",
     "sync": "Sync"
-  }
+  },
+  "error_required": "Is required"
 }

@@ -24,6 +24,9 @@ import useStatusBar from "../../hooks/useStatusBar";
 
 export type LoginProps = NativeStackScreenProps<RootStackParamList, "Login">;
 
+// t('error', 'Something went wrong')
+// t('error_required', 'Is required')
+
 type FormValues = {
   email: string;
   password: string;
@@ -51,7 +54,6 @@ export default function Login({}: LoginProps) {
       if (e instanceof TRPCClientError) {
         const message = e.message;
 
-        // t('error', 'Something went wrong')
         if (message === "Invalid email") {
           setError("email", { type: "notFound" });
         } else if (message === "Incorrect password") {
@@ -60,6 +62,7 @@ export default function Login({}: LoginProps) {
           setError("root", { type: "couldNotConnect" });
         }
 
+        console.log(e);
         return;
       }
       throw e;
