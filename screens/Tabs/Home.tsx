@@ -34,6 +34,7 @@ import dateFnsLocale from "../../util/dateFnsLocale";
 import ChangeLanguageButtons from "../../components/ChangeLanguageButtons";
 import { apiUrl } from "../../config";
 import useStatusBar from "../../hooks/useStatusBar";
+import { nativeApplicationVersion } from "expo-application";
 
 export type HomeProps = CompositeScreenProps<
   BottomTabScreenProps<TabParamList, "Home">,
@@ -91,6 +92,7 @@ export default function Home({ navigation }: HomeProps) {
               },
             }}
             p={3}
+            pb={7}
             entering={FadeInUp}
           >
             <ChangeLanguageButtons />
@@ -103,10 +105,14 @@ export default function Home({ navigation }: HomeProps) {
                 <Badge colorScheme={"yellow"}>STAGING</Badge>
               ) : null}
             </Center>
-            <HStack alignItems={"center"} justifyContent={"space-between"}>
+            <HStack
+              alignItems={"center"}
+              justifyContent={"space-between"}
+              mb={2}
+            >
               <AnimatedBox entering={FadeInLeft.delay(100)}>
                 <Text color="light.100">{t("welcome", "Welcome")},</Text>
-                <Heading fontStyle="italic" mb={5} color="white">
+                <Heading fontStyle="italic" color="white">
                   {auth.userData?.name}
                 </Heading>
               </AnimatedBox>
@@ -118,6 +124,11 @@ export default function Home({ navigation }: HomeProps) {
                 />
               </AnimatedBox>
             </HStack>
+            {nativeApplicationVersion ? (
+              <Text color="light.100" fontSize="xs">
+                version {nativeApplicationVersion}
+              </Text>
+            ) : null}
           </AnimatedBox>
         }
         flex={1}
