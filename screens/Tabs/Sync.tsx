@@ -1,4 +1,4 @@
-import { deleteDatabase, dbQuery } from "../../util/db";
+import { deleteDatabase, dbQuery, databasePath } from "../../util/db";
 import {
   Box,
   Button,
@@ -24,6 +24,7 @@ import ParallaxScroll from "../../components/ParallaxScroll";
 import { useTranslation } from "react-i18next";
 import dateFnsLocale from "../../util/dateFnsLocale";
 import useStatusBar from "../../hooks/useStatusBar";
+import { shareAsync } from "expo-sharing";
 
 export type SyncProps = {};
 
@@ -125,13 +126,16 @@ export default function Sync({}: SyncProps) {
           {readings?.rows.map((item) => (
             <ReadingItem key={item.id} item={item} />
           ))}
-          <DeleteDBButton
-            key="3"
-            onSuccess={() => {
-              refetchLastSync();
-              refetchReadings();
-            }}
-          />
+          <HStack space={3} justifyContent={"center"}>
+            <ShareDBButton />
+            <DeleteDBButton
+              key="3"
+              onSuccess={() => {
+                refetchLastSync();
+                refetchReadings();
+              }}
+            />
+          </HStack>
         </Box>
       </ParallaxScroll>
     </Box>
@@ -242,5 +246,32 @@ function DeleteDBButton({ onSuccess }: DeleteDBButtonProps) {
         </Modal.Content>
       </Modal>
     </>
+  );
+}
+
+type ShareDBButtonProps = {
+  onSuccess?: () => void;
+};
+function ShareDBButton({ onSuccess }: ShareDBButtonProps) {
+  const { mutate: shareDb, isMutating: isSharingDb } = useMutation(
+    () => shareAsync(databasePath),
+
+    {
+      onSuccess: () => {
+        onSuccess?.();
+      },
+    }
+  );
+  const { t } = useTranslation();
+
+  return (
+    <Button
+      colorScheme="yellow"
+      mb={3}
+      isLoading={isSharingDb}
+      onPress={() => shareDb()}
+    >
+      {t("sync.exportDb", "Export Database")}
+    </Button>
   );
 }

@@ -1,68 +1,68 @@
 {
   "createReading": {
-    "careful": "Sois prudent!",
+    "careful": "Faites Attention!",
     "carefulMessage": "Il semblerait qu'un autre relevé de ce compteur ait été enregistré au cours des dernières 24 heures. Veuillez faire attention à ne pas envoyer de données redondantes.",
     "understand": "Je comprends",
     "doYouConfirm": "Confirmez-vous ces valeurs ?",
     "pleaseInput": "Veuillez saisir la lecture actuelle du compteur",
     "enterReading": "Entrez la lecture ici...",
-    "anotherPicture": "Prends une autre photo",
-    "pointCamera": "Pointez votre appareil photo vers le compteur et appuyez sur le bouton pour prendre un instantané",
-    "takeSnap": "Prenez un cliché"
+    "anotherPicture": "Prendre une autre photo",
+    "pointCamera": "Pointez votre appareil photo vers le compteur et appuyez sur le bouton pour prendre un snapshot",
+    "takeSnap": "Prendre un snapshot"
   },
   "titles": {
-    "meter": "Mètre",
-    "meters": "Mètres",
-    "reading": "En lisant"
+    "meter": "Compteur",
+    "meters": "Compteurs",
+    "reading": "Lecture"
   },
-  "back": "Retourner",
+  "back": "Précédent",
   "confirm": "Confirmer",
-  "skip": "Sauter",
+  "skip": "Procéder",
   "listMeters": {
-    "location": "Emplacement",
+    "location": "Localisation",
     "readingsToday": "Lectures aujourd'hui : {{num}}/{{den}}",
-    "meters": "Mètres",
+    "meters": "Compteurs",
     "lastReading": "Dernière lecture {{date}}"
   },
   "meter": {
-    "notFound": "Le compteur avec identifiant {{id}} n'a pas été trouvé",
+    "notFound": "Le compteur avec l'identifiant {{id}} n'a pas été trouvé",
     "meterId": "ID du compteur :",
-    "location": "Emplacement:",
-    "type": "Taper:",
+    "location": "Localisation:",
+    "type": "Type:",
     "notes": "Remarques",
     "latestReadings": "Dernières lectures"
   },
-  "error": "Quelque chose s'est mal passé",
+  "error": "Une erreur s'est produite.",
   "login": {
     "login": "Se connecter",
     "enterCredentials": "Entrez vos identifiants",
     "internetAccess": "Vous avez besoin d'un accès Internet pour vous connecter pour la première fois",
-    "connect": "CONNECTER"
+    "connect": "SE CONNECTER"
   },
   "email": "E-mail",
-  "error_notFound": "Pas trouvé",
+  "error_notFound": "Aucun résultat n'a été trouvé",
   "password": "Mot de passe",
   "error_incorrect": "Incorrect",
-  "error_couldNotConnect": "N'a pas pu se connecter",
+  "error_couldNotConnect": "Connection impossible",
   "reading": {
-    "notFound": "La lecture avec identifiant {{id}} n'a pas été trouvé",
+    "notFound": "La lecture avec l'identifiant {{id}} n'a pas été trouvé",
     "meterId": "Identifiant du compteur :",
     "doneBy": "Fait par:",
     "status": "Statut:",
     "synchronized": "Synchronisé :",
     "notSynchronized": "Non synchronisé",
-    "goToMeter": "Aller au compteur"
+    "goToMeter": "Accéder au compteur"
   },
-  "welcome": "Accueillir",
+  "welcome": "Bienvenue",
   "home": {
     "readingsToday": "Lectures aujourd'hui",
     "latestReadings": "Dernières lectures"
   },
   "location": {
-    "location": "Emplacement",
+    "location": "Localisation",
     "typeLocation": "Tapez l'emplacement...",
-    "locations": "Emplacements",
-    "meters": "Mètres"
+    "locations": "Localisations",
+    "meters": "Compteurs"
   },
   "read": {
     "pointCamera": "Pointez votre appareil photo vers le QR Code attaché au compteur",
@@ -73,9 +73,9 @@
   "search": {
     "search": "Recherche",
     "typeId": "Tapez l'identifiant...",
-    "meters": "Mètres",
-    "meter": "Mètre",
-    "location": "Emplacement"
+    "meters": "Compteurs",
+    "meter": "Compteur",
+    "location": "Localisation"
   },
   "sync": {
     "sync": "Synch",
@@ -83,13 +83,14 @@
     "unsentReadings": "Lectures non envoyées",
     "deleteLocal": "Supprimer les données locales",
     "deleteDatabaseTitle": "Supprimer la base de données",
-    "deleteDatabaseBody": "Cette action supprimera la base de données locale et toutes les données stockées dans cet appareil, toutes les données non synchronisées seront perdues, soyez prudent lorsque vous utilisez cette option"
+    "deleteDatabaseBody": "Cette action supprimera la base de données locale et toutes les données stockées dans cet appareil, toutes les données non synchronisées seront perdues, Faites attention lorsque vous utilisez cette option",
+    "exportDb": "Exporter Database"
   },
   "cancel": "Annuler",
   "delete": "Supprimer",
   "tabs": {
     "home": "Maison",
-    "locations": "Position",
+    "locations": "Localisation",
     "read": "Lire",
     "search": "Recherche",
     "sync": "Synch"

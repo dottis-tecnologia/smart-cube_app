@@ -83,7 +83,8 @@
     "unsentReadings": "Unsent readings",
     "deleteLocal": "Delete local data",
     "deleteDatabaseTitle": "Delete Database",
-    "deleteDatabaseBody": "This action will delete the local database and all the data stored in this device, any unsynchronized data will be lost, be careful when using this option"
+    "deleteDatabaseBody": "This action will delete the local database and all the data stored in this device, any unsynchronized data will be lost, be careful when using this option",
+    "exportDb": "Export Database"
   },
   "cancel": "Cancel",
   "delete": "Delete",

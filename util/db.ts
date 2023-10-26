@@ -2,9 +2,10 @@ import * as SQLite from "expo-sqlite";
 import * as FileSystem from "expo-file-system";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-const dbPath = "db.db";
+const dbFileName = "db.db";
+export const databasePath = `${FileSystem.documentDirectory}SQLite/${dbFileName}`;
 
-export const getDatabase = () => SQLite.openDatabase(dbPath);
+export const getDatabase = () => SQLite.openDatabase(dbFileName);
 
 export async function createTables() {
   const db = getDatabase();
@@ -78,7 +79,7 @@ export async function dbQuery<T>(
 }
 
 export async function deleteDatabase() {
-  const databasePath = `${FileSystem.documentDirectory}SQLite/${dbPath}`;
+  const databasePath = `${FileSystem.documentDirectory}SQLite/${dbFileName}`;
 
   const databaseFile = await FileSystem.getInfoAsync(databasePath);
   if (databaseFile.exists) {
