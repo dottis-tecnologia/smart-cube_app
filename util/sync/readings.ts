@@ -4,25 +4,25 @@ import { dbQuery } from "../db";
 import uploadFile from "../uploadFile";
 import * as FileSystem from "expo-file-system";
 
-type Reading = {
+type Reading<T> = {
   id: string;
   meterId: string;
-  value: string;
+  value: T;
   imagePath: string | null;
   technician: { id: string; name: string } | null;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
 };
-export const syncReading = async (reading: Reading, lastSync?: Date) => {
+export const syncReading = async <T>(reading: Reading<T>, lastSync?: Date) => {
   const createdAt = new Date(reading.createdAt);
   if (lastSync == null || isAfter(createdAt, lastSync)) {
     await dbQuery(
-      "INSERT INTO readings (id, meterId, value, createdAt, imagePath, synchedAt, technicianId, technicianName) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+      "INSERT OR IGNORE INTO readings (id, meterId, value, createdAt, imagePath, synchedAt, technicianId, technicianName) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
       [
         reading.id,
         reading.meterId,
         +reading.value,
-        new Date(reading.createdAt).toISOString(),
+        reading.createdAt.toISOString(),
         reading.imagePath,
         new Date().toISOString(),
         reading.technician?.id,
@@ -33,7 +33,7 @@ export const syncReading = async (reading: Reading, lastSync?: Date) => {
   } else {
     await dbQuery(
       "UPDATE readings SET value = ?, synchedAt = ? WHERE id = ?",
-      [reading.value, new Date().toISOString(), reading.id],
+      [+reading.value, new Date().toISOString(), reading.id],
       false
     );
   }
@@ -60,7 +60,7 @@ export const sendReading = async (payload: ReadingPayload) => {
 
     await dbQuery(
       "UPDATE readings SET synchedAt = ?, imagePath = ? WHERE id = ?",
-      [data.createdAt, outUrl, payload.id],
+      [data.createdAt.toISOString(), outUrl, payload.id],
       false
     );
 
@@ -74,7 +74,7 @@ export const sendReading = async (payload: ReadingPayload) => {
 
     await dbQuery(
       "UPDATE readings SET synchedAt = ? WHERE id = ?",
-      [data.createdAt, payload.id],
+      [data.createdAt.toISOString(), payload.id],
       false
     );
   }

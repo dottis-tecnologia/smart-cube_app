@@ -11,15 +11,13 @@ export type Meter = {
   name: string;
   notes: string | null;
   energyName: string | null;
-  createdAt: string;
-  updatedAt: string;
+  createdAt: Date;
+  updatedAt: Date;
 };
 export const syncMeter = async (meter: Meter, lastSync?: Date) => {
-  const createdAt = new Date(meter.createdAt);
-
-  if (lastSync == null || isAfter(createdAt, lastSync)) {
+  if (lastSync == null || isAfter(meter.createdAt, lastSync)) {
     await dbQuery(
-      "INSERT INTO meters (id, name, location, unit, synchedAt, notes, type) VALUES (?, ?, ?, ?, ?, ?, ?)",
+      "INSERT OR IGNORE INTO meters (id, name, location, unit, synchedAt, notes, type) VALUES (?, ?, ?, ?, ?, ?, ?)",
       [
         meter.id,
         meter.name,

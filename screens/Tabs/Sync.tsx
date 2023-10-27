@@ -126,7 +126,7 @@ export default function Sync({}: SyncProps) {
           {readings?.rows.map((item) => (
             <ReadingItem key={item.id} item={item} />
           ))}
-          <HStack space={3} justifyContent={"center"}>
+          <HStack flexWrap={"wrap"} space={3} justifyContent={"center"}>
             <ShareDBButton />
             <DeleteDBButton
               key="3"
