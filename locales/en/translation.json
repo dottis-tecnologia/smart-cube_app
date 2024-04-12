@@ -51,7 +51,9 @@
     "status": "Status:",
     "synchronized": "Synchronized:",
     "notSynchronized": "Not synchronized",
-    "goToMeter": "Go to Meter"
+    "goToMeter": "Go to Meter",
+    "invalidValue": "This value is invalid, please input a number",
+    "currentReading": "Current reading"
   },
   "welcome": "Welcome",
   "home": {
@@ -95,5 +97,10 @@
     "search": "Search",
     "sync": "Sync"
   },
-  "error_required": "Is required"
+  "error_required": "Is required",
+  "readings": {
+    "longPressToEdit": "Press and hold on an item to edit its value",
+    "update": "Update reading",
+    "mistakes": "You can update the value if you made any mistakes!"
+  }
 }

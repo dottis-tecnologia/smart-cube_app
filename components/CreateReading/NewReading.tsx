@@ -20,7 +20,7 @@ export default function NewReading({ onConfirm }: NewReadingProps) {
     return (
       <InputReading
         snapshot={snapshot}
-        onReturn={() => setSnapshot(null)}
+        onReturn={() => setSnapshot(undefined)}
         onConfirm={setReading}
       />
     );

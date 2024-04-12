@@ -6,9 +6,12 @@ import {
   HStack,
   Heading,
   Icon,
+  Input,
   Modal,
+  Pressable,
   Text,
   VStack,
+  useToast,
 } from "native-base";
 import { FontAwesome } from "@expo/vector-icons";
 import useMutation from "../../hooks/useMutation";
@@ -40,7 +43,7 @@ const getReadings = () =>
     createdAt: string;
     imagePath: string;
   }>(
-    "SELECT readings.*, meters.unit, meters.name as meterName FROM readings JOIN meters ON readings.meterId = meters.id WHERE readings.synchedAt IS NULL;"
+    "SELECT readings.*, meters.unit, meters.name as meterName FROM readings JOIN meters ON readings.meterId = meters.id WHERE readings.synchedAt IS NULL;",
   );
 
 export default function Sync({}: SyncProps) {
@@ -49,7 +52,7 @@ export default function Sync({}: SyncProps) {
   const { t, i18n } = useTranslation();
   const { data: readings, refetch: refetchReadings } = useQuery(
     getReadings,
-    []
+    [],
   );
   const { data: lastSync, refetch: refetchLastSync } = useQuery(async () => {
     const lastSync = await AsyncStorage.getItem("last-sync");
@@ -123,8 +126,20 @@ export default function Sync({}: SyncProps) {
             {t("sync.unsentReadings", "Unsent readings")}
           </Heading>
 
+          <Text color="gray.500" p={1} textAlign={"center"} mb={3}>
+            <Icon as={FontAwesome} name="pencil" w={4} h={4} />{" "}
+            {t(
+              "readings.longPressToEdit",
+              "Press and hold on an item to edit its value",
+            )}
+          </Text>
+
           {readings?.rows.map((item) => (
-            <ReadingItem key={item.id} item={item} />
+            <ReadingItem
+              key={item.id}
+              item={item}
+              onUpdate={() => refetchReadings()}
+            />
           ))}
           <HStack flexWrap={"wrap"} space={3} justifyContent={"center"}>
             <ShareDBButton />
@@ -144,6 +159,7 @@ export default function Sync({}: SyncProps) {
 
 function ReadingItem({
   item,
+  onUpdate,
 }: {
   item: {
     id: string;
@@ -153,36 +169,127 @@ function ReadingItem({
     imagePath: string;
     unit: string;
   };
+  onUpdate?: () => void;
 }) {
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
+  const [modalVisible, setModalVisible] = useState(false);
+  const [reading, setReading] = useState(
+    item.value ? item.value.toString() : "",
+  );
+  const toast = useToast();
+  const { isMutating, mutate } = useMutation(
+    async (reading: number) => {
+      await dbQuery(
+        "UPDATE readings SET value = ? WHERE id = ?",
+        [reading, item.id],
+        false,
+      );
+    },
+    {
+      onSuccess: () => {
+        onUpdate?.();
+        setModalVisible(false);
+      },
+    },
+  );
+
+  const resetField = () => setReading(item.value ? item.value.toString() : "");
 
   return (
-    <AnimatedHStack
-      key={item.id}
-      p={5}
-      bg={"red.500"}
-      rounded="lg"
-      mb={3}
-      alignItems="center"
-      space={5}
-      entering={SlideInLeft.delay(200).randomDelay()}
-      exiting={SlideOutRight.delay(200).randomDelay()}
-    >
-      <VStack flex={1}>
-        <Text color="white" key="1">
-          {item.meterName}
-        </Text>
-        <Text color="white" key="2">
-          {formatDistanceToNow(new Date(item.createdAt), {
-            addSuffix: true,
-            locale: dateFnsLocale(i18n.resolvedLanguage),
-          })}
-        </Text>
-      </VStack>
-      <Text color="white" fontWeight={"bold"}>
-        {item.value} {item.unit}
-      </Text>
-    </AnimatedHStack>
+    <>
+      <Modal
+        isOpen={modalVisible}
+        onClose={() => {
+          resetField();
+          setModalVisible(false);
+        }}
+        avoidKeyboard
+        size="lg"
+      >
+        <Modal.Content>
+          <Modal.CloseButton />
+          <Modal.Header>{t("readings.update", "Update reading")}</Modal.Header>
+          <Modal.Body>
+            <Text mb="3">
+              {t(
+                "readings.mistakes",
+                "You can update the value if you made any mistakes!",
+              )}
+            </Text>
+            <Input
+              keyboardType="numeric"
+              selectTextOnFocus
+              placeholder={t("reading.currentReading", "Current reading")}
+              value={reading}
+              onChangeText={(v) => setReading(v)}
+            />
+          </Modal.Body>
+          <Modal.Footer>
+            <Button.Group space={2}>
+              <Button
+                variant="ghost"
+                colorScheme="blueGray"
+                onPress={() => {
+                  resetField();
+                  setModalVisible(false);
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                isLoading={isMutating}
+                onPress={() => {
+                  const numberValue = +reading;
+                  if (isNaN(numberValue)) {
+                    toast.show({
+                      description: t(
+                        "reading.invalidValue",
+                        "This value is invalid, please input a number",
+                      ),
+                    });
+                    return;
+                  }
+                  mutate(numberValue);
+                }}
+              >
+                Save
+              </Button>
+            </Button.Group>
+          </Modal.Footer>
+        </Modal.Content>
+      </Modal>
+      <Pressable onLongPress={() => setModalVisible(true)}>
+        {({ isPressed }) => (
+          <AnimatedHStack
+            key={item.id}
+            p={5}
+            bg={"red.500"}
+            rounded="lg"
+            mb={3}
+            alignItems="center"
+            space={5}
+            style={{ transform: [{ scale: isPressed ? 0.95 : 1 }] }}
+            entering={SlideInLeft.delay(200).randomDelay()}
+            exiting={SlideOutRight.delay(200).randomDelay()}
+          >
+            <VStack flex={1}>
+              <Text color="white" key="1">
+                {item.meterName}
+              </Text>
+              <Text color="white" key="2">
+                {formatDistanceToNow(new Date(item.createdAt), {
+                  addSuffix: true,
+                  locale: dateFnsLocale(i18n.resolvedLanguage),
+                })}
+              </Text>
+            </VStack>
+            <Text color="white" fontWeight={"bold"}>
+              {item.value} {item.unit}
+            </Text>
+          </AnimatedHStack>
+        )}
+      </Pressable>
+    </>
   );
 }
 
@@ -197,7 +304,7 @@ function DeleteDBButton({ onSuccess }: DeleteDBButtonProps) {
       onSuccess: () => {
         onSuccess?.();
       },
-    }
+    },
   );
   const { t } = useTranslation();
 
@@ -220,7 +327,7 @@ function DeleteDBButton({ onSuccess }: DeleteDBButtonProps) {
           <Modal.Body>
             {t(
               "sync.deleteDatabaseBody",
-              "This action will delete the local database and all the data stored in this device, any unsynchronized data will be lost, be careful when using this option"
+              "This action will delete the local database and all the data stored in this device, any unsynchronized data will be lost, be careful when using this option",
             )}
           </Modal.Body>
           <Modal.Footer justifyContent="flex-end">
@@ -260,7 +367,7 @@ function ShareDBButton({ onSuccess }: ShareDBButtonProps) {
       onSuccess: () => {
         onSuccess?.();
       },
-    }
+    },
   );
   const { t } = useTranslation();
 

@@ -10,6 +10,7 @@ import {
   Image,
   Input,
   Text,
+  useToast,
 } from "native-base";
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
@@ -25,7 +26,8 @@ export default function InputReading({
   onConfirm,
   onReturn,
 }: InputReadingProps) {
-  const [reading, setReading] = useState(0);
+  const [reading, setReading] = useState("");
+  const toast = useToast();
   const { t } = useTranslation();
 
   return (
@@ -45,7 +47,7 @@ export default function InputReading({
         <Text mb={3}>
           {t(
             "createReading.pleaseInput",
-            "Please input the current reading of the meter"
+            "Please input the current reading of the meter",
           )}
         </Text>
         <Input
@@ -54,9 +56,10 @@ export default function InputReading({
           keyboardType="numeric"
           placeholder={t(
             "createReading.enterReading",
-            "Enter the reading here..."
+            "Enter the reading here...",
           )}
-          onChangeText={(v) => setReading(+v)}
+          value={reading}
+          onChangeText={(v) => setReading(v)}
         />
         <HStack space={3} alignItems={"center"}>
           <Button
@@ -67,7 +70,23 @@ export default function InputReading({
           >
             {t("createReading.anotherPicture", "Take another picture")}
           </Button>
-          <Button size="lg" onPress={() => onConfirm?.(reading)}>
+          <Button
+            size="lg"
+            onPress={() => {
+              const numberValue = +reading;
+              if (isNaN(numberValue)) {
+                toast.show({
+                  description: t(
+                    "reading.invalidValue",
+                    "This value is invalid, please input a number",
+                  ),
+                });
+                return;
+              }
+
+              onConfirm?.(numberValue);
+            }}
+          >
             {t("confirm", "Confirm")}
           </Button>
         </HStack>

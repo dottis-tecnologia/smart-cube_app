@@ -51,7 +51,9 @@
     "status": "Statut:",
     "synchronized": "Synchronisé :",
     "notSynchronized": "Non synchronisé",
-    "goToMeter": "Accéder au compteur"
+    "goToMeter": "Accéder au compteur",
+    "invalidValue": "Cette valeur est invalide, veuillez entrer un nombre",
+    "currentReading": "Lecture actuelle"
   },
   "welcome": "Bienvenue",
   "home": {
@@ -95,5 +97,10 @@
     "search": "Recherche",
     "sync": "Synch"
   },
-  "error_required": "Est requis"
+  "error_required": "Est requis",
+  "readings": {
+    "longPressToEdit": "Appuyez longuement sur un élément pour éditer sa valeur",
+    "update": "Mettre à jour la lecture",
+    "mistakes": "Vous pouvez mettre à jour la valeur si vous avez fait des erreurs!"
+  }
 }
