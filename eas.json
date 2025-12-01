@@ -13,7 +13,7 @@
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://smartcube.dottis.dev.br"
+        "EXPO_PUBLIC_API_URL": "https://api-smartcube.cubiiapp.com"
       }
     },
     "staging": {
@@ -22,7 +22,7 @@
         "buildType": "apk"
       },
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://staging-smartcube.dottis.dev.br",
+        "EXPO_PUBLIC_API_URL": "https://api-staging-smartcube.cubiiapp.com",
         "EXPO_PUBLIC_STAGING": "true"
       }
     },
