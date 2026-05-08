@@ -46,7 +46,9 @@
             "kotlinVersion": "1.9.25"
           }
         }
-      ]
+      ],
+      "expo-font",
+      "expo-sqlite"
     ],
     "extra": {
       "eas": {

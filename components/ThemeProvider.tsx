@@ -6,7 +6,6 @@
 import React, { ReactNode } from 'react';
 import { PaperProvider, MD3Theme } from 'react-native-paper';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
-import { BottomSheetModalProvider } from '@gorhom/bottom-sheet';
 import { StyleSheet } from 'react-native';
 import { lightTheme, darkTheme } from '../theme/paperTheme';
 
@@ -26,9 +25,7 @@ export function ThemeProvider({
   return (
     <GestureHandlerRootView style={styles.container}>
       <PaperProvider theme={currentTheme}>
-        <BottomSheetModalProvider>
-          {children}
-        </BottomSheetModalProvider>
+        {children}
       </PaperProvider>
     </GestureHandlerRootView>
   );

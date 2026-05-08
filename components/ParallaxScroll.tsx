@@ -1,7 +1,7 @@
 import React, { ComponentProps, useState, type ReactNode } from "react";
 import { View, ScrollView } from "react-native";
 import Animated, {
-  Extrapolate,
+  Extrapolation,
   interpolate,
   useAnimatedScrollHandler,
   useAnimatedStyle,
@@ -37,13 +37,13 @@ export default function ParallaxScroll({
       scrollY.value,
       [0, headerHeight],
       [0, headerHeight * 0.9],
-      Extrapolate.EXTEND
+      Extrapolation.EXTEND
     );
     const opacity = interpolate(
       scrollY.value,
       [0, headerHeight],
       [1, 0],
-      Extrapolate.CLAMP
+      Extrapolation.CLAMP
     );
 
     return { opacity, transform: [{ translateY }] };

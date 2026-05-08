@@ -12,7 +12,7 @@ export const StatusBarContext = createContext<StatusBarData>({
 
 const useStatusBar = (props: StatusBarProps) => {
   const { setProps } = useContext(StatusBarContext);
-  useFocusEffect(useCallback(() => setProps(props), []));
+  useFocusEffect(useCallback(() => setProps(props), [props]));
 };
 
 export default useStatusBar;
