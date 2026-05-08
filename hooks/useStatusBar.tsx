@@ -12,7 +12,12 @@ export const StatusBarContext = createContext<StatusBarData>({
 
 const useStatusBar = (props: StatusBarProps) => {
   const { setProps } = useContext(StatusBarContext);
-  useFocusEffect(useCallback(() => setProps(props), [props]));
+  const { style, backgroundColor, translucent, hidden, networkActivityIndicatorVisible, hideTransitionAnimation, animated } = props;
+  useFocusEffect(
+    useCallback(() => {
+      setProps({ style, backgroundColor, translucent, hidden, networkActivityIndicatorVisible, hideTransitionAnimation, animated });
+    }, [style, backgroundColor, translucent, hidden, networkActivityIndicatorVisible, hideTransitionAnimation, animated])
+  );
 };
 
 export default useStatusBar;

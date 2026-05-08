@@ -1,5 +1,5 @@
 import trpc from "../trpc";
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import { isAfter } from "date-fns";
 import { dbQuery } from "../db";
 

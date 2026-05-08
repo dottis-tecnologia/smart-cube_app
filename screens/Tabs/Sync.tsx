@@ -7,20 +7,16 @@ import React, { useState } from 'react';
 import { View, StyleSheet, ScrollView, Pressable } from 'react-native';
 import { 
   Text, 
-  useTheme, 
-  Button, 
   Portal, 
   Dialog, 
   TextInput,
   ActivityIndicator,
-  IconButton,
-  Avatar,
   Snackbar
 } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { formatDistanceToNow } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import AsyncStorage from "expo-sqlite/kv-store";
 import { shareAsync } from 'expo-sharing';
 import Animated, { FadeInUp, FadeInLeft } from 'react-native-reanimated';
 
@@ -62,8 +58,7 @@ const getUnsyncedReadings = () =>
 export type SyncProps = {};
 
 export default function Sync({}: SyncProps) {
-  useStatusBar({ style: 'dark' });
-  const theme = useTheme();
+  useStatusBar({ style: 'light' });
   const { refreshToken } = useAuth();
   const { t, i18n } = useTranslation();
   const [snackbarVisible, setSnackbarVisible] = useState(false);
@@ -77,7 +72,7 @@ export default function Sync({}: SyncProps) {
   );
 
   const { data: lastSync, refetch: refetchLastSync } = useQuery(async () => {
-    const stored = await AsyncStorage.getItem('last-sync');
+    const stored = await AsyncStorage.getItemAsync("last-sync");
     return stored ? new Date(stored) : null;
   }, []);
 
@@ -104,22 +99,17 @@ export default function Sync({}: SyncProps) {
 
   return (
     <View style={styles.container}>
-      {/* Header */}
+      {/* Header moderno */}
       <View style={styles.header}>
         <AnimatedView entering={FadeInUp} style={styles.headerContent}>
           <View style={styles.headerTop}>
-            <View>
-              <Text variant="headlineSmall" style={styles.headerTitle}>
-                {t('sync.sync')}
-              </Text>
-              <Text variant="bodyMedium" style={styles.headerSubtitle}>
-                {t('sync.lastSync')}{' '}
-                {lastSync
-                  ? formatDistanceToNow(lastSync, { addSuffix: true, locale })
-                  : t('sync.never')}
-              </Text>
+            <View style={styles.headerIconWrap}>
+              <MaterialCommunityIcons name="cloud-sync" size={28} color="rgba(255,255,255,0.9)" />
             </View>
-            
+            <View style={{ flex: 1 }}>
+              <Text style={styles.headerSubtitleSmall}>{t('sync.lastSync')}{' '}{lastSync ? formatDistanceToNow(lastSync, { addSuffix: true, locale }) : t('sync.never')}</Text>
+              <Text style={styles.headerTitle}>{t('sync.sync')}</Text>
+            </View>
             <AppButton
               mode="primary"
               onPress={() => syncMutate()}
@@ -131,27 +121,16 @@ export default function Sync({}: SyncProps) {
             </AppButton>
           </View>
 
-          {/* Stats Card */}
-          <AppCard style={styles.statsCard}>
-            <AppCardContent style={styles.statsContent}>
-              <View style={styles.statItem}>
-                <Avatar.Icon 
-                  size={40} 
-                  icon="cloud-upload" 
-                  style={{ backgroundColor: theme.colors.errorContainer }}
-                  color={theme.colors.error}
-                />
-                <View>
-                  <Text variant="headlineSmall" style={{ color: theme.colors.error, fontWeight: '700' }}>
-                    {unsyncedCount}
-                  </Text>
-                  <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
-                    {t('sync.pending')}
-                  </Text>
-                </View>
-              </View>
-            </AppCardContent>
-          </AppCard>
+          {/* Stats pill */}
+          <View style={styles.statsPill}>
+            <View style={styles.statsPillIcon}>
+              <MaterialCommunityIcons name="cloud-upload-outline" size={20} color={unsyncedCount > 0 ? themeColors.error : themeColors.primary} />
+            </View>
+            <View>
+              <Text style={styles.statsCount}>{unsyncedCount}</Text>
+              <Text style={styles.statsLabel}>{t('sync.pending')}</Text>
+            </View>
+          </View>
         </AnimatedView>
       </View>
 
@@ -159,8 +138,8 @@ export default function Sync({}: SyncProps) {
       <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
         {/* Hint */}
         <AnimatedView entering={FadeInUp.delay(200)} style={styles.hint}>
-          <MaterialCommunityIcons name="pencil" size={16} color={theme.colors.outline} />
-          <Text variant="bodySmall" style={{ color: theme.colors.outline }}>
+          <MaterialCommunityIcons name="pencil" size={16} color={themeColors.outline} />
+          <Text variant="bodySmall" style={{ color: themeColors.outline }}>
             {t('readings.longPressToEdit')}
           </Text>
         </AnimatedView>
@@ -184,7 +163,7 @@ export default function Sync({}: SyncProps) {
               <MaterialCommunityIcons 
                 name="check-circle-outline" 
                 size={64} 
-                color={theme.colors.primary} 
+                color={themeColors.primary} 
               />
               <Text variant="titleMedium" style={styles.emptyTitle}>
                 {t('sync.allSynced')}
@@ -216,7 +195,7 @@ export default function Sync({}: SyncProps) {
         visible={snackbarVisible}
         onDismiss={() => setSnackbarVisible(false)}
         duration={3000}
-        style={{ backgroundColor: theme.colors.inverseSurface }}
+        style={{ backgroundColor: '#1A3A5C' }}
       >
         {snackbarMessage}
       </Snackbar>
@@ -232,7 +211,6 @@ function ReadingItem({
   onUpdate?: () => void;
 }) {
   const { t, i18n } = useTranslation();
-  const theme = useTheme();
   const [dialogVisible, setDialogVisible] = useState(false);
   const [reading, setReading] = useState(item.value ? item.value.toString() : '');
   const [error, setError] = useState('');
@@ -290,7 +268,7 @@ function ReadingItem({
               error={!!error}
             />
             {error ? (
-              <Text variant="bodySmall" style={{ color: theme.colors.error, marginTop: spacing.xs }}>
+              <Text variant="bodySmall" style={{ color: themeColors.error, marginTop: spacing.xs }}>
                 {error}
               </Text>
             ) : null}
@@ -324,28 +302,24 @@ function ReadingItem({
           { transform: [{ scale: pressed ? 0.98 : 1 }] }
         ]}
       >
-        <View style={[styles.readingCard, { backgroundColor: theme.colors.errorContainer }]}>
+        <View style={styles.readingCard}>
           <View style={styles.readingContent}>
-            <View style={styles.readingMain}>
-              <MaterialCommunityIcons 
-                name="lightning-bolt" 
-                size={20} 
-                color={theme.colors.error} 
-              />
-              <View style={styles.readingInfo}>
-                <Text variant="titleSmall" style={{ fontWeight: '600' }}>
-                  {item.meterName}
-                </Text>
-                <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
-                  {formatDistanceToNow(new Date(item.createdAt), { addSuffix: true, locale })}
-                </Text>
-              </View>
+            <View style={styles.readingIconWrap}>
+              <MaterialCommunityIcons name="lightning-bolt" size={20} color={themeColors.error} />
+            </View>
+            <View style={styles.readingInfo}>
+              <Text variant="titleSmall" style={{ fontWeight: '600', color: themeColors.onSurface }}>
+                {item.meterName}
+              </Text>
+              <Text variant="bodySmall" style={{ color: themeColors.onSurfaceVariant }}>
+                {formatDistanceToNow(new Date(item.createdAt), { addSuffix: true, locale })}
+              </Text>
             </View>
             <View style={styles.readingValue}>
-              <Text variant="titleMedium" style={{ fontWeight: '700', color: theme.colors.error }}>
+              <Text variant="titleMedium" style={{ fontWeight: '700', color: themeColors.error }}>
                 {item.value}
               </Text>
-              <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
+              <Text variant="bodySmall" style={{ color: themeColors.onSurfaceVariant }}>
                 {item.unit}
               </Text>
             </View>
@@ -365,7 +339,6 @@ function DeleteDBButton({ onSuccess }: { onSuccess?: () => void }) {
     },
   });
   const { t } = useTranslation();
-  const theme = useTheme();
 
   return (
     <>
@@ -385,7 +358,7 @@ function DeleteDBButton({ onSuccess }: { onSuccess?: () => void }) {
               mode="primary" 
               onPress={() => deleteDb()}
               loading={isMutating}
-              style={{ backgroundColor: theme.colors.error }}
+              style={{ backgroundColor: themeColors.error }}
             >
               {t('delete')}
             </AppButton>
@@ -431,43 +404,84 @@ const styles = StyleSheet.create({
     backgroundColor: themeColors.background,
   },
   header: {
-    backgroundColor: themeColors.primary,
-    paddingTop: 60,
-    paddingHorizontal: spacing.md,
-    paddingBottom: spacing.xl,
+    backgroundColor: '#5A9BD6',
+    paddingTop: 52,
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.xl + 8,
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
   },
   headerContent: {
     gap: spacing.md,
   },
   headerTop: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
+    alignItems: 'center',
+    gap: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  headerIconWrap: {
+    width: 48,
+    height: 48,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  headerSubtitleSmall: {
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.75)',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
   },
   headerTitle: {
-    color: 'white',
-    fontWeight: '600',
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#fff',
+    letterSpacing: 0.2,
   },
   headerSubtitle: {
     color: 'rgba(255,255,255,0.8)',
   },
-  statsCard: {
-    marginHorizontal: 0,
-    marginTop: spacing.md,
-  },
-  statsContent: {
-    padding: spacing.md,
-  },
-  statItem: {
+  statsPill: {
     flexDirection: 'row',
     alignItems: 'center',
     gap: spacing.md,
+    backgroundColor: '#fff',
+    borderRadius: 14,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  statsPillIcon: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: themeColors.errorContainer,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  statsCount: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: themeColors.error,
+    lineHeight: 24,
+  },
+  statsLabel: {
+    fontSize: 11,
+    color: themeColors.onSurfaceVariant,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   content: {
     flex: 1,
     backgroundColor: themeColors.background,
     paddingHorizontal: spacing.md,
-    paddingTop: spacing.md,
+    paddingTop: spacing.lg,
   },
   hint: {
     flexDirection: 'row',
@@ -485,19 +499,22 @@ const styles = StyleSheet.create({
   },
   readingCard: {
     borderRadius: borderRadius.lg,
+    backgroundColor: themeColors.errorContainer,
     overflow: 'hidden',
   },
   readingContent: {
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
     padding: spacing.md,
+    gap: spacing.md,
   },
-  readingMain: {
-    flexDirection: 'row',
+  readingIconWrap: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
+    backgroundColor: 'rgba(255,255,255,0.6)',
+    justifyContent: 'center',
     alignItems: 'center',
-    gap: spacing.sm,
-    flex: 1,
   },
   readingInfo: {
     flex: 1,

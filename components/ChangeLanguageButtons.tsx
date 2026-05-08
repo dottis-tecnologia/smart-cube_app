@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { TouchableOpacity, Text, View, StyleSheet } from "react-native";
-import { useTheme } from "react-native-paper";
+import { colors } from "../theme";
 
 export type ChangeLanguageButtonsProps = {};
 
@@ -11,12 +11,13 @@ const availableLanguages = {
 
 export default function ChangeLanguageButtons({}: ChangeLanguageButtonsProps) {
   const { i18n } = useTranslation();
-  const theme = useTheme();
 
   return (
     <View style={styles.container}>
       {Object.entries(availableLanguages).map(([key, value], index) => {
         const isActive = i18n.resolvedLanguage === key;
+        const isFirst = index === 0;
+        const isLast = index === Object.keys(availableLanguages).length - 1;
         return (
           <TouchableOpacity
             key={key}
@@ -24,30 +25,22 @@ export default function ChangeLanguageButtons({}: ChangeLanguageButtonsProps) {
             style={[
               styles.button,
               {
-                backgroundColor: isActive
-                  ? theme.colors.primary
-                  : theme.colors.surface,
-                borderTopLeftRadius: index === 0 ? 4 : 0,
-                borderBottomLeftRadius: index === 0 ? 4 : 0,
-                borderTopRightRadius:
-                  index === Object.keys(availableLanguages).length - 1
-                    ? 4
-                    : 0,
-                borderBottomRightRadius:
-                  index === Object.keys(availableLanguages).length - 1
-                    ? 4
-                    : 0,
-                borderRightWidth:
-                  index < Object.keys(availableLanguages).length - 1 ? 1 : 0,
-                borderColor: theme.colors.outline,
+                backgroundColor: isActive ? '#fff' : '#1A3A5C',
+                borderTopLeftRadius: isFirst ? 8 : 0,
+                borderBottomLeftRadius: isFirst ? 8 : 0,
+                borderTopRightRadius: isLast ? 8 : 0,
+                borderBottomRightRadius: isLast ? 8 : 0,
+                borderWidth: 1,
+                borderRightWidth: !isLast ? 0 : 1,
+                borderColor: '#fff',
               },
             ]}
           >
             <Text
               style={{
-                color: isActive ? theme.colors.onPrimary : theme.colors.onSurface,
+                color: isActive ? '#1A3A5C' : '#fff',
                 fontSize: 12,
-                fontWeight: "500",
+                fontWeight: isActive ? '700' : '600',
               }}
             >
               {value}

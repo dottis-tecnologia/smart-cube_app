@@ -12,7 +12,8 @@
       "backgroundColor": "#0093e9"
     },
     "androidNavigationBar": {
-      "backgroundColor": "#0093e9"
+      "backgroundColor": "#0F2336",
+      "barStyle": "light-content"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -43,12 +44,19 @@
         "expo-build-properties",
         {
           "android": {
-            "kotlinVersion": "1.9.25"
+            "kotlinVersion": "1.9.25",
+            "compileSdkVersion": 36,
+            "targetSdkVersion": 36,
+            "minSdkVersion": 24
+          },
+          "ios": {
+            "deploymentTarget": "15.1"
           }
         }
       ],
       "expo-font",
-      "expo-sqlite"
+      "expo-sqlite",
+      "expo-secure-store"
     ],
     "extra": {
       "eas": {

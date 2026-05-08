@@ -5,76 +5,76 @@
 
 // Cores primárias da marca
 export const brandColors = {
-  primary: '#006C9C',
-  primaryContainer: '#C4E7FF',
+  primary: '#3D7AB5',
+  primaryContainer: '#E8F1FA',
   onPrimary: '#FFFFFF',
-  onPrimaryContainer: '#001E2F',
+  onPrimaryContainer: '#1A3A5C',
   
-  secondary: '#4C616B',
-  secondaryContainer: '#CFE6F1',
+  secondary: '#6B8CA8',
+  secondaryContainer: '#EAF2F8',
   onSecondary: '#FFFFFF',
-  onSecondaryContainer: '#081E27',
+  onSecondaryContainer: '#1E3A4F',
   
-  tertiary: '#5C5B7E',
-  tertiaryContainer: '#E2DFFF',
+  tertiary: '#7C7FA3',
+  tertiaryContainer: '#EEEEF8',
   onTertiary: '#FFFFFF',
-  onTertiaryContainer: '#191837',
+  onTertiaryContainer: '#2A2B4A',
 } as const;
 
 // Cores semânticas
 export const semanticColors = {
-  success: '#2E7D32',
-  successContainer: '#C8E6C9',
+  success: '#3A7D44',
+  successContainer: '#E8F5EA',
   onSuccess: '#FFFFFF',
-  onSuccessContainer: '#1B5E20',
+  onSuccessContainer: '#1B4A22',
   
-  warning: '#ED6C02',
-  warningContainer: '#FFF3E0',
+  warning: '#B06B00',
+  warningContainer: '#FFF4E0',
   onWarning: '#FFFFFF',
-  onWarningContainer: '#E65100',
+  onWarningContainer: '#5C3700',
   
-  error: '#D32F2F',
-  errorContainer: '#FFCDD2',
+  error: '#C0392B',
+  errorContainer: '#FDECEA',
   onError: '#FFFFFF',
-  onErrorContainer: '#B71C1C',
+  onErrorContainer: '#7B1A13',
   
-  info: '#0288D1',
-  infoContainer: '#E1F5FE',
+  info: '#2980B9',
+  infoContainer: '#E8F4FC',
   onInfo: '#FFFFFF',
-  onInfoContainer: '#01579B',
+  onInfoContainer: '#0D4F7C',
 } as const;
 
 // Cores neutras
 export const neutralColors = {
   surface: '#FFFFFF',
-  surfaceVariant: '#E7E0EC',
-  surfaceDim: '#DED8E1',
-  surfaceBright: '#FEF7FF',
+  surfaceVariant: '#F0F4F8',
+  surfaceDim: '#E2E8EF',
+  surfaceBright: '#FAFCFE',
   
-  onSurface: '#1C1B1F',
-  onSurfaceVariant: '#49454F',
+  onSurface: '#1E2A35',
+  onSurfaceVariant: '#4A5C6B',
   
-  outline: '#79747E',
-  outlineVariant: '#CAC4D0',
+  outline: '#8FA5B5',
+  outlineVariant: '#D0DDE6',
   
-  background: '#FFFBFE',
-  onBackground: '#1C1B1F',
+  background: '#F5F8FB',
+  onBackground: '#1E2A35',
   
   scrim: '#000000',
   shadow: '#000000',
   
-  inverseSurface: '#313033',
-  inverseOnSurface: '#F4EFF4',
-  inversePrimary: '#7BD0FF',
+  inverseSurface: '#2A3A47',
+  inverseOnSurface: '#EEF3F7',
+  inversePrimary: '#90BBDE',
 } as const;
 
 // Cores de superfície adicionais
 export const surfaceColors = {
-  surface1: '#FFFBFE',
-  surface2: '#F7F2FA',
-  surface3: '#F2EFF4',
-  surface4: '#EEEBF0',
-  surface5: '#E9E6EB',
+  surface1: '#FAFCFE',
+  surface2: '#F5F8FB',
+  surface3: '#EFF4F8',
+  surface4: '#E8EFF5',
+  surface5: '#E2EAF0',
 } as const;
 
 // Paleta completa para o tema Material You
@@ -88,21 +88,21 @@ export const materialYouPalette = {
 // Cores específicas do app Smart Cube
 export const appColors = {
   // Gradientes
-  gradientPrimary: ['#006C9C', '#0091BD'] as const,
-  gradientSecondary: ['#4C616B', '#6B8391'] as const,
-  gradientSuccess: ['#2E7D32', '#4CAF50'] as const,
-  gradientWarning: ['#ED6C02', '#FF9800'] as const,
-  gradientError: ['#D32F2F', '#EF5350'] as const,
+  gradientPrimary: ['#3D7AB5', '#5A9BD6'] as const,
+  gradientSecondary: ['#6B8CA8', '#8AAFC8'] as const,
+  gradientSuccess: ['#3A7D44', '#5A9E65'] as const,
+  gradientWarning: ['#B06B00', '#D4860A'] as const,
+  gradientError: ['#C0392B', '#D9534F'] as const,
   
   // Cores de status de sync
-  synced: '#2E7D32',
-  pending: '#ED6C02',
-  unsynced: '#D32F2F',
+  synced: '#3A7D44',
+  pending: '#B06B00',
+  unsynced: '#C0392B',
   
   // Cores de leitura
-  readingCardSynced: '#E8F5E9',
-  readingCardPending: '#FFF3E0',
-  readingCardError: '#FFEBEE',
+  readingCardSynced: '#EDF7EE',
+  readingCardPending: '#FFF5E0',
+  readingCardError: '#FDECEA',
 } as const;
 
 // Exportação única

@@ -40,17 +40,20 @@
   "login": {
     "login": "Log In",
     "enterCredentials": "Enter your credentials",
-    "internetAccess": "You need internet access to login for the first time",
+    "internetAccess": "Internet connection required for first-time login",
     "connect": "CONNECT",
-    "error": "Login error"
+    "error": "Login error",
+    "invalidEmail": "Please enter a valid email address",
+    "passwordTooShort": "Password must be at least 4 characters"
   },
   "emailPlaceholder": "your@email.com",
   "passwordPlaceholder": "••••••••",
   "email": "Email",
-  "error_notFound": "Not found",
+  "error_notFound": "No account found with this email",
   "password": "Password",
-  "error_incorrect": "Incorrect",
-  "error_couldNotConnect": "Could not connect",
+  "error_incorrect": "Incorrect password",
+  "error_couldNotConnect": "Could not connect to server. Check your internet.",
+  "error_required": "This field is required",
   "reading": {
     "notFound": "The reading with id {{id}} was not found",
     "meterId": "Meter Id:",
@@ -77,6 +80,8 @@
   "location": {
     "location": "Location",
     "typeLocation": "Type the location...",
+    "typeToSearch": "Type to search locations",
+    "foundCount": "{{count}} found",
     "locations": "Locations",
     "meters": "Meters"
   },
@@ -89,7 +94,8 @@
   },
   "search": {
     "search": "Search",
-    "typeId": "Type the id...",
+    "typeId": "Search by name...",
+    "minChars": "Type at least 3 characters",
     "meters": "Meters",
     "meter": "Meter",
     "location": "Location"
@@ -119,7 +125,6 @@
     "search": "Search",
     "sync": "Sync"
   },
-  "error_required": "Is required",
   "readings": {
     "longPressToEdit": "Press and hold on an item to edit its value",
     "update": "Update reading",

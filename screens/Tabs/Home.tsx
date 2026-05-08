@@ -5,7 +5,7 @@
 
 import React from 'react';
 import { View, StyleSheet, Dimensions } from 'react-native';
-import { Text, useTheme, Badge, Avatar } from 'react-native-paper';
+import { Text, Badge, Avatar } from 'react-native-paper';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { formatDistanceToNow, subDays } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
@@ -28,6 +28,8 @@ import { AppReadingCard, ReadingData } from '../../components/ui/AppReadingCard'
 import { AppIconButton } from '../../components/ui/AppIconButton';
 import { spacing, borderRadius, colors as themeColors } from '../../theme';
 import ParallaxScroll from '../../components/ParallaxScroll';
+import Logo from '../../assets/logo.svg';
+import ChangeLanguageButtons from '../../components/ChangeLanguageButtons';
 
 const AnimatedView = Animated.createAnimatedComponent(View);
 
@@ -49,8 +51,7 @@ const getRecentReadings = (userId: string) =>
   );
 
 export default function Home({ navigation }: HomeProps) {
-  useStatusBar({ style: 'light' });
-  const theme = useTheme();
+  useStatusBar({ style: 'dark' });
   const auth = useAuth();
   const { t, i18n } = useTranslation();
   
@@ -81,20 +82,30 @@ export default function Home({ navigation }: HomeProps) {
           </View>
         )}
 
+        {/* Logo */}
+        <AnimatedView entering={FadeInUp} style={styles.logoContainer}>
+          <Logo width={200} height={80} />
+        </AnimatedView>
+
+        {/* Idioma */}
+        <AnimatedView entering={FadeInUp} style={styles.languageRow}>
+          <ChangeLanguageButtons />
+        </AnimatedView>
+
         {/* User Info */}
         <AnimatedView entering={FadeInUp} style={styles.userSection}>
           <View style={styles.userInfo}>
             <Avatar.Text 
               size={48} 
               label={auth.userData?.name?.charAt(0) || '?'} 
-              style={{ backgroundColor: theme.colors.primaryContainer }}
-              labelStyle={{ color: theme.colors.onPrimaryContainer }}
+              style={{ backgroundColor: '#5A9BD6' }}
+              labelStyle={{ color: '#fff', fontWeight: '700' }}
             />
             <View style={styles.userText}>
-              <Text variant="bodyMedium" style={{ color: 'rgba(255,255,255,0.8)' }}>
+              <Text variant="bodySmall" style={{ color: themeColors.onSurfaceVariant }}>
                 {t('welcome')}
               </Text>
-              <Text variant="headlineSmall" style={styles.userName}>
+              <Text variant="titleLarge" style={styles.userName}>
                 {auth.userData?.name}
               </Text>
             </View>
@@ -111,14 +122,14 @@ export default function Home({ navigation }: HomeProps) {
         {/* Stats Card */}
         <AnimatedView entering={FadeInUp.delay(200)} style={styles.statsContainer}>
           <AppCard style={styles.statsCard}>
-            <AppCardContent style={styles.statsContent}>
+            <AppCardContent style={{ ...styles.statsContent, flexDirection: 'row', alignItems: 'center' }}>
               <View style={styles.statItem}>
                 <MaterialCommunityIcons name="lightning-bolt" size={24} color={themeColors.primary} />
                 <View>
-                  <Text variant="headlineMedium" style={{ color: theme.colors.primary, fontWeight: '700' }}>
+                  <Text variant="headlineMedium" style={{ color: themeColors.primary, fontWeight: '700' }}>
                     {todayCount}
                   </Text>
-                  <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
+                  <Text variant="bodySmall" style={{ color: themeColors.onSurfaceVariant }}>
                     {t('home.readingsToday')}
                   </Text>
                 </View>
@@ -129,10 +140,10 @@ export default function Home({ navigation }: HomeProps) {
               <View style={styles.statItem}>
                 <MaterialCommunityIcons name="calendar-week" size={24} color={themeColors.secondary} />
                 <View>
-                  <Text variant="headlineMedium" style={{ color: theme.colors.secondary, fontWeight: '700' }}>
+                  <Text variant="headlineMedium" style={{ color: themeColors.secondary, fontWeight: '700' }}>
                     {readings?.rows.length || 0}
                   </Text>
-                  <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
+                  <Text variant="bodySmall" style={{ color: themeColors.onSurfaceVariant }}>
                     {t('home.readingsWeek')}
                   </Text>
                 </View>
@@ -153,7 +164,7 @@ export default function Home({ navigation }: HomeProps) {
         <View style={styles.content}>
           {/* Section Title */}
           <AnimatedView entering={FadeInLeft.delay(300)} style={styles.sectionHeader}>
-            <MaterialCommunityIcons name="history" size={20} color={theme.colors.primary} />
+            <MaterialCommunityIcons name="history" size={20} color={themeColors.primary} />
             <Text variant="titleMedium" style={styles.sectionTitle}>
               {t('home.latestReadings')}
             </Text>
@@ -178,12 +189,12 @@ export default function Home({ navigation }: HomeProps) {
                 <MaterialCommunityIcons 
                   name="inbox-outline" 
                   size={64} 
-                  color={theme.colors.outline} 
+                  color={themeColors.outline} 
                 />
-                <Text variant="titleMedium" style={{ color: theme.colors.onSurfaceVariant, marginTop: spacing.md }}>
+                <Text variant="titleMedium" style={{ color: themeColors.onSurfaceVariant, marginTop: spacing.md }}>
                   {t('home.noReadings')}
                 </Text>
-                <Text variant="bodyMedium" style={{ color: theme.colors.outline, textAlign: 'center' }}>
+                <Text variant="bodyMedium" style={{ color: themeColors.outline, textAlign: 'center' }}>
                   {t('home.scanToStart')}
                 </Text>
               </AnimatedView>
@@ -211,12 +222,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   headerContainer: {
-    height: 280,
+    height: 360,
   },
   headerGradient: {
     flex: 1,
-    backgroundColor: themeColors.primary,
-    paddingTop: 60,
+    backgroundColor: themeColors.primaryContainer,
+    paddingTop: 52,
     paddingHorizontal: spacing.md,
     paddingBottom: spacing.xl,
   },
@@ -240,7 +251,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   userName: {
-    color: 'white',
+    color: themeColors.onPrimaryContainer,
     fontWeight: '600',
   },
   statsContainer: {
@@ -251,7 +262,8 @@ const styles = StyleSheet.create({
     elevation: 4,
   },
   statsContent: {
-    padding: spacing.md,
+    paddingVertical: spacing.md,
+    paddingHorizontal: spacing.lg,
   },
   statItem: {
     flexDirection: 'row',
@@ -288,6 +300,14 @@ const styles = StyleSheet.create({
   emptyState: {
     alignItems: 'center',
     paddingVertical: spacing.xl * 2,
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: spacing.sm,
+  },
+  languageRow: {
+    alignItems: 'center',
+    marginBottom: spacing.md,
   },
   version: {
     textAlign: 'center',

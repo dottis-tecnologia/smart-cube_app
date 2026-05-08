@@ -42,8 +42,8 @@ export const lightTheme: MD3Theme = {
     onSurface: colors.onSurface,
     surfaceVariant: colors.surfaceVariant,
     onSurfaceVariant: colors.onSurfaceVariant,
-    surfaceDisabled: `${colors.onSurface}1F`, // 12% opacity
-    onSurfaceDisabled: `${colors.onSurface}61`, // 38% opacity
+    surfaceDisabled: `${colors.onSurface}1F`,
+    onSurfaceDisabled: `${colors.onSurface}61`,
     
     // Background
     background: colors.background,

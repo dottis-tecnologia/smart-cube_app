@@ -5,8 +5,8 @@
 
 import React from 'react';
 import { View, StyleSheet, ViewStyle } from 'react-native';
-import { TextInput, TextInputProps, HelperText, useTheme } from 'react-native-paper';
-import { spacing } from '../../theme';
+import { TextInput, TextInputProps, HelperText } from 'react-native-paper';
+import { spacing, colors as themeColors } from '../../theme';
 
 interface AppInputProps extends Omit<TextInputProps, 'mode' | 'ref' | 'error'> {
   label?: string;
@@ -31,8 +31,6 @@ export const AppInput = React.forwardRef<any, AppInputProps>(function AppInput({
   style,
   ...rest
 }, ref) {
-  const theme = useTheme();
-
   return (
     <View style={[styles.container, containerStyle]}>
       <TextInput
@@ -45,10 +43,11 @@ export const AppInput = React.forwardRef<any, AppInputProps>(function AppInput({
         left={leftIcon ? <TextInput.Icon icon={leftIcon} /> : undefined}
         right={rightIcon ? <TextInput.Icon icon={rightIcon} onPress={onRightIconPress} /> : undefined}
         theme={{
-          ...theme,
           colors: {
-            ...theme.colors,
-            primary: theme.colors.primary,
+            primary: themeColors.primary,
+            error: themeColors.error,
+            onSurfaceVariant: themeColors.onSurfaceVariant,
+            outline: themeColors.outline,
           },
         }}
         {...rest}

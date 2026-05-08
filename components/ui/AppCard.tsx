@@ -4,9 +4,8 @@
  */
 
 import React, { ReactNode } from 'react';
-import { View, StyleSheet, ViewStyle } from 'react-native';
-import { Card, useTheme } from 'react-native-paper';
-import { spacing } from '../../theme';
+import { View, StyleSheet, ViewStyle, Pressable } from 'react-native';
+import { colors, spacing } from '../../theme';
 
 interface AppCardProps {
   children: ReactNode;
@@ -23,23 +22,25 @@ export function AppCard({
   disabled = false,
   mode = 'elevated'
 }: AppCardProps) {
-  const theme = useTheme();
-
+  if (onPress) {
+    return (
+      <Pressable
+        onPress={onPress}
+        disabled={disabled}
+        style={({ pressed }) => [
+          styles.card,
+          { opacity: pressed ? 0.85 : 1 },
+          style,
+        ]}
+      >
+        {children}
+      </Pressable>
+    );
+  }
   return (
-    <Card
-      mode={mode}
-      onPress={onPress}
-      disabled={disabled || !onPress}
-      style={[
-        styles.card,
-        {
-          backgroundColor: theme.colors.surface,
-        },
-        style,
-      ]}
-    >
+    <View style={[styles.card, style]}>
       {children}
-    </Card>
+    </View>
   );
 }
 
@@ -63,9 +64,9 @@ interface AppCardContentProps {
 
 export function AppCardContent({ children, style }: AppCardContentProps) {
   return (
-    <Card.Content style={[styles.content, style]}>
+    <View style={[styles.content, style]}>
       {children}
-    </Card.Content>
+    </View>
   );
 }
 
@@ -76,9 +77,9 @@ interface AppCardFooterProps {
 
 export function AppCardFooter({ children, style }: AppCardFooterProps) {
   return (
-    <Card.Actions style={[styles.footer, style]}>
+    <View style={[styles.footer, style]}>
       {children}
-    </Card.Actions>
+    </View>
   );
 }
 
@@ -87,6 +88,12 @@ const styles = StyleSheet.create({
     marginHorizontal: spacing.md,
     marginBottom: spacing.md,
     borderRadius: 12,
+    backgroundColor: colors.surface,
+    shadowColor: colors.shadow,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 3,
   },
   header: {
     paddingHorizontal: spacing.lg,

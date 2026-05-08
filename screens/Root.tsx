@@ -5,8 +5,6 @@ import Meter from "./Meter";
 import CreateReading from "./CreateReading";
 import Reading from "./Reading";
 import Login from "./NoAuth/Login";
-import useAuth from "../hooks/useAuth";
-import { View, ActivityIndicator } from "react-native";
 import ListMeters from "./ListMeters";
 import { useTranslation } from "react-i18next";
 
@@ -24,57 +22,41 @@ export type RootStackParamList = {
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function Root({}: RootProps) {
-  const { userData, isLoading } = useAuth();
   const { t } = useTranslation();
-
-  if (isLoading) {
-    return (
-      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-        <ActivityIndicator size="large" />
-      </View>
-    );
-  }
 
   return (
     <Stack.Navigator
-      initialRouteName="Tabs"
+      initialRouteName="Login"
       screenOptions={{
         header: HeaderBar,
       }}
     >
-      {userData ? (
-        <>
-          <Stack.Screen
-            name="Tabs"
-            component={Tabs}
-            options={{ headerShown: false }}
-          />
-          <Stack.Screen
-            name="Meter"
-            component={Meter}
-            options={{ title: t("titles.meter") }}
-          />
-          <Stack.Screen
-            name="ListMeters"
-            component={ListMeters}
-            options={{ title: t("titles.meters") }}
-          />
-          <Stack.Screen name="Reading" component={Reading} />
-          <Stack.Screen
-            name="CreateReading"
-            component={CreateReading}
-            options={{ title: t("titles.reading") }}
-          />
-        </>
-      ) : (
-        <>
-          <Stack.Screen
-            name="Login"
-            component={Login}
-            options={{ headerShown: false }}
-          />
-        </>
-      )}
+      <Stack.Screen
+        name="Login"
+        component={Login}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Tabs"
+        component={Tabs}
+        options={{ headerShown: false }}
+      />
+      <Stack.Screen
+        name="Meter"
+        component={Meter}
+        options={{ title: t("titles.meter") }}
+      />
+      <Stack.Screen
+        name="ListMeters"
+        component={ListMeters}
+        options={{ title: t("titles.meters") }}
+      />
+      <Stack.Screen name="Reading" component={Reading} />
+      <Stack.Screen
+        name="CreateReading"
+        component={CreateReading}
+        options={{ title: t("titles.reading") }}
+      />
     </Stack.Navigator>
   );
 }

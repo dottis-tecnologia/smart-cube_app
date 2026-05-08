@@ -9,7 +9,7 @@ import { Text, ActivityIndicator, Portal, Dialog, Button } from 'react-native-pa
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { CameraCapturedPicture } from 'expo-camera';
 import { randomUUID } from 'expo-crypto';
-import * as FileSystem from 'expo-file-system';
+import * as FileSystem from 'expo-file-system/legacy';
 import { isAfter, sub } from 'date-fns';
 import Animated, { FadeIn } from 'react-native-reanimated';
 

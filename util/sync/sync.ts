@@ -1,11 +1,11 @@
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import AsyncStorage from "expo-sqlite/kv-store";
 import trpc from "../trpc";
 import { syncMeter } from "./meters";
 import { sendReading, syncReading } from "./readings";
 import { dbQuery } from "../db";
 
 export const syncData = async () => {
-  const lastSyncRaw = await AsyncStorage.getItem("last-sync");
+  const lastSyncRaw = await AsyncStorage.getItemAsync("last-sync");
 
   let lastSync: Date | undefined;
   if (lastSyncRaw != null) {
@@ -36,5 +36,5 @@ export const syncData = async () => {
     await syncMeter(meter, lastSync);
   }
 
-  await AsyncStorage.setItem("last-sync", new Date().toISOString());
+  await AsyncStorage.setItemAsync("last-sync", new Date().toISOString());
 };

@@ -5,7 +5,8 @@
 
 import React from 'react';
 import { View, StyleSheet, FlatList, Pressable } from 'react-native';
-import { Text, useTheme, ActivityIndicator, Searchbar } from 'react-native-paper';
+import { Text, ActivityIndicator } from 'react-native-paper';
+import { TextInput } from 'react-native';
 import { MaterialCommunityIcons } from '@expo/vector-icons';
 import { BottomTabScreenProps } from '@react-navigation/bottom-tabs';
 import { CompositeScreenProps } from '@react-navigation/native';
@@ -40,8 +41,7 @@ interface MeterData {
 }
 
 export default function Search({ navigation, route }: SearchProps) {
-  useStatusBar({ style: 'dark' });
-  const theme = useTheme();
+  useStatusBar({ style: 'light' });
   const { t } = useTranslation();
   
   const filter = route.params?.filter || '';
@@ -77,20 +77,42 @@ export default function Search({ navigation, route }: SearchProps) {
 
   return (
     <View style={styles.container}>
-      {/* Header com gradiente */}
-      <View style={[styles.header, { backgroundColor: theme.colors.primary }]}>
-        <Text variant="headlineSmall" style={styles.headerTitle}>
-          {t('search.search').toUpperCase()}
-        </Text>
-        
-        <Searchbar
-          placeholder={t('search.typeId')}
-          onChangeText={setSearchQuery}
-          value={searchQuery}
-          onSubmitEditing={handleSearch}
-          style={styles.searchBar}
-          inputStyle={styles.searchInput}
-        />
+      {/* Header moderno */}
+      <View style={styles.header}>
+        <View style={styles.headerTop}>
+          <View style={styles.headerIconWrap}>
+            <MaterialCommunityIcons name="lightning-bolt-outline" size={28} color="rgba(255,255,255,0.9)" />
+          </View>
+          <View>
+            <Text style={styles.headerSubtitle}>{t('search.meters', 'Medidores')}</Text>
+            <Text style={styles.headerTitle}>{t('search.search', 'Busca')}</Text>
+          </View>
+        </View>
+        <View style={styles.searchWrap}>
+          <MaterialCommunityIcons name="magnify" size={20} color={themeColors.onSurfaceVariant} style={styles.searchIcon} />
+          <TextInput
+            placeholder={t('search.typeId', 'Buscar por nome...')}
+            placeholderTextColor={themeColors.outline}
+            onChangeText={setSearchQuery}
+            value={searchQuery}
+            onSubmitEditing={handleSearch}
+            returnKeyType="search"
+            style={styles.searchInput}
+          />
+          {searchQuery.length > 0 && (
+            <MaterialCommunityIcons
+              name="close-circle"
+              size={18}
+              color={themeColors.outline}
+              onPress={() => { setSearchQuery(''); navigation.setParams({ filter: '' }); }}
+            />
+          )}
+        </View>
+        {searchQuery.length > 0 && searchQuery.length < 3 && (
+          <Text style={styles.searchHint}>
+            {t('search.minChars', 'Mínimo 3 caracteres')}
+          </Text>
+        )}
       </View>
 
       {/* Lista de resultados */}
@@ -103,7 +125,7 @@ export default function Search({ navigation, route }: SearchProps) {
         keyExtractor={({ id }) => id}
         ListHeaderComponent={
           <Text variant="titleMedium" style={styles.sectionTitle}>
-            {t('search.meters', 'Medidores')}
+            {t('search.meters')}
           </Text>
         }
         ListFooterComponent={
@@ -118,14 +140,14 @@ export default function Search({ navigation, route }: SearchProps) {
             <View style={styles.emptyState}>
               <MaterialCommunityIcons name="magnify-close" size={48} color={themeColors.outline} />
               <Text variant="bodyMedium" style={{ color: themeColors.outline }}>
-                {t('search.noResults', 'Nenhum medidor encontrado')}
+                {t('search.noResults', 'No meters found')}
               </Text>
             </View>
           ) : filter.length < 3 ? (
             <View style={styles.emptyState}>
               <MaterialCommunityIcons name="magnify" size={48} color={themeColors.outline} />
               <Text variant="bodyMedium" style={{ color: themeColors.outline }}>
-                {t('search.minChars', 'Digite pelo menos 3 caracteres')}
+                {t('search.minChars')}
               </Text>
             </View>
           ) : null
@@ -152,7 +174,6 @@ interface ListItemProps {
 
 const ListItem = memo(({ location, name, index, onPress }: ListItemProps) => {
   const { t } = useTranslation();
-  const theme = useTheme();
 
   return (
     <AnimatedPressable
@@ -165,29 +186,24 @@ const ListItem = memo(({ location, name, index, onPress }: ListItemProps) => {
     >
       <AppCard>
         <AppCardContent style={styles.cardContent}>
-          {/* Meter ID Row */}
           <View style={styles.row}>
-            <MaterialCommunityIcons name="identifier" size={20} color={theme.colors.primary} />
-            <Text variant="bodySmall" style={styles.label}>
-              {t('search.meter', 'Medidor')}
-            </Text>
-            <Text variant="titleSmall" style={[styles.value, { color: theme.colors.primary }]}>
-              {name}
-            </Text>
-          </View>
-
-          {/* Divider */}
-          <View style={[styles.divider, { backgroundColor: theme.colors.surfaceVariant }]} />
-
-          {/* Location Row */}
-          <View style={styles.row}>
-            <MaterialCommunityIcons name="map-marker" size={20} color={theme.colors.secondary} />
-            <Text variant="bodySmall" style={styles.label}>
-              {t('search.location', 'Localização')}
-            </Text>
-            <Text variant="bodyMedium" style={styles.value} numberOfLines={1}>
-              {location}
-            </Text>
+            <View style={styles.meterIconWrap}>
+              <MaterialCommunityIcons name="lightning-bolt" size={20} color={themeColors.primary} />
+            </View>
+            <View style={styles.meterInfo}>
+              <Text variant="bodySmall" style={styles.label}>
+                {t('search.meter', 'Medidor')}
+              </Text>
+              <Text variant="titleSmall" style={styles.meterName}>
+                {name}
+              </Text>
+            </View>
+            <View style={styles.locationTag}>
+              <MaterialCommunityIcons name="map-marker" size={12} color={themeColors.secondary} />
+              <Text style={styles.locationText} numberOfLines={1}>
+                {location}
+              </Text>
+            </View>
           </View>
         </AppCardContent>
       </AppCard>
@@ -201,25 +217,69 @@ const styles = StyleSheet.create({
     backgroundColor: themeColors.background,
   },
   header: {
+    backgroundColor: '#5A9BD6',
+    paddingTop: 52,
     paddingHorizontal: spacing.lg,
-    paddingTop: spacing.lg,
-    paddingBottom: spacing.xl,
+    paddingBottom: spacing.xl + 8,
+    borderBottomLeftRadius: 28,
+    borderBottomRightRadius: 28,
+  },
+  headerTop: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+    marginBottom: spacing.lg,
+  },
+  headerIconWrap: {
+    width: 48,
+    height: 48,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255,255,255,0.2)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  headerSubtitle: {
+    fontSize: 12,
+    color: 'rgba(255,255,255,0.75)',
+    letterSpacing: 1,
+    textTransform: 'uppercase',
   },
   headerTitle: {
-    color: themeColors.onPrimary,
+    fontSize: 22,
     fontWeight: '700',
-    marginBottom: spacing.md,
+    color: '#fff',
+    letterSpacing: 0.2,
   },
-  searchBar: {
-    backgroundColor: themeColors.surface,
-    borderRadius: borderRadius.lg,
-    elevation: 2,
+  searchWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#fff',
+    borderRadius: 14,
+    paddingHorizontal: spacing.md,
+    height: 48,
+    elevation: 3,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+  },
+  searchIcon: {
+    marginRight: spacing.sm,
   },
   searchInput: {
-    fontSize: 16,
+    flex: 1,
+    fontSize: 15,
+    color: themeColors.onSurface,
+  },
+  searchHint: {
+    fontSize: 11,
+    color: 'rgba(255,255,255,0.75)',
+    marginTop: spacing.sm,
+    marginLeft: spacing.xs,
   },
   listContent: {
     padding: spacing.md,
+    paddingTop: spacing.lg,
     gap: spacing.sm,
   },
   sectionTitle: {
@@ -236,20 +296,47 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: spacing.sm,
+    gap: spacing.md,
+  },
+  meterIconWrap: {
+    width: 40,
+    height: 40,
+    borderRadius: 12,
+    backgroundColor: themeColors.primaryContainer,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  meterInfo: {
+    flex: 1,
   },
   label: {
-    flex: 1,
+    fontSize: 11,
     color: themeColors.onSurfaceVariant,
+    marginBottom: 2,
   },
-  value: {
-    fontWeight: '600',
+  meterName: {
+    fontWeight: '700',
+    color: themeColors.primary,
+    fontSize: 14,
+  },
+  locationTag: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 3,
+    backgroundColor: themeColors.secondaryContainer,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 20,
+    maxWidth: 110,
+  },
+  locationText: {
+    fontSize: 11,
+    color: themeColors.secondary,
+    fontWeight: '500',
     flexShrink: 1,
-    textAlign: 'right',
   },
   divider: {
     height: 1,
-    marginHorizontal: spacing.lg,
   },
   footerLoading: {
     padding: spacing.xl,

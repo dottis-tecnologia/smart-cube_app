@@ -7,8 +7,6 @@ import Animated, {
   useAnimatedStyle,
   useSharedValue,
 } from "react-native-reanimated";
-import { useTheme } from "react-native-paper";
-
 const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
 const AnimatedView = Animated.createAnimatedComponent(View);
 
@@ -30,7 +28,6 @@ export default function ParallaxScroll({
     },
   });
   const [headerHeight, setHeaderHeight] = useState(0);
-  const theme = useTheme();
 
   const animatedStyles = useAnimatedStyle(() => {
     const translateY = interpolate(

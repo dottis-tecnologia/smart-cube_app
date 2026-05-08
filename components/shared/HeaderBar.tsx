@@ -3,7 +3,7 @@ import { getHeaderTitle } from "@react-navigation/elements";
 import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import Animated, { FadeInUp } from "react-native-reanimated";
-import { useTheme } from "react-native-paper";
+import { colors } from "../../theme";
 
 export type HeaderBarProps = NativeStackHeaderProps;
 
@@ -16,20 +16,19 @@ export default function HeaderBar({
   back,
 }: HeaderBarProps) {
   const title = getHeaderTitle(options, route.name);
-  const theme = useTheme();
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: theme.colors.surface }]}>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.surface }]}>
       <AnimatedView entering={FadeInUp} style={styles.content}>
         {back && (
           <TouchableOpacity
             onPress={() => navigation.goBack()}
             style={styles.backButton}
           >
-            <FontAwesome name="chevron-left" size={20} color={theme.colors.onSurface} />
+            <FontAwesome name="chevron-left" size={20} color={colors.onSurface} />
           </TouchableOpacity>
         )}
-        <Text style={[styles.title, { color: theme.colors.onSurface }]} numberOfLines={1}>
+        <Text style={[styles.title, { color: colors.onSurface }]} numberOfLines={1}>
           {title}
         </Text>
       </AnimatedView>

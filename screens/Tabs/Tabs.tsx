@@ -2,8 +2,8 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import ReadCode from "./ReadCode";
 import Home from "./Home";
 import TabBar from "../../components/shared/TabBar";
-import { FontAwesome } from "@expo/vector-icons";
-import HeaderBar from "../../components/shared/TabHeaderBar";
+import { MaterialCommunityIcons } from "@expo/vector-icons";
+
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "../Root";
 import Sync from "./Sync";
@@ -31,7 +31,7 @@ export default function Tabs({}: TabsProps) {
       initialRouteName="Home"
       tabBar={TabBar}
       screenOptions={{
-        header: HeaderBar,
+        headerShown: false,
       }}
     >
       <Tab.Screen
@@ -40,14 +40,14 @@ export default function Tabs({}: TabsProps) {
         options={{
           title: t("tabs.home"),
           headerShown: false,
-          tabBarIcon: tabBarIcon("home"),
+          tabBarIcon: tabBarIcon("home", "home-outline"),
         }}
       />
       <Tab.Screen
         name="Locations"
         component={Locations}
         options={{
-          tabBarIcon: tabBarIcon("list"),
+          tabBarIcon: tabBarIcon("map-marker", "map-marker-outline"),
           title: t("tabs.locations"),
         }}
       />
@@ -55,7 +55,7 @@ export default function Tabs({}: TabsProps) {
         name="ReadCode"
         component={ReadCode}
         options={{
-          tabBarIcon: tabBarIcon("qrcode"),
+          tabBarIcon: tabBarIcon("qrcode-scan", "qrcode-scan"),
           title: t("tabs.read"),
         }}
       />
@@ -63,7 +63,7 @@ export default function Tabs({}: TabsProps) {
         name="Search"
         component={Search}
         options={{
-          tabBarIcon: tabBarIcon("search"),
+          tabBarIcon: tabBarIcon("magnify", "magnify"),
           title: t("tabs.search"),
         }}
       />
@@ -71,7 +71,7 @@ export default function Tabs({}: TabsProps) {
         name="Sync"
         component={Sync}
         options={{
-          tabBarIcon: tabBarIcon("refresh"),
+          tabBarIcon: tabBarIcon("cloud-sync", "cloud-sync-outline"),
           title: t("tabs.sync"),
         }}
       />
@@ -80,11 +80,11 @@ export default function Tabs({}: TabsProps) {
 }
 
 const tabBarIcon =
-  (name: string) =>
-  ({ color, size }: { color: string; size: number }) =>
+  (activeName: string, inactiveName: string) =>
+  ({ color, size, focused }: { color: string; size: number; focused: boolean }) =>
     (
-      <FontAwesome
-        name={name as any}
+      <MaterialCommunityIcons
+        name={(focused ? activeName : inactiveName) as any}
         color={color}
         size={size}
       />

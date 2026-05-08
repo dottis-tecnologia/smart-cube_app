@@ -5,7 +5,8 @@
 
 import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
-import { IconButton, IconButtonProps, useTheme } from 'react-native-paper';
+import { IconButton, IconButtonProps } from 'react-native-paper';
+import { colors } from '../../theme';
 
 interface AppIconButtonProps extends Omit<IconButtonProps, 'icon' | 'size'> {
   icon: string;
@@ -23,8 +24,6 @@ export function AppIconButton({
   style,
   ...rest
 }: AppIconButtonProps) {
-  const theme = useTheme();
-
   const sizeMap = {
     small: 16,
     medium: 24,
@@ -32,10 +31,10 @@ export function AppIconButton({
   };
 
   const variantColors = {
-    default: theme.colors.onSurfaceVariant,
-    primary: theme.colors.primary,
-    secondary: theme.colors.secondary,
-    surface: theme.colors.onSurface,
+    default: colors.onSurfaceVariant,
+    primary: colors.primary,
+    secondary: colors.secondary,
+    surface: colors.onSurface,
   };
 
   return (

@@ -40,17 +40,19 @@
   "login": {
     "login": "Se connecter",
     "enterCredentials": "Entrez vos identifiants",
-    "internetAccess": "Vous avez besoin d'un accès Internet pour vous connecter pour la première fois",
+    "internetAccess": "Connexion Internet requise pour la première connexion",
     "connect": "SE CONNECTER",
-    "error": "Erreur de connexion"
+    "error": "Erreur de connexion",
+    "invalidEmail": "Veuillez saisir une adresse e-mail valide",
+    "passwordTooShort": "Le mot de passe doit contenir au moins 4 caractères"
   },
   "emailPlaceholder": "votre@email.com",
   "passwordPlaceholder": "••••••••",
   "email": "E-mail",
-  "error_notFound": "Aucun résultat n'a été trouvé",
+  "error_notFound": "Aucun compte trouvé avec cet e-mail",
   "password": "Mot de passe",
-  "error_incorrect": "Incorrect",
-  "error_couldNotConnect": "Connection impossible",
+  "error_incorrect": "Mot de passe incorrect",
+  "error_couldNotConnect": "Impossible de se connecter au serveur. Vérifiez votre connexion.",
   "reading": {
     "notFound": "La lecture avec l'identifiant {{id}} n'a pas été trouvé",
     "meterId": "Identifiant du compteur :",
@@ -77,6 +79,8 @@
   "location": {
     "location": "Localisation",
     "typeLocation": "Tapez l'emplacement...",
+    "typeToSearch": "Tapez pour chercher des localisations",
+    "foundCount": "{{count}} trouvé(s)",
     "locations": "Localisations",
     "meters": "Compteurs"
   },
@@ -89,7 +93,8 @@
   },
   "search": {
     "search": "Recherche",
-    "typeId": "Tapez l'identifiant...",
+    "typeId": "Rechercher par nom...",
+    "minChars": "Tapez au moins 3 caractères",
     "meters": "Compteurs",
     "meter": "Compteur",
     "location": "Localisation"
@@ -119,7 +124,7 @@
     "search": "Recherche",
     "sync": "Synch"
   },
-  "error_required": "Est requis",
+  "error_required": "Ce champ est obligatoire",
   "readings": {
     "longPressToEdit": "Appuyez longuement sur un élément pour éditer sa valeur",
     "update": "Mettre à jour la lecture",

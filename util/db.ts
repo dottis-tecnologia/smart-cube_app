@@ -1,6 +1,6 @@
 import { SQLiteDatabase, openDatabaseAsync } from "expo-sqlite";
-import * as FileSystem from "expo-file-system";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import * as FileSystem from "expo-file-system/legacy";
+import AsyncStorage from "expo-sqlite/kv-store";
 
 const dbFileName = "db.db";
 export const databasePath = `${FileSystem.documentDirectory}SQLite/${dbFileName}`;
@@ -108,7 +108,7 @@ export async function deleteDatabase() {
   if (picturesDir.exists) {
     await FileSystem.deleteAsync(picturesPath);
   }
-  await AsyncStorage.removeItem("last-sync");
+  await AsyncStorage.removeItemAsync("last-sync");
 
   await createTables();
 }

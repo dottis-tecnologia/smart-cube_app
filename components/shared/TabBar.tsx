@@ -4,12 +4,14 @@ import {
   Pressable,
   Text,
   StyleSheet,
-  useColorScheme,
 } from "react-native";
 import { ReactNode } from "react";
-import { useTheme } from "react-native-paper";
 
 export type TabBarProps = BottomTabBarProps;
+
+const ACTIVE_COLOR = '#FFFFFF';
+const INACTIVE_COLOR = 'rgba(255,255,255,0.55)';
+const BG_COLOR = '#5A9BD6';
 
 export default function TabBar({
   descriptors,
@@ -17,22 +19,11 @@ export default function TabBar({
   navigation,
   state,
 }: TabBarProps) {
-  const theme = useTheme();
-
   return (
-    <View
-      style={[
-        styles.container,
-        {
-          backgroundColor: theme.colors.primary,
-          paddingBottom: insets.bottom,
-        },
-      ]}
-    >
+    <View style={[styles.container, { paddingBottom: insets.bottom }]}>
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
         const label = options.tabBarLabel ?? options.title ?? route.name;
-
         const isFocused = state.index === index;
 
         const onPress = () => {
@@ -41,17 +32,13 @@ export default function TabBar({
             target: route.key,
             canPreventDefault: true,
           });
-
           if (!isFocused && !event.defaultPrevented) {
             navigation.navigate({ name: route.name, merge: true } as any);
           }
         };
 
         const onLongPress = () => {
-          navigation.emit({
-            type: "tabLongPress",
-            target: route.key,
-          });
+          navigation.emit({ type: "tabLongPress", target: route.key });
         };
 
         return (
@@ -76,35 +63,29 @@ function TabBarEntry({
   onLongPress,
   isActive,
 }: {
-  icon?: (props: {
-    color: string;
-    focused: boolean;
-    size: number;
-  }) => ReactNode;
+  icon?: (props: { color: string; focused: boolean; size: number }) => ReactNode;
   label: string;
   onPress?: () => void;
   onLongPress?: () => void;
   isActive?: boolean;
 }) {
-  const theme = useTheme();
-  const white = theme.colors.onPrimary;
+  const iconColor = isActive ? ACTIVE_COLOR : INACTIVE_COLOR;
 
   return (
     <Pressable
       onPress={onPress}
       onLongPress={onLongPress}
-      style={({ pressed }) => [
-        styles.tabItem,
-        {
-          opacity: isActive ? 1 : 0.5,
-          transform: [{ scale: pressed ? 0.9 : 1 }],
-        },
-      ]}
+      style={({ pressed }) => [styles.tabItem, { opacity: pressed ? 0.7 : 1 }]}
     >
-      <View style={styles.tabContent}>
-        {icon ? icon({ color: white, focused: isActive ?? false, size: 24 }) : null}
-        <Text style={[styles.label, { color: white }]}>{label.toUpperCase()}</Text>
+      {/* Ícone com pill no ativo */}
+      <View style={[styles.iconWrap, isActive && styles.iconWrapActive]}>
+        {icon ? icon({ color: iconColor, focused: isActive ?? false, size: 22 }) : null}
       </View>
+
+      {/* Label */}
+      <Text style={[styles.label, { color: iconColor, fontWeight: isActive ? '700' : '400' }]}>
+        {label}
+      </Text>
     </Pressable>
   );
 }
@@ -112,23 +93,22 @@ function TabBarEntry({
 const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
-    paddingHorizontal: 8,
-    paddingTop: 8,
-    borderTopWidth: 1,
-    borderTopColor: "#e5e5e5",
+    backgroundColor: BG_COLOR,
+    borderTopWidth: 0,
+    paddingTop: 4,
   },
   tabItem: {
     flex: 1,
     alignItems: "center",
-    justifyContent: "center",
-    paddingVertical: 8,
+    paddingBottom: 8,
   },
-  tabContent: {
-    alignItems: "center",
-    justifyContent: "center",
+  iconWrap: {
+    marginBottom: 2,
+    paddingVertical: 4,
   },
+  iconWrapActive: {},
   label: {
-    fontSize: 12,
-    marginTop: 2,
+    fontSize: 10,
+    letterSpacing: 0.2,
   },
 });

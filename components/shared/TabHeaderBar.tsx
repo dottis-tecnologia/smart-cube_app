@@ -1,9 +1,8 @@
 import { BottomTabHeaderProps } from "@react-navigation/bottom-tabs";
 import { getHeaderTitle } from "@react-navigation/elements";
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, StyleSheet, SafeAreaView } from "react-native";
 import Animated, { FadeInUp } from "react-native-reanimated";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { useTheme } from "react-native-paper";
+import { colors } from "../../theme";
 
 export type TabHeaderBarProps = BottomTabHeaderProps;
 
@@ -16,26 +15,20 @@ export default function TabHeaderBar({
   options,
 }: TabHeaderBarProps) {
   const title = getHeaderTitle(options, route.name);
-  const insets = useSafeAreaInsets();
-  const theme = useTheme();
 
   return (
-    <AnimatedView
-      entering={FadeInUp}
-      style={[
-        styles.container,
-        {
-          paddingTop: insets.top,
-          backgroundColor: theme.colors.surface,
-        },
-      ]}
-    >
-      <View style={styles.content}>
-        <Text style={[styles.title, { color: theme.colors.onSurface }]}>
-          {title}
-        </Text>
-      </View>
-    </AnimatedView>
+    <SafeAreaView style={{ backgroundColor: colors.surface }}>
+      <AnimatedView
+        entering={FadeInUp}
+        style={styles.container}
+      >
+        <View style={styles.content}>
+          <Text style={[styles.title, { color: colors.onSurface }]}>
+            {title}
+          </Text>
+        </View>
+      </AnimatedView>
+    </SafeAreaView>
   );
 }
 
