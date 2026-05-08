@@ -2,10 +2,9 @@ import "./i18n";
 
 import { NavigationContainer } from "@react-navigation/native";
 import Root from "./screens/Root";
-import { NativeBaseProvider } from "native-base";
-import { theme, themeConfig } from "./config";
+import { ThemeProvider } from "./components/ThemeProvider";
 import AuthWrapper from "./components/AuthWrapper";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { createTables } from "./util/db";
 import * as SplashScreen from "expo-splash-screen";
 import * as Font from "expo-font";
@@ -39,9 +38,9 @@ export default function App() {
     prepare();
   }, []);
 
-  const onReady = useCallback(async () => {
+  useEffect(() => {
     if (appIsReady) {
-      await SplashScreen.hideAsync();
+      SplashScreen.hideAsync();
     }
   }, [appIsReady]);
 
@@ -59,13 +58,13 @@ export default function App() {
           },
         }}
       >
-        <NativeBaseProvider theme={theme} config={themeConfig}>
-          <NavigationContainer onReady={onReady}>
+        <ThemeProvider theme="light">
+          <NavigationContainer>
             <AuthWrapper>
               <Root />
             </AuthWrapper>
           </NavigationContainer>
-        </NativeBaseProvider>
+        </ThemeProvider>
       </StatusBarContext.Provider>
     </>
   );

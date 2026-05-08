@@ -1,6 +1,13 @@
 import { BottomTabBarProps } from "@react-navigation/bottom-tabs";
-import { HStack, Pressable, Text, VStack, useToken } from "native-base";
+import {
+  View,
+  Pressable,
+  Text,
+  StyleSheet,
+  useColorScheme,
+} from "react-native";
 import { ReactNode } from "react";
+import { useTheme } from "react-native-paper";
 
 export type TabBarProps = BottomTabBarProps;
 
@@ -10,14 +17,17 @@ export default function TabBar({
   navigation,
   state,
 }: TabBarProps) {
+  const theme = useTheme();
+
   return (
-    <HStack
-      bg="primary.400"
-      py={2}
-      px={2}
-      space={3}
-      borderBottomWidth={1}
-      borderBottomColor={"primary.600"}
+    <View
+      style={[
+        styles.container,
+        {
+          backgroundColor: theme.colors.primary,
+          paddingBottom: insets.bottom,
+        },
+      ]}
     >
       {state.routes.map((route, index) => {
         const { options } = descriptors[route.key];
@@ -55,7 +65,7 @@ export default function TabBar({
           />
         );
       })}
-    </HStack>
+    </View>
   );
 }
 
@@ -76,27 +86,49 @@ function TabBarEntry({
   onLongPress?: () => void;
   isActive?: boolean;
 }) {
-  const white = useToken("colors", "white");
+  const theme = useTheme();
+  const white = theme.colors.onPrimary;
 
   return (
-    <Pressable onPress={onPress} onLongPress={onLongPress} flex={1}>
-      {({ isPressed }) => {
-        return (
-          <VStack
-            alignItems={"center"}
-            space={0}
-            opacity={isActive ? 1 : 0.5}
-            style={{ transform: [{ scale: isPressed ? 0.9 : 1 }] }}
-          >
-            {icon
-              ? icon({ color: white, focused: isActive ?? false, size: 6 })
-              : null}
-            <Text fontSize="xs" color="white">
-              {label.toUpperCase()}
-            </Text>
-          </VStack>
-        );
-      }}
+    <Pressable
+      onPress={onPress}
+      onLongPress={onLongPress}
+      style={({ pressed }) => [
+        styles.tabItem,
+        {
+          opacity: isActive ? 1 : 0.5,
+          transform: [{ scale: pressed ? 0.9 : 1 }],
+        },
+      ]}
+    >
+      <View style={styles.tabContent}>
+        {icon ? icon({ color: white, focused: isActive ?? false, size: 24 }) : null}
+        <Text style={[styles.label, { color: white }]}>{label.toUpperCase()}</Text>
+      </View>
     </Pressable>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flexDirection: "row",
+    paddingHorizontal: 8,
+    paddingTop: 8,
+    borderTopWidth: 1,
+    borderTopColor: "#e5e5e5",
+  },
+  tabItem: {
+    flex: 1,
+    alignItems: "center",
+    justifyContent: "center",
+    paddingVertical: 8,
+  },
+  tabContent: {
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  label: {
+    fontSize: 12,
+    marginTop: 2,
+  },
+});

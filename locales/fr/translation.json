@@ -30,15 +30,22 @@
     "location": "Localisation:",
     "type": "Type:",
     "notes": "Remarques",
-    "latestReadings": "Dernières lectures"
+    "latestReadings": "Dernières lectures",
+    "noImage": "Pas d'image"
+  },
+  "common": {
+    "unknown": "Inconnu"
   },
   "error": "Une erreur s'est produite.",
   "login": {
     "login": "Se connecter",
     "enterCredentials": "Entrez vos identifiants",
     "internetAccess": "Vous avez besoin d'un accès Internet pour vous connecter pour la première fois",
-    "connect": "SE CONNECTER"
+    "connect": "SE CONNECTER",
+    "error": "Erreur de connexion"
   },
+  "emailPlaceholder": "votre@email.com",
+  "passwordPlaceholder": "••••••••",
   "email": "E-mail",
   "error_notFound": "Aucun résultat n'a été trouvé",
   "password": "Mot de passe",
@@ -53,12 +60,19 @@
     "notSynchronized": "Non synchronisé",
     "goToMeter": "Accéder au compteur",
     "invalidValue": "Cette valeur est invalide, veuillez entrer un nombre",
-    "currentReading": "Lecture actuelle"
+    "currentReading": "Lecture actuelle",
+    "saving": "Enregistrement de la lecture...",
+    "noImage": "Pas d'image",
+    "createdAt": "Date",
+    "synchedAt": "Synchronisé le"
   },
   "welcome": "Bienvenue",
   "home": {
     "readingsToday": "Lectures aujourd'hui",
-    "latestReadings": "Dernières lectures"
+    "readingsWeek": "7 derniers jours",
+    "latestReadings": "Dernières lectures",
+    "noReadings": "Aucune lecture récente",
+    "scanToStart": "Scannez un QR Code pour commencer"
   },
   "location": {
     "location": "Localisation",
@@ -68,9 +82,10 @@
   },
   "read": {
     "pointCamera": "Pointez votre appareil photo vers le QR Code attaché au compteur",
-    "or": "Ou",
+    "or": "Ou saisissez manuellement",
     "enterId": "Entrez l'ID manuellement ci-dessous",
-    "meterId": "ID du compteur..."
+    "meterId": "ID du compteur",
+    "meterIdPlaceholder": "Ex: MED-001"
   },
   "search": {
     "search": "Recherche",
@@ -82,14 +97,21 @@
   "sync": {
     "sync": "Synch",
     "lastSync": "Dernière synchronisation :",
+    "never": "Jamais",
     "unsentReadings": "Lectures non envoyées",
+    "pending": "En attente",
+    "success": "Synchronisé avec succès !",
+    "error": "Erreur de synchronisation",
+    "allSynced": "Tout est synchronisé !",
+    "noPending": "Aucune lecture en attente",
     "deleteLocal": "Supprimer les données locales",
     "deleteDatabaseTitle": "Supprimer la base de données",
     "deleteDatabaseBody": "Cette action supprimera la base de données locale et toutes les données stockées dans cet appareil, toutes les données non synchronisées seront perdues, Faites attention lorsque vous utilisez cette option",
-    "exportDb": "Exporter Database"
+    "exportDb": "Exporter la base de données"
   },
   "cancel": "Annuler",
   "delete": "Supprimer",
+  "save": "Enregistrer",
   "tabs": {
     "home": "Maison",
     "locations": "Localisation",

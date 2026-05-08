@@ -1,14 +1,14 @@
 {
   "expo": {
     "name": "Cube4Meters",
-    "slug": "smart-cube",
+    "slug": "smart-cube-qrcode",
     "version": "1.2.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/splash.png",
-      "resizeMode": "contain",
+      "resizeMode": "cover",
       "backgroundColor": "#0093e9"
     },
     "androidNavigationBar": {
@@ -29,7 +29,8 @@
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
       ],
-      "package": "com.dottis.smartcube"
+      "package": "com.dottis.smartcube",
+      "versionCode": 4
     },
     "plugins": [
       [
@@ -37,13 +38,21 @@
         {
           "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera."
         }
+      ],
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "kotlinVersion": "1.9.25"
+          }
+        }
       ]
     ],
     "extra": {
       "eas": {
-        "projectId": "d9cd5daf-3360-4bd0-8a53-bc3a859589a7"
+        "projectId": "f7a41f51-7265-4ac7-8721-25f464f75c79"
       }
     },
-    "owner": "dottis-tecnologia"
+    "owner": "pedrohdev-qrcode"
   }
 }

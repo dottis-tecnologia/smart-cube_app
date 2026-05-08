@@ -1,23 +1,15 @@
 import { Feather, FontAwesome, FontAwesome5 } from "@expo/vector-icons";
-import {
-  Camera as BaseCamera,
-  CameraProps,
-  CameraType,
-  FlashMode,
-  Point,
-} from "expo-camera";
-import { Center, Text, Button, IconButton, HStack, Icon } from "native-base";
+import { CameraView, useCameraPermissions, CameraViewProps } from "expo-camera";
 import { forwardRef, useState } from "react";
-import { useWindowDimensions, StyleSheet } from "react-native";
-import { BarCodeScanner } from "expo-barcode-scanner";
+import { useWindowDimensions, StyleSheet, View, Text, Pressable } from "react-native";
 import Animated, { FadeIn, FadeInUp, FadeOut } from "react-native-reanimated";
 import { useIsFocused } from "@react-navigation/native";
 
-const AnimatedIconButton = Animated.createAnimatedComponent(IconButton);
-const AnimatedCenter = Animated.createAnimatedComponent(Center);
+const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
+const AnimatedView = Animated.createAnimatedComponent(View);
 
-const Camera = forwardRef<BaseCamera, CameraProps>((props, ref) => {
-  const [permission, requestPermission] = BaseCamera.useCameraPermissions();
+const Camera = forwardRef<CameraView, CameraViewProps>((props, ref) => {
+  const [permission, requestPermission] = useCameraPermissions();
   const [flashlight, setFlashlight] = useState(false);
   const [frontCamera, setFrontCamera] = useState(false);
   const { width } = useWindowDimensions();
@@ -26,75 +18,110 @@ const Camera = forwardRef<BaseCamera, CameraProps>((props, ref) => {
 
   if (!permission) {
     return (
-      <AnimatedCenter flex={1} entering={FadeIn} exiting={FadeOut} bg="black">
-        <Icon as={FontAwesome5} name="camera" size={24} color="light.800" />
-      </AnimatedCenter>
+      <AnimatedView style={[styles.center, styles.black]} entering={FadeIn} exiting={FadeOut}>
+        <FontAwesome5 name="camera" size={24} color="#666" />
+      </AnimatedView>
     );
   }
 
   if (!permission.granted) {
     return (
-      <AnimatedCenter flex={1} entering={FadeIn} exiting={FadeOut} bg={"black"}>
-        <Text color="white" mb={2}>
-          We need permission to use your camera
-        </Text>
-        <Button onPress={requestPermission}>Grant permission</Button>
-      </AnimatedCenter>
+      <AnimatedView style={[styles.center, styles.black]} entering={FadeIn} exiting={FadeOut}>
+        <Text style={styles.whiteText}>We need permission to use your camera</Text>
+        <Pressable onPress={requestPermission} style={styles.button}>
+          <Text style={styles.buttonText}>Grant permission</Text>
+        </Pressable>
+      </AnimatedView>
     );
   }
 
   return (
-    <AnimatedCenter
-      overflow={"hidden"}
+    <AnimatedView
+      style={[styles.container, styles.black]}
       entering={FadeIn}
       exiting={FadeOut}
-      flex={1}
-      bg="black"
     >
       {isFocused ? (
-        <BaseCamera
-          ratio="4:3"
+        <CameraView
           style={{
             height,
             width,
           }}
-          type={frontCamera ? CameraType.front : CameraType.back}
-          flashMode={flashlight ? FlashMode.torch : FlashMode.off}
-          barCodeScannerSettings={{
-            barCodeTypes: [BarCodeScanner.Constants.BarCodeType.qr],
+          facing={frontCamera ? 'front' : 'back'}
+          enableTorch={flashlight}
+          barcodeScannerSettings={{
+            barcodeTypes: ['qr'],
           }}
           ref={ref}
           {...props}
-        ></BaseCamera>
+        />
       ) : (
-        <Center width={width} height={width} bg="black">
-          <Icon as={FontAwesome5} name="camera" size={24} color="light.800" />
-        </Center>
+        <View style={[styles.cameraPlaceholder, { width, height: width }]}>
+          <FontAwesome5 name="camera" size={24} color="#666" />
+        </View>
       )}
-      <HStack alignSelf={"flex-end"} position={"absolute"} top={0} right={0}>
-        <AnimatedIconButton
-          colorScheme={"dark"}
-          size="lg"
+      <View style={styles.controls}>
+        <AnimatedPressable
+          style={styles.iconButton}
           onPress={() => setFlashlight((v) => !v)}
-          _icon={{
-            as: FontAwesome,
-            name: "flash",
-          }}
           entering={FadeInUp}
-        />
-        <AnimatedIconButton
-          colorScheme={"dark"}
-          size="lg"
+        >
+          <FontAwesome name="flash" size={24} color="white" />
+        </AnimatedPressable>
+        <AnimatedPressable
+          style={styles.iconButton}
           onPress={() => setFrontCamera((v) => !v)}
-          _icon={{
-            as: FontAwesome,
-            name: "repeat",
-          }}
           entering={FadeInUp.delay(100)}
-        />
-      </HStack>
-    </AnimatedCenter>
+        >
+          <FontAwesome name="repeat" size={24} color="white" />
+        </AnimatedPressable>
+      </View>
+    </AnimatedView>
   );
+});
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    overflow: 'hidden',
+  },
+  center: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 16,
+  },
+  black: {
+    backgroundColor: 'black',
+  },
+  whiteText: {
+    color: 'white',
+    marginBottom: 8,
+  },
+  button: {
+    backgroundColor: '#3b82f6',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 8,
+  },
+  buttonText: {
+    color: 'white',
+  },
+  cameraPlaceholder: {
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  controls: {
+    position: 'absolute',
+    top: 0,
+    right: 0,
+    flexDirection: 'row',
+    padding: 16,
+  },
+  iconButton: {
+    padding: 8,
+    marginLeft: 8,
+  },
 });
 
 export default Camera;

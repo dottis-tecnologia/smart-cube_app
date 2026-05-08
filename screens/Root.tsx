@@ -6,7 +6,7 @@ import CreateReading from "./CreateReading";
 import Reading from "./Reading";
 import Login from "./NoAuth/Login";
 import useAuth from "../hooks/useAuth";
-import { Center, Spinner } from "native-base";
+import { View, ActivityIndicator } from "react-native";
 import ListMeters from "./ListMeters";
 import { useTranslation } from "react-i18next";
 
@@ -29,9 +29,9 @@ export default function Root({}: RootProps) {
 
   if (isLoading) {
     return (
-      <Center flex={1}>
-        <Spinner />
-      </Center>
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+        <ActivityIndicator size="large" />
+      </View>
     );
   }
 
@@ -52,18 +52,18 @@ export default function Root({}: RootProps) {
           <Stack.Screen
             name="Meter"
             component={Meter}
-            options={{ title: t("titles.meter", "Meter") }}
+            options={{ title: t("titles.meter") }}
           />
           <Stack.Screen
             name="ListMeters"
             component={ListMeters}
-            options={{ title: t("titles.meters", "Meters") }}
+            options={{ title: t("titles.meters") }}
           />
           <Stack.Screen name="Reading" component={Reading} />
           <Stack.Screen
             name="CreateReading"
             component={CreateReading}
-            options={{ title: t("titles.reading", "Reading") }}
+            options={{ title: t("titles.reading") }}
           />
         </>
       ) : (

@@ -2,7 +2,6 @@ import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
 import ReadCode from "./ReadCode";
 import Home from "./Home";
 import TabBar from "../../components/shared/TabBar";
-import { Icon } from "native-base";
 import { FontAwesome } from "@expo/vector-icons";
 import HeaderBar from "../../components/shared/TabHeaderBar";
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
@@ -10,7 +9,6 @@ import { RootStackParamList } from "../Root";
 import Sync from "./Sync";
 import Locations from "./Locations";
 import Search from "./Search";
-import type { InterfaceIconProps } from "native-base/lib/typescript/components/primitives/Icon/types";
 import { useTranslation } from "react-i18next";
 
 export type TabParamList = {
@@ -40,7 +38,7 @@ export default function Tabs({}: TabsProps) {
         name="Home"
         component={Home}
         options={{
-          title: t("tabs.home", "Home"),
+          title: t("tabs.home"),
           headerShown: false,
           tabBarIcon: tabBarIcon("home"),
         }}
@@ -50,15 +48,15 @@ export default function Tabs({}: TabsProps) {
         component={Locations}
         options={{
           tabBarIcon: tabBarIcon("list"),
-          title: t("tabs.locations", "Locations"),
+          title: t("tabs.locations"),
         }}
       />
       <Tab.Screen
         name="ReadCode"
         component={ReadCode}
         options={{
-          tabBarIcon: tabBarIcon("qrcode", { marginLeft: 1 }),
-          title: t("tabs.read", "Read"),
+          tabBarIcon: tabBarIcon("qrcode"),
+          title: t("tabs.read"),
         }}
       />
       <Tab.Screen
@@ -66,7 +64,7 @@ export default function Tabs({}: TabsProps) {
         component={Search}
         options={{
           tabBarIcon: tabBarIcon("search"),
-          title: t("tabs.search", "Search"),
+          title: t("tabs.search"),
         }}
       />
       <Tab.Screen
@@ -74,7 +72,7 @@ export default function Tabs({}: TabsProps) {
         component={Sync}
         options={{
           tabBarIcon: tabBarIcon("refresh"),
-          title: t("tabs.sync", "Sync"),
+          title: t("tabs.sync"),
         }}
       />
     </Tab.Navigator>
@@ -82,14 +80,12 @@ export default function Tabs({}: TabsProps) {
 }
 
 const tabBarIcon =
-  (name: string, options?: InterfaceIconProps) =>
+  (name: string) =>
   ({ color, size }: { color: string; size: number }) =>
     (
-      <Icon
-        as={FontAwesome}
-        name={name}
+      <FontAwesome
+        name={name as any}
         color={color}
         size={size}
-        {...options}
       />
     );

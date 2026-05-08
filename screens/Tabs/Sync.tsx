@@ -1,159 +1,226 @@
-import { deleteDatabase, dbQuery, databasePath } from "../../util/db";
-import {
-  Box,
-  Button,
-  Center,
-  HStack,
-  Heading,
-  Icon,
-  Input,
-  Modal,
-  Pressable,
-  Text,
-  VStack,
-  useToast,
-} from "native-base";
-import { FontAwesome } from "@expo/vector-icons";
-import useMutation from "../../hooks/useMutation";
-import useQuery from "../../hooks/useQuery";
-import Animated, { SlideInLeft, SlideOutRight } from "react-native-reanimated";
-import { formatDistanceToNow } from "date-fns";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { useState } from "react";
-import { syncData } from "../../util/sync/sync";
-import useAuth from "../../hooks/useAuth";
-import { getToken } from "../../util/authToken";
-import ParallaxScroll from "../../components/ParallaxScroll";
-import { useTranslation } from "react-i18next";
-import dateFnsLocale from "../../util/dateFnsLocale";
-import useStatusBar from "../../hooks/useStatusBar";
-import { shareAsync } from "expo-sharing";
+/**
+ * Sync Screen - Redesign Fase 3
+ * Tela de sincronização moderna com Material Design 3
+ */
+
+import React, { useState } from 'react';
+import { View, StyleSheet, ScrollView, Pressable } from 'react-native';
+import { 
+  Text, 
+  useTheme, 
+  Button, 
+  Portal, 
+  Dialog, 
+  TextInput,
+  ActivityIndicator,
+  IconButton,
+  Avatar,
+  Snackbar
+} from 'react-native-paper';
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { formatDistanceToNow } from 'date-fns';
+import { ptBR } from 'date-fns/locale';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import { shareAsync } from 'expo-sharing';
+import Animated, { FadeInUp, FadeInLeft } from 'react-native-reanimated';
+
+import { deleteDatabase, dbQuery, databasePath } from '../../util/db';
+import useMutation from '../../hooks/useMutation';
+import useQuery from '../../hooks/useQuery';
+import { syncData } from '../../util/sync/sync';
+import useAuth from '../../hooks/useAuth';
+import { getToken } from '../../util/authToken';
+import { useTranslation } from 'react-i18next';
+import useStatusBar from '../../hooks/useStatusBar';
+
+import { AppCard, AppCardContent } from '../../components/ui/AppCard';
+import { AppButton } from '../../components/ui/AppButton';
+import { AppDivider } from '../../components/ui/AppDivider';
+import { spacing, borderRadius, colors as themeColors } from '../../theme';
+
+const AnimatedView = Animated.createAnimatedComponent(View);
+
+// Interface para leitura
+interface UnsyncedReading {
+  id: string;
+  meterId: string;
+  meterName: string;
+  value: number;
+  unit: string;
+  createdAt: string;
+  imagePath: string;
+}
+
+const getUnsyncedReadings = () =>
+  dbQuery<UnsyncedReading>(
+    `SELECT readings.*, meters.unit, meters.name as meterName 
+     FROM readings 
+     JOIN meters ON readings.meterId = meters.id 
+     WHERE readings.synchedAt IS NULL;`
+  );
 
 export type SyncProps = {};
 
-const AnimatedHStack = Animated.createAnimatedComponent(HStack);
-
-const getReadings = () =>
-  dbQuery<{
-    id: string;
-    meterId: string;
-    meterName: string;
-    value: number;
-    unit: string;
-    createdAt: string;
-    imagePath: string;
-  }>(
-    "SELECT readings.*, meters.unit, meters.name as meterName FROM readings JOIN meters ON readings.meterId = meters.id WHERE readings.synchedAt IS NULL;",
-  );
-
 export default function Sync({}: SyncProps) {
-  useStatusBar({ style: "dark" });
+  useStatusBar({ style: 'dark' });
+  const theme = useTheme();
   const { refreshToken } = useAuth();
   const { t, i18n } = useTranslation();
-  const { data: readings, refetch: refetchReadings } = useQuery(
-    getReadings,
-    [],
-  );
-  const { data: lastSync, refetch: refetchLastSync } = useQuery(async () => {
-    const lastSync = await AsyncStorage.getItem("last-sync");
-    if (lastSync == null) return null;
+  const [snackbarVisible, setSnackbarVisible] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState('');
+  
+  const locale = i18n.language === 'pt' ? ptBR : undefined;
 
-    return new Date(lastSync);
+  const { data: readings, refetch: refetchReadings } = useQuery(
+    getUnsyncedReadings,
+    []
+  );
+
+  const { data: lastSync, refetch: refetchLastSync } = useQuery(async () => {
+    const stored = await AsyncStorage.getItem('last-sync');
+    return stored ? new Date(stored) : null;
   }, []);
 
-  const { mutate, isMutating } = useMutation(syncData, {
-    onSuccess() {
+  const { mutate: syncMutate, isMutating: isSyncing } = useMutation(syncData, {
+    onSuccess: () => {
       refetchReadings();
       refetchLastSync();
+      showSnackbar(t('sync.success'));
+    },
+    onError: () => {
+      showSnackbar(t('sync.error'));
     },
     async beforeRequest() {
       if (getToken() == null) await refreshToken();
     },
   });
 
+  const showSnackbar = (message: string) => {
+    setSnackbarMessage(message);
+    setSnackbarVisible(true);
+  };
+
+  const unsyncedCount = readings?.rows.length || 0;
+
   return (
-    <Box flex={1} bg="light.100">
-      <ParallaxScroll
-        header={
-          <Center
-            bg={{
-              linearGradient: {
-                colors: ["primary.400", "secondary.400"],
-                start: [0, 0],
-                end: [0, 1],
-              },
-            }}
-            p={8}
-            pb={10}
-          >
-            <HStack
-              w="full"
-              space={3}
-              justifyContent={"space-between"}
-              alignItems={"center"}
+    <View style={styles.container}>
+      {/* Header */}
+      <View style={styles.header}>
+        <AnimatedView entering={FadeInUp} style={styles.headerContent}>
+          <View style={styles.headerTop}>
+            <View>
+              <Text variant="headlineSmall" style={styles.headerTitle}>
+                {t('sync.sync')}
+              </Text>
+              <Text variant="bodyMedium" style={styles.headerSubtitle}>
+                {t('sync.lastSync')}{' '}
+                {lastSync
+                  ? formatDistanceToNow(lastSync, { addSuffix: true, locale })
+                  : t('sync.never')}
+              </Text>
+            </View>
+            
+            <AppButton
+              mode="primary"
+              onPress={() => syncMutate()}
+              loading={isSyncing}
+              icon="sync"
+              size="small"
             >
-              <Box key="1">
-                <Heading color="white">{t("sync.sync", "Sync")}</Heading>
-                <Text color="white" opacity={0.7}>
-                  {t("sync.lastSync", "Last synchronization:")}
-                </Text>
-                <Text color="white" opacity={0.8}>
-                  {lastSync
-                    ? formatDistanceToNow(lastSync, {
-                        addSuffix: true,
-                        locale: dateFnsLocale(i18n.resolvedLanguage),
-                      })
-                    : "never"}
-                </Text>
-              </Box>
-              <Button
-                mb={3}
-                key="2"
-                leftIcon={<Icon as={FontAwesome} name="refresh" />}
-                colorScheme={"green"}
-                onPress={() => mutate()}
-                isLoading={isMutating}
-              >
-                {t("sync.sync", "Sync")}
-              </Button>
-            </HStack>
-          </Center>
-        }
-        flex={1}
-      >
-        <Box p={3} borderTopRadius={"lg"} mt={-3} bg="light.100">
-          <Heading mb={3} fontSize={"md"} key="2">
-            {t("sync.unsentReadings", "Unsent readings")}
-          </Heading>
+              {t('sync.sync')}
+            </AppButton>
+          </View>
 
-          <Text color="gray.500" p={1} textAlign={"center"} mb={3}>
-            <Icon as={FontAwesome} name="pencil" w={4} h={4} />{" "}
-            {t(
-              "readings.longPressToEdit",
-              "Press and hold on an item to edit its value",
-            )}
+          {/* Stats Card */}
+          <AppCard style={styles.statsCard}>
+            <AppCardContent style={styles.statsContent}>
+              <View style={styles.statItem}>
+                <Avatar.Icon 
+                  size={40} 
+                  icon="cloud-upload" 
+                  style={{ backgroundColor: theme.colors.errorContainer }}
+                  color={theme.colors.error}
+                />
+                <View>
+                  <Text variant="headlineSmall" style={{ color: theme.colors.error, fontWeight: '700' }}>
+                    {unsyncedCount}
+                  </Text>
+                  <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
+                    {t('sync.pending')}
+                  </Text>
+                </View>
+              </View>
+            </AppCardContent>
+          </AppCard>
+        </AnimatedView>
+      </View>
+
+      {/* Content */}
+      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+        {/* Hint */}
+        <AnimatedView entering={FadeInUp.delay(200)} style={styles.hint}>
+          <MaterialCommunityIcons name="pencil" size={16} color={theme.colors.outline} />
+          <Text variant="bodySmall" style={{ color: theme.colors.outline }}>
+            {t('readings.longPressToEdit')}
           </Text>
+        </AnimatedView>
 
-          {readings?.rows.map((item) => (
-            <ReadingItem
-              key={item.id}
-              item={item}
-              onUpdate={() => refetchReadings()}
-            />
+        {/* Readings List */}
+        <View style={styles.readingsList}>
+          {readings?.rows.map((item, index) => (
+            <AnimatedView 
+              key={item.id} 
+              entering={FadeInUp.delay(300 + index * 50)}
+            >
+              <ReadingItem
+                item={item}
+                onUpdate={() => refetchReadings()}
+              />
+            </AnimatedView>
           ))}
-          <HStack flexWrap={"wrap"} space={3} justifyContent={"center"}>
-            <ShareDBButton />
-            <DeleteDBButton
-              key="3"
-              onSuccess={() => {
-                refetchLastSync();
-                refetchReadings();
-              }}
-            />
-          </HStack>
-        </Box>
-      </ParallaxScroll>
-    </Box>
+          
+          {unsyncedCount === 0 && (
+            <AnimatedView entering={FadeInUp.delay(300)} style={styles.emptyState}>
+              <MaterialCommunityIcons 
+                name="check-circle-outline" 
+                size={64} 
+                color={theme.colors.primary} 
+              />
+              <Text variant="titleMedium" style={styles.emptyTitle}>
+                {t('sync.allSynced')}
+              </Text>
+              <Text variant="bodyMedium" style={styles.emptySubtitle}>
+                {t('sync.noPending')}
+              </Text>
+            </AnimatedView>
+          )}
+        </View>
+
+        <AppDivider />
+
+        {/* Actions */}
+        <AnimatedView entering={FadeInUp.delay(500)} style={styles.actions}>
+          <ShareDBButton />
+          <DeleteDBButton 
+            onSuccess={() => {
+              refetchLastSync();
+              refetchReadings();
+            }}
+          />
+        </AnimatedView>
+
+        <View style={{ height: 100 }} />
+      </ScrollView>
+
+      <Snackbar
+        visible={snackbarVisible}
+        onDismiss={() => setSnackbarVisible(false)}
+        duration={3000}
+        style={{ backgroundColor: theme.colors.inverseSurface }}
+      >
+        {snackbarMessage}
+      </Snackbar>
+    </View>
   );
 }
 
@@ -161,224 +228,302 @@ function ReadingItem({
   item,
   onUpdate,
 }: {
-  item: {
-    id: string;
-    value: number;
-    meterName: string;
-    createdAt: string;
-    imagePath: string;
-    unit: string;
-  };
+  item: UnsyncedReading;
   onUpdate?: () => void;
 }) {
-  const { i18n, t } = useTranslation();
-  const [modalVisible, setModalVisible] = useState(false);
-  const [reading, setReading] = useState(
-    item.value ? item.value.toString() : "",
-  );
-  const toast = useToast();
+  const { t, i18n } = useTranslation();
+  const theme = useTheme();
+  const [dialogVisible, setDialogVisible] = useState(false);
+  const [reading, setReading] = useState(item.value ? item.value.toString() : '');
+  const [error, setError] = useState('');
+
+  const locale = i18n.language === 'pt' ? ptBR : undefined;
+
   const { isMutating, mutate } = useMutation(
-    async (reading: number) => {
+    async (newValue: number) => {
       await dbQuery(
-        "UPDATE readings SET value = ? WHERE id = ?",
-        [reading, item.id],
-        false,
+        'UPDATE readings SET value = ? WHERE id = ?',
+        [newValue, item.id],
+        false
       );
     },
     {
       onSuccess: () => {
         onUpdate?.();
-        setModalVisible(false);
+        setDialogVisible(false);
+        setError('');
       },
-    },
+    }
   );
 
-  const resetField = () => setReading(item.value ? item.value.toString() : "");
+  const handleSave = () => {
+    const numberValue = parseFloat(reading);
+    if (isNaN(numberValue)) {
+      setError(t('reading.invalidValue'));
+      return;
+    }
+    mutate(numberValue);
+  };
 
   return (
     <>
-      <Modal
-        isOpen={modalVisible}
-        onClose={() => {
-          resetField();
-          setModalVisible(false);
-        }}
-        avoidKeyboard
-        size="lg"
-      >
-        <Modal.Content>
-          <Modal.CloseButton />
-          <Modal.Header>{t("readings.update", "Update reading")}</Modal.Header>
-          <Modal.Body>
-            <Text mb="3">
-              {t(
-                "readings.mistakes",
-                "You can update the value if you made any mistakes!",
-              )}
+      <Portal>
+        <Dialog 
+          visible={dialogVisible} 
+          onDismiss={() => {
+            setDialogVisible(false);
+            setReading(item.value ? item.value.toString() : '');
+            setError('');
+          }}
+        >
+          <Dialog.Title>{t('readings.update')}</Dialog.Title>
+          <Dialog.Content>
+            <Text variant="bodyMedium" style={{ marginBottom: spacing.md }}>
+              {t('readings.mistakes')}
             </Text>
-            <Input
+            <TextInput
+              label={t('reading.currentReading')}
+              value={reading}
+              onChangeText={setReading}
               keyboardType="numeric"
               selectTextOnFocus
-              placeholder={t("reading.currentReading", "Current reading")}
-              value={reading}
-              onChangeText={(v) => setReading(v)}
+              error={!!error}
             />
-          </Modal.Body>
-          <Modal.Footer>
-            <Button.Group space={2}>
-              <Button
-                variant="ghost"
-                colorScheme="blueGray"
-                onPress={() => {
-                  resetField();
-                  setModalVisible(false);
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                isLoading={isMutating}
-                onPress={() => {
-                  const numberValue = +reading;
-                  if (isNaN(numberValue)) {
-                    toast.show({
-                      description: t(
-                        "reading.invalidValue",
-                        "This value is invalid, please input a number",
-                      ),
-                    });
-                    return;
-                  }
-                  mutate(numberValue);
-                }}
-              >
-                Save
-              </Button>
-            </Button.Group>
-          </Modal.Footer>
-        </Modal.Content>
-      </Modal>
-      <Pressable onLongPress={() => setModalVisible(true)}>
-        {({ isPressed }) => (
-          <AnimatedHStack
-            key={item.id}
-            p={5}
-            bg={"red.500"}
-            rounded="lg"
-            mb={3}
-            alignItems="center"
-            space={5}
-            style={{ transform: [{ scale: isPressed ? 0.95 : 1 }] }}
-            entering={SlideInLeft.delay(200).randomDelay()}
-            exiting={SlideOutRight.delay(200).randomDelay()}
-          >
-            <VStack flex={1}>
-              <Text color="white" key="1">
-                {item.meterName}
+            {error ? (
+              <Text variant="bodySmall" style={{ color: theme.colors.error, marginTop: spacing.xs }}>
+                {error}
               </Text>
-              <Text color="white" key="2">
-                {formatDistanceToNow(new Date(item.createdAt), {
-                  addSuffix: true,
-                  locale: dateFnsLocale(i18n.resolvedLanguage),
-                })}
+            ) : null}
+          </Dialog.Content>
+          <Dialog.Actions>
+            <AppButton
+              mode="text"
+              onPress={() => {
+                setDialogVisible(false);
+                setReading(item.value ? item.value.toString() : '');
+                setError('');
+              }}
+            >
+              {t('cancel')}
+            </AppButton>
+            <AppButton
+              mode="primary"
+              onPress={handleSave}
+              loading={isMutating}
+            >
+              {t('save')}
+            </AppButton>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+
+      <Pressable 
+        onLongPress={() => setDialogVisible(true)}
+        style={({ pressed }: { pressed: boolean }) => [
+          styles.readingItem,
+          { transform: [{ scale: pressed ? 0.98 : 1 }] }
+        ]}
+      >
+        <View style={[styles.readingCard, { backgroundColor: theme.colors.errorContainer }]}>
+          <View style={styles.readingContent}>
+            <View style={styles.readingMain}>
+              <MaterialCommunityIcons 
+                name="lightning-bolt" 
+                size={20} 
+                color={theme.colors.error} 
+              />
+              <View style={styles.readingInfo}>
+                <Text variant="titleSmall" style={{ fontWeight: '600' }}>
+                  {item.meterName}
+                </Text>
+                <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
+                  {formatDistanceToNow(new Date(item.createdAt), { addSuffix: true, locale })}
+                </Text>
+              </View>
+            </View>
+            <View style={styles.readingValue}>
+              <Text variant="titleMedium" style={{ fontWeight: '700', color: theme.colors.error }}>
+                {item.value}
               </Text>
-            </VStack>
-            <Text color="white" fontWeight={"bold"}>
-              {item.value} {item.unit}
-            </Text>
-          </AnimatedHStack>
-        )}
+              <Text variant="bodySmall" style={{ color: theme.colors.onSurfaceVariant }}>
+                {item.unit}
+              </Text>
+            </View>
+          </View>
+        </View>
       </Pressable>
     </>
   );
 }
 
-type DeleteDBButtonProps = {
-  onSuccess?: () => void;
-};
-function DeleteDBButton({ onSuccess }: DeleteDBButtonProps) {
-  const [isOpen, setIsOpen] = useState(false);
-  const { mutate: deleteDb, isMutating: isDeletingDb } = useMutation(
-    deleteDatabase,
-    {
-      onSuccess: () => {
-        onSuccess?.();
-      },
+function DeleteDBButton({ onSuccess }: { onSuccess?: () => void }) {
+  const [dialogVisible, setDialogVisible] = useState(false);
+  const { mutate: deleteDb, isMutating } = useMutation(deleteDatabase, {
+    onSuccess: () => {
+      onSuccess?.();
+      setDialogVisible(false);
     },
-  );
+  });
   const { t } = useTranslation();
+  const theme = useTheme();
 
   return (
     <>
-      <Button
-        colorScheme="danger"
-        mb={3}
-        isLoading={isDeletingDb}
-        onPress={() => setIsOpen(true)}
+      <Portal>
+        <Dialog visible={dialogVisible} onDismiss={() => setDialogVisible(false)}>
+          <Dialog.Title>{t('sync.deleteDatabaseTitle')}</Dialog.Title>
+          <Dialog.Content>
+            <Text variant="bodyMedium">
+              {t('sync.deleteDatabaseBody')}
+            </Text>
+          </Dialog.Content>
+          <Dialog.Actions>
+            <AppButton mode="text" onPress={() => setDialogVisible(false)}>
+              {t('cancel')}
+            </AppButton>
+            <AppButton 
+              mode="primary" 
+              onPress={() => deleteDb()}
+              loading={isMutating}
+              style={{ backgroundColor: theme.colors.error }}
+            >
+              {t('delete')}
+            </AppButton>
+          </Dialog.Actions>
+        </Dialog>
+      </Portal>
+
+      <AppButton
+        mode="outline"
+        onPress={() => setDialogVisible(true)}
+        icon="delete"
+        style={styles.actionButton}
       >
-        {t("sync.deleteLocal", "Delete local data")}
-      </Button>
-      <Modal isOpen={isOpen} onClose={() => setIsOpen(false)} safeArea>
-        <Modal.Content accessibilityLabel="Delete Database" m={3}>
-          <Modal.CloseButton />
-          <Modal.Header>
-            {t("sync.deleteDatabaseTitle", "Delete Database")}
-          </Modal.Header>
-          <Modal.Body>
-            {t(
-              "sync.deleteDatabaseBody",
-              "This action will delete the local database and all the data stored in this device, any unsynchronized data will be lost, be careful when using this option",
-            )}
-          </Modal.Body>
-          <Modal.Footer justifyContent="flex-end">
-            <Button.Group space={2}>
-              <Button
-                colorScheme="coolGray"
-                variant="ghost"
-                onPress={() => setIsOpen(false)}
-              >
-                {t("cancel", "Cancel")}
-              </Button>
-              <Button
-                colorScheme="danger"
-                onPress={() => {
-                  deleteDb();
-                  setIsOpen(false);
-                }}
-              >
-                {t("delete", "Delete")}
-              </Button>
-            </Button.Group>
-          </Modal.Footer>
-        </Modal.Content>
-      </Modal>
+        {t('sync.deleteLocal')}
+      </AppButton>
     </>
   );
 }
 
-type ShareDBButtonProps = {
-  onSuccess?: () => void;
-};
-function ShareDBButton({ onSuccess }: ShareDBButtonProps) {
-  const { mutate: shareDb, isMutating: isSharingDb } = useMutation(
+function ShareDBButton() {
+  const { mutate: shareDb, isMutating } = useMutation(
     () => shareAsync(databasePath),
-
-    {
-      onSuccess: () => {
-        onSuccess?.();
-      },
-    },
+    {}
   );
   const { t } = useTranslation();
 
   return (
-    <Button
-      colorScheme="yellow"
-      mb={3}
-      isLoading={isSharingDb}
+    <AppButton
+      mode="outline"
       onPress={() => shareDb()}
+      loading={isMutating}
+      icon="share-variant"
+      style={styles.actionButton}
     >
-      {t("sync.exportDb", "Export Database")}
-    </Button>
+      {t('sync.exportDb')}
+    </AppButton>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: themeColors.background,
+  },
+  header: {
+    backgroundColor: themeColors.primary,
+    paddingTop: 60,
+    paddingHorizontal: spacing.md,
+    paddingBottom: spacing.xl,
+  },
+  headerContent: {
+    gap: spacing.md,
+  },
+  headerTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+  },
+  headerTitle: {
+    color: 'white',
+    fontWeight: '600',
+  },
+  headerSubtitle: {
+    color: 'rgba(255,255,255,0.8)',
+  },
+  statsCard: {
+    marginHorizontal: 0,
+    marginTop: spacing.md,
+  },
+  statsContent: {
+    padding: spacing.md,
+  },
+  statItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.md,
+  },
+  content: {
+    flex: 1,
+    backgroundColor: themeColors.background,
+    paddingHorizontal: spacing.md,
+    paddingTop: spacing.md,
+  },
+  hint: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginBottom: spacing.md,
+    justifyContent: 'center',
+  },
+  readingsList: {
+    gap: spacing.sm,
+    marginBottom: spacing.md,
+  },
+  readingItem: {
+    marginBottom: spacing.sm,
+  },
+  readingCard: {
+    borderRadius: borderRadius.lg,
+    overflow: 'hidden',
+  },
+  readingContent: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    padding: spacing.md,
+  },
+  readingMain: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    flex: 1,
+  },
+  readingInfo: {
+    flex: 1,
+  },
+  readingValue: {
+    alignItems: 'flex-end',
+  },
+  emptyState: {
+    alignItems: 'center',
+    paddingVertical: spacing.xl * 2,
+  },
+  emptyTitle: {
+    color: themeColors.onBackground,
+    marginTop: spacing.md,
+    fontWeight: '600',
+  },
+  emptySubtitle: {
+    color: themeColors.outline,
+    textAlign: 'center',
+    marginTop: spacing.xs,
+  },
+  actions: {
+    gap: spacing.md,
+    marginTop: spacing.md,
+  },
+  actionButton: {
+    marginBottom: spacing.sm,
+  },
+});

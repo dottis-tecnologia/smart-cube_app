@@ -72,7 +72,7 @@ async function tryAndDownloadImage(meter: Meter) {
     await FileSystem.downloadAsync(meter.imagePath, filePath);
     return filePath;
   } catch (e) {
-    console.error(e);
+    __DEV__ && console.error(e);
     return null;
   }
 }
