@@ -1,12 +1,13 @@
 import { NativeStackHeaderProps } from "@react-navigation/native-stack";
 import { getHeaderTitle } from "@react-navigation/elements";
-import { Box, Center, HStack, Heading, IconButton } from "native-base";
+import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView } from "react-native";
 import { FontAwesome } from "@expo/vector-icons";
 import Animated, { FadeInUp } from "react-native-reanimated";
+import { colors } from "../../theme";
 
 export type HeaderBarProps = NativeStackHeaderProps;
 
-const AnimatedBox = Animated.createAnimatedComponent(Box);
+const AnimatedView = Animated.createAnimatedComponent(View);
 
 export default function HeaderBar({
   navigation,
@@ -17,24 +18,42 @@ export default function HeaderBar({
   const title = getHeaderTitle(options, route.name);
 
   return (
-    <AnimatedBox entering={FadeInUp} safeArea p={3} bg="light.50">
-      <Center>
+    <SafeAreaView style={[styles.container, { backgroundColor: colors.surface }]}>
+      <AnimatedView entering={FadeInUp} style={styles.content}>
         {back && (
-          <AnimatedBox
-            entering={FadeInUp.delay(200)}
-            position={"absolute"}
-            left={0}
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
           >
-            <IconButton
-              colorScheme={"secondary"}
-              variant="ghost"
-              _icon={{ as: FontAwesome, name: "chevron-left" }}
-              onPress={() => navigation.goBack()}
-            />
-          </AnimatedBox>
+            <FontAwesome name="chevron-left" size={20} color={colors.onSurface} />
+          </TouchableOpacity>
         )}
-        <Heading numberOfLines={1}>{title}</Heading>
-      </Center>
-    </AnimatedBox>
+        <Text style={[styles.title, { color: colors.onSurface }]} numberOfLines={1}>
+          {title}
+        </Text>
+      </AnimatedView>
+    </SafeAreaView>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    paddingHorizontal: 16,
+    paddingVertical: 12,
+  },
+  content: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    position: "relative",
+  },
+  backButton: {
+    position: "absolute",
+    left: 0,
+    padding: 8,
+  },
+  title: {
+    fontSize: 17,
+    fontWeight: "600",
+  },
+});

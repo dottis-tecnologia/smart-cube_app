@@ -1,16 +1,13 @@
 import { NativeStackScreenProps } from "@react-navigation/native-stack";
 import { RootStackParamList } from "./Root";
 import {
-  Box,
-  Center,
+  View,
   FlatList,
-  HStack,
-  Heading,
   Pressable,
-  Spinner,
+  ActivityIndicator,
   Text,
-  VStack,
-} from "native-base";
+  StyleSheet,
+} from "react-native";
 import { formatDistanceToNow, isToday } from "date-fns";
 import useQuery from "../hooks/useQuery";
 import { dbQuery } from "../util/db";
@@ -20,6 +17,8 @@ import { memo } from "react";
 import { useTranslation } from "react-i18next";
 import dateFnsLocale from "../util/dateFnsLocale";
 import useStatusBar from "../hooks/useStatusBar";
+import { LinearGradient } from "expo-linear-gradient";
+import { useTheme } from "react-native-paper";
 
 export type ListMetersProps = NativeStackScreenProps<
   RootStackParamList,
@@ -42,6 +41,7 @@ export default function ListMeters({
 }: ListMetersProps) {
   const { location } = params;
   const { t } = useTranslation();
+  const theme = useTheme();
   useStatusBar({ style: "dark" });
 
   const { data, fetchNextPage, isFinished, isRefreshing, refresh } =
@@ -102,64 +102,47 @@ export default function ListMeters({
   );
 
   return (
-    <Box flex={1} bg="light.100">
+    <View style={styles.container}>
       <FlatList
         ListHeaderComponent={
           <>
-            <Center
-              key="heading"
-              bg={{
-                linearGradient: {
-                  colors: ["primary.400", "secondary.400"],
-                  start: [0, 0],
-                  end: [0, 1],
-                },
-              }}
-              p={8}
-              pb={10}
+            <LinearGradient
+              colors={[theme.colors.primary, theme.colors.secondary]}
+              start={[0, 0]}
+              end={[0, 1]}
+              style={styles.header}
             >
-              <Box w="full">
-                <Heading color="white">
-                  <Text key="title" fontWeight={"normal"} fontStyle={"italic"}>
-                    {t("listMeters.location", "Location").toUpperCase()}:
+              <View style={styles.headerContent}>
+                <Text style={styles.locationTitle}>
+                  <Text style={styles.locationLabel}>
+                    {t("listMeters.location").toUpperCase()}:
                   </Text>{" "}
                   {location}
-                </Heading>
-                <Text color="white">
-                  {t(
-                    "listMeters.readingsToday",
-                    "Readings today: {{num}}/{{den}}",
-                    {
-                      num: readingsToday?.rows[0].count ?? "-",
-                      den: readingsTotal?.rows[0]?.count ?? "-",
-                    }
-                  )}
                 </Text>
-              </Box>
-            </Center>
-            <Heading
-              key="title"
-              mt={-3}
-              bg="light.100"
-              mb={3}
-              fontSize={"md"}
-              p={3}
-              borderTopRadius={"lg"}
-            >
-              {t("listMeters.meters", "Meters")}
-            </Heading>
+                <Text style={styles.readingsCount}>
+                  {t("listMeters.readingsToday", {
+                    num: readingsToday?.rows[0].count ?? "-",
+                    den: readingsTotal?.rows[0]?.count ?? "-",
+                  })}
+                </Text>
+              </View>
+            </LinearGradient>
+            <View style={styles.sectionHeader}>
+              <Text style={styles.sectionTitle}>
+                {t("listMeters.meters")}
+              </Text>
+            </View>
           </>
         }
-        flex={1}
         data={flatData}
         onEndReached={() => !isFinished && fetchNextPage()}
         refreshing={isRefreshing}
         onRefresh={refresh}
         ListFooterComponent={
           !isFinished ? (
-            <Center p={5}>
-              <Spinner />
-            </Center>
+            <View style={styles.footer}>
+              <ActivityIndicator />
+            </View>
           ) : null
         }
         renderItem={({ item }) => (
@@ -169,7 +152,7 @@ export default function ListMeters({
           />
         )}
       />
-    </Box>
+    </View>
   );
 }
 
@@ -184,39 +167,101 @@ const ListItem = memo(
     onPress: () => void;
   }) => {
     const { t, i18n } = useTranslation();
+    const theme = useTheme();
+    const hasReadingToday = createdAt && isToday(new Date(createdAt));
+    
     return (
       <AnimatedPressable
         entering={FadeInLeft.delay(150).randomDelay()}
         onPress={onPress}
-        mx={3}
-        mb={3}
+        style={styles.itemContainer}
       >
-        <HStack
-          bg={
-            createdAt && isToday(new Date(createdAt))
-              ? "success.500"
-              : "warning.500"
-          }
-          rounded={"lg"}
-          p={3}
+        <View
+          style={[
+            styles.itemCard,
+            {
+              backgroundColor: hasReadingToday 
+                ? theme.colors.primary 
+                : theme.colors.error,
+            },
+          ]}
         >
-          <VStack>
-            <Text fontWeight={"bold"} fontSize="lg" color="white">
-              {name}
-            </Text>
-            <Text color="white">
-              {t("listMeters.lastReading", "Last reading {{date}}", {
+          <View>
+            <Text style={styles.itemName}>{name}</Text>
+            <Text style={styles.itemDate}>
+              {t("listMeters.lastReading", {
                 date: createdAt
                   ? formatDistanceToNow(new Date(createdAt), {
                       addSuffix: true,
                       locale: dateFnsLocale(i18n.resolvedLanguage),
                     })
-                  : "never",
+                  : t("sync.never"),
               })}
             </Text>
-          </VStack>
-        </HStack>
+          </View>
+        </View>
       </AnimatedPressable>
     );
   }
 );
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#f5f5f5",
+  },
+  header: {
+    padding: 32,
+    paddingBottom: 40,
+  },
+  headerContent: {
+    width: "100%",
+  },
+  locationTitle: {
+    fontSize: 20,
+    fontWeight: "bold",
+    color: "white",
+  },
+  locationLabel: {
+    fontWeight: "normal",
+    fontStyle: "italic",
+  },
+  readingsCount: {
+    fontSize: 16,
+    color: "white",
+    marginTop: 8,
+  },
+  sectionHeader: {
+    marginTop: -12,
+    backgroundColor: "#f5f5f5",
+    marginBottom: 12,
+    padding: 12,
+    borderTopLeftRadius: 12,
+    borderTopRightRadius: 12,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: "600",
+  },
+  footer: {
+    padding: 20,
+    alignItems: "center",
+  },
+  itemContainer: {
+    marginHorizontal: 12,
+    marginBottom: 12,
+  },
+  itemCard: {
+    borderRadius: 8,
+    padding: 12,
+  },
+  itemName: {
+    fontWeight: "bold",
+    fontSize: 18,
+    color: "white",
+  },
+  itemDate: {
+    color: "white",
+    fontSize: 14,
+  },
+});

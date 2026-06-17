@@ -1,5 +1,5 @@
 import trpc from "../trpc";
-import * as FileSystem from "expo-file-system";
+import * as FileSystem from "expo-file-system/legacy";
 import { isAfter } from "date-fns";
 import { dbQuery } from "../db";
 
@@ -72,7 +72,7 @@ async function tryAndDownloadImage(meter: Meter) {
     await FileSystem.downloadAsync(meter.imagePath, filePath);
     return filePath;
   } catch (e) {
-    console.error(e);
+    __DEV__ && console.error(e);
     return null;
   }
 }

@@ -19,7 +19,7 @@ export default function useInfiniteQuery<T, R>(
   const [isFinished, setIsFinished] = useState(false);
   const [isRefreshing, setIsRefreshing] = useState(false);
   const isLoading = useRef(false);
-  const nextPageParam = useRef<R | null>();
+  const nextPageParam = useRef<R | null>(null);
   const isDisabled = options?.isDisabled || false;
 
   const wrappedFunc = useMemo(() => {
@@ -42,7 +42,7 @@ export default function useInfiniteQuery<T, R>(
       let pageParam =
         nextPageParam.current ??
         getNextPageParam(data.length > 0 ? data[data.length - 1] : null, data);
-      nextPageParam.current = undefined;
+      nextPageParam.current = null;
 
       if (pageParam != null) {
         const result = await wrappedFunc(pageParam);

@@ -1,9 +1,8 @@
 import "./i18n";
 
-import { NavigationContainer } from "@react-navigation/native";
+import { NavigationContainer, useNavigationContainerRef } from "@react-navigation/native";
 import Root from "./screens/Root";
-import { NativeBaseProvider } from "native-base";
-import { theme, themeConfig } from "./config";
+import { ThemeProvider } from "./components/ThemeProvider";
 import AuthWrapper from "./components/AuthWrapper";
 import { useCallback, useEffect, useState } from "react";
 import { createTables } from "./util/db";
@@ -12,8 +11,28 @@ import * as Font from "expo-font";
 import { FontAwesome, FontAwesome5 } from "@expo/vector-icons";
 import { StatusBar, StatusBarProps } from "expo-status-bar";
 import { StatusBarContext } from "./hooks/useStatusBar";
+import useAuth from "./hooks/useAuth";
+import type { RootStackParamList } from "./screens/Root";
 
 SplashScreen.preventAutoHideAsync();
+
+type NavRef = ReturnType<typeof useNavigationContainerRef<RootStackParamList>>;
+
+function AuthRedirect({ navRef }: { navRef: NavRef }) {
+  const { userData, isLoading } = useAuth();
+
+  useEffect(() => {
+    if (isLoading) return;
+    if (!navRef.isReady()) return;
+    if (userData) {
+      navRef.reset({ index: 0, routes: [{ name: "Tabs" }] });
+    } else {
+      navRef.reset({ index: 0, routes: [{ name: "Login" }] });
+    }
+  }, [userData, isLoading]);
+
+  return null;
+}
 
 export default function App() {
   const [appIsReady, setAppIsReady] = useState(false);
@@ -39,11 +58,18 @@ export default function App() {
     prepare();
   }, []);
 
-  const onReady = useCallback(async () => {
+  useEffect(() => {
     if (appIsReady) {
-      await SplashScreen.hideAsync();
+      SplashScreen.hideAsync();
     }
   }, [appIsReady]);
+
+  const statusBarContextValue = useCallback(
+    (props: StatusBarProps) => setStatusBarProps(props),
+    []
+  );
+
+  const navRef = useNavigationContainerRef<RootStackParamList>();
 
   if (!appIsReady) {
     return null;
@@ -53,19 +79,16 @@ export default function App() {
     <>
       <StatusBar {...statusBarProps} />
       <StatusBarContext.Provider
-        value={{
-          setProps(props) {
-            setStatusBarProps(props);
-          },
-        }}
+        value={{ setProps: statusBarContextValue }}
       >
-        <NativeBaseProvider theme={theme} config={themeConfig}>
-          <NavigationContainer onReady={onReady}>
+        <ThemeProvider theme="light">
+          <NavigationContainer ref={navRef}>
             <AuthWrapper>
+              <AuthRedirect navRef={navRef} />
               <Root />
             </AuthWrapper>
           </NavigationContainer>
-        </NativeBaseProvider>
+        </ThemeProvider>
       </StatusBarContext.Provider>
     </>
   );

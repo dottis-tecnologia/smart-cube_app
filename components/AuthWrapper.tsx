@@ -33,6 +33,7 @@ export default function AuthWrapper({ children }: AuthWrapperProps) {
 
     await SecureStore.setItemAsync("refresh-token", refreshToken);
     setToken(token);
+    setUser(newUser);
   };
 
   const signOut = async () => {
@@ -69,7 +70,6 @@ export default function AuthWrapper({ children }: AuthWrapperProps) {
     const token = await trpc.session.login.mutate(data);
 
     await setAuth(token);
-    setUser(token.user);
   };
 
   return (

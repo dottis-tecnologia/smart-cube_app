@@ -30,20 +30,30 @@
     "location": "Location:",
     "type": "Type:",
     "notes": "Notes",
-    "latestReadings": "Latest readings"
+    "latestReadings": "Latest readings",
+    "noImage": "No image"
+  },
+  "common": {
+    "unknown": "Unknown"
   },
   "error": "Something went wrong",
   "login": {
     "login": "Log In",
     "enterCredentials": "Enter your credentials",
-    "internetAccess": "You need internet access to login for the first time",
-    "connect": "CONNECT"
+    "internetAccess": "Internet connection required for first-time login",
+    "connect": "CONNECT",
+    "error": "Login error",
+    "invalidEmail": "Please enter a valid email address",
+    "passwordTooShort": "Password must be at least 4 characters"
   },
+  "emailPlaceholder": "your@email.com",
+  "passwordPlaceholder": "••••••••",
   "email": "Email",
-  "error_notFound": "Not found",
+  "error_notFound": "No account found with this email",
   "password": "Password",
-  "error_incorrect": "Incorrect",
-  "error_couldNotConnect": "Could not connect",
+  "error_incorrect": "Incorrect password",
+  "error_couldNotConnect": "Could not connect to server. Check your internet.",
+  "error_required": "This field is required",
   "reading": {
     "notFound": "The reading with id {{id}} was not found",
     "meterId": "Meter Id:",
@@ -53,28 +63,39 @@
     "notSynchronized": "Not synchronized",
     "goToMeter": "Go to Meter",
     "invalidValue": "This value is invalid, please input a number",
-    "currentReading": "Current reading"
+    "currentReading": "Current reading",
+    "saving": "Saving reading...",
+    "noImage": "No image",
+    "createdAt": "Date",
+    "synchedAt": "Synced at"
   },
   "welcome": "Welcome",
   "home": {
     "readingsToday": "Readings today",
-    "latestReadings": "Latest Readings"
+    "readingsWeek": "Last 7 days",
+    "latestReadings": "Latest Readings",
+    "noReadings": "No recent readings",
+    "scanToStart": "Scan a QR Code to get started"
   },
   "location": {
     "location": "Location",
     "typeLocation": "Type the location...",
+    "typeToSearch": "Type to search locations",
+    "foundCount": "{{count}} found",
     "locations": "Locations",
     "meters": "Meters"
   },
   "read": {
     "pointCamera": "Point your camera to the QR Code attached to the meter",
-    "or": "Or",
+    "or": "Or type manually",
     "enterId": "Enter the ID manually below",
-    "meterId": "Meter ID..."
+    "meterId": "Meter ID",
+    "meterIdPlaceholder": "Ex: MED-001"
   },
   "search": {
     "search": "Search",
-    "typeId": "Type the id...",
+    "typeId": "Search by name...",
+    "minChars": "Type at least 3 characters",
     "meters": "Meters",
     "meter": "Meter",
     "location": "Location"
@@ -82,7 +103,13 @@
   "sync": {
     "sync": "Sync",
     "lastSync": "Last synchronization:",
+    "never": "Never",
     "unsentReadings": "Unsent readings",
+    "pending": "Pending",
+    "success": "Synced successfully!",
+    "error": "Sync error",
+    "allSynced": "All synced!",
+    "noPending": "No pending readings",
     "deleteLocal": "Delete local data",
     "deleteDatabaseTitle": "Delete Database",
     "deleteDatabaseBody": "This action will delete the local database and all the data stored in this device, any unsynchronized data will be lost, be careful when using this option",
@@ -90,6 +117,7 @@
   },
   "cancel": "Cancel",
   "delete": "Delete",
+  "save": "Save",
   "tabs": {
     "home": "Home",
     "locations": "Locations",
@@ -97,7 +125,6 @@
     "search": "Search",
     "sync": "Sync"
   },
-  "error_required": "Is required",
   "readings": {
     "longPressToEdit": "Press and hold on an item to edit its value",
     "update": "Update reading",

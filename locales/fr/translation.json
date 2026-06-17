@@ -30,20 +30,29 @@
     "location": "Localisation:",
     "type": "Type:",
     "notes": "Remarques",
-    "latestReadings": "Dernières lectures"
+    "latestReadings": "Dernières lectures",
+    "noImage": "Pas d'image"
+  },
+  "common": {
+    "unknown": "Inconnu"
   },
   "error": "Une erreur s'est produite.",
   "login": {
     "login": "Se connecter",
     "enterCredentials": "Entrez vos identifiants",
-    "internetAccess": "Vous avez besoin d'un accès Internet pour vous connecter pour la première fois",
-    "connect": "SE CONNECTER"
+    "internetAccess": "Connexion Internet requise pour la première connexion",
+    "connect": "SE CONNECTER",
+    "error": "Erreur de connexion",
+    "invalidEmail": "Veuillez saisir une adresse e-mail valide",
+    "passwordTooShort": "Le mot de passe doit contenir au moins 4 caractères"
   },
+  "emailPlaceholder": "votre@email.com",
+  "passwordPlaceholder": "••••••••",
   "email": "E-mail",
-  "error_notFound": "Aucun résultat n'a été trouvé",
+  "error_notFound": "Aucun compte trouvé avec cet e-mail",
   "password": "Mot de passe",
-  "error_incorrect": "Incorrect",
-  "error_couldNotConnect": "Connection impossible",
+  "error_incorrect": "Mot de passe incorrect",
+  "error_couldNotConnect": "Impossible de se connecter au serveur. Vérifiez votre connexion.",
   "reading": {
     "notFound": "La lecture avec l'identifiant {{id}} n'a pas été trouvé",
     "meterId": "Identifiant du compteur :",
@@ -53,28 +62,39 @@
     "notSynchronized": "Non synchronisé",
     "goToMeter": "Accéder au compteur",
     "invalidValue": "Cette valeur est invalide, veuillez entrer un nombre",
-    "currentReading": "Lecture actuelle"
+    "currentReading": "Lecture actuelle",
+    "saving": "Enregistrement de la lecture...",
+    "noImage": "Pas d'image",
+    "createdAt": "Date",
+    "synchedAt": "Synchronisé le"
   },
   "welcome": "Bienvenue",
   "home": {
     "readingsToday": "Lectures aujourd'hui",
-    "latestReadings": "Dernières lectures"
+    "readingsWeek": "7 derniers jours",
+    "latestReadings": "Dernières lectures",
+    "noReadings": "Aucune lecture récente",
+    "scanToStart": "Scannez un QR Code pour commencer"
   },
   "location": {
     "location": "Localisation",
     "typeLocation": "Tapez l'emplacement...",
+    "typeToSearch": "Tapez pour chercher des localisations",
+    "foundCount": "{{count}} trouvé(s)",
     "locations": "Localisations",
     "meters": "Compteurs"
   },
   "read": {
     "pointCamera": "Pointez votre appareil photo vers le QR Code attaché au compteur",
-    "or": "Ou",
+    "or": "Ou saisissez manuellement",
     "enterId": "Entrez l'ID manuellement ci-dessous",
-    "meterId": "ID du compteur..."
+    "meterId": "ID du compteur",
+    "meterIdPlaceholder": "Ex: MED-001"
   },
   "search": {
     "search": "Recherche",
-    "typeId": "Tapez l'identifiant...",
+    "typeId": "Rechercher par nom...",
+    "minChars": "Tapez au moins 3 caractères",
     "meters": "Compteurs",
     "meter": "Compteur",
     "location": "Localisation"
@@ -82,14 +102,21 @@
   "sync": {
     "sync": "Synch",
     "lastSync": "Dernière synchronisation :",
+    "never": "Jamais",
     "unsentReadings": "Lectures non envoyées",
+    "pending": "En attente",
+    "success": "Synchronisé avec succès !",
+    "error": "Erreur de synchronisation",
+    "allSynced": "Tout est synchronisé !",
+    "noPending": "Aucune lecture en attente",
     "deleteLocal": "Supprimer les données locales",
     "deleteDatabaseTitle": "Supprimer la base de données",
     "deleteDatabaseBody": "Cette action supprimera la base de données locale et toutes les données stockées dans cet appareil, toutes les données non synchronisées seront perdues, Faites attention lorsque vous utilisez cette option",
-    "exportDb": "Exporter Database"
+    "exportDb": "Exporter la base de données"
   },
   "cancel": "Annuler",
   "delete": "Supprimer",
+  "save": "Enregistrer",
   "tabs": {
     "home": "Maison",
     "locations": "Localisation",
@@ -97,7 +124,7 @@
     "search": "Recherche",
     "sync": "Synch"
   },
-  "error_required": "Est requis",
+  "error_required": "Ce champ est obligatoire",
   "readings": {
     "longPressToEdit": "Appuyez longuement sur un élément pour éditer sa valeur",
     "update": "Mettre à jour la lecture",

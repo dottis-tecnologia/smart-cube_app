@@ -1,7 +1,14 @@
 import { FontAwesome } from "@expo/vector-icons";
 import { CameraCapturedPicture } from "expo-camera";
-import { Box, Button, Center, HStack, Icon, Image, Text } from "native-base";
 import { useTranslation } from "react-i18next";
+import {
+  View,
+  Text,
+  Image,
+  Pressable,
+  StyleSheet,
+} from "react-native";
+import { useTheme } from "react-native-paper";
 
 export type ConfirmationProps = {
   snapshot: CameraCapturedPicture | null;
@@ -17,41 +24,96 @@ export default function Confirmation({
   onReturn,
 }: ConfirmationProps) {
   const { t } = useTranslation();
+  const theme = useTheme();
 
   return (
-    <Box flex={1}>
+    <View style={styles.container}>
       {snapshot && (
         <Image
-          flex={1}
-          source={snapshot}
+          source={{ uri: snapshot.uri }}
+          style={styles.image}
           resizeMode="contain"
-          bg="black"
-          w={"100%"}
-          h={"100%"}
-          alt="snapshot"
         />
       )}
-      <Center p={3}>
-        <Text mb={5} fontSize={"4xl"}>
+      <View style={styles.content}>
+        <Text style={[styles.readingValue, { color: theme.colors.onSurface }]}>
           {reading}
         </Text>
-        <Text mb={3}>
+        <Text style={[styles.message, { color: theme.colors.onSurfaceVariant }]}>
           {t("createReading.doYouConfirm", "Do you confirm these values?")}
         </Text>
-        <HStack space={3} alignItems={"center"}>
-          <Button
-            size="lg"
-            leftIcon={<Icon as={FontAwesome} name="arrow-left" />}
-            colorScheme={"red"}
+        <View style={styles.buttonRow}>
+          <Pressable
+            style={[styles.button, styles.backButton, { backgroundColor: theme.colors.errorContainer }]}
             onPress={() => onReturn?.()}
           >
-            {t("back", "Go back")}
-          </Button>
-          <Button size="lg" onPress={() => onConfirm?.()} colorScheme={"green"}>
-            {t("confirm", "Confirm")}
-          </Button>
-        </HStack>
-      </Center>
-    </Box>
+            <FontAwesome name="arrow-left" size={16} color={theme.colors.onErrorContainer} style={styles.icon} />
+            <Text style={[styles.buttonText, { color: theme.colors.onErrorContainer }]}>
+              {t("back", "Go back")}
+            </Text>
+          </Pressable>
+          <Pressable
+            style={[styles.button, styles.confirmButton, { backgroundColor: theme.colors.primary }]}
+            onPress={() => onConfirm?.()}
+          >
+            <Text style={[styles.buttonText, { color: theme.colors.onPrimary }]}>
+              {t("confirm", "Confirm")}
+            </Text>
+          </Pressable>
+        </View>
+      </View>
+    </View>
   );
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  image: {
+    flex: 1,
+    backgroundColor: "black",
+    width: "100%",
+  },
+  content: {
+    padding: 16,
+    alignItems: "center",
+    gap: 16,
+  },
+  readingValue: {
+    fontSize: 32,
+    fontWeight: "bold",
+  },
+  message: {
+    fontSize: 16,
+    textAlign: "center",
+  },
+  buttonRow: {
+    flexDirection: "row",
+    gap: 12,
+    justifyContent: "center",
+    width: "100%",
+  },
+  button: {
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "center",
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    borderRadius: 8,
+    flex: 1,
+  },
+  backButton: {
+    flex: 1,
+  },
+  confirmButton: {
+    flex: 1,
+  },
+  buttonText: {
+    fontSize: 14,
+    fontWeight: "600",
+  },
+  icon: {
+    marginRight: 8,
+  },
+});

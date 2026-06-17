@@ -25,8 +25,8 @@ export const syncReading = async <T>(reading: Reading<T>, lastSync?: Date) => {
         reading.createdAt.toISOString(),
         reading.imagePath,
         new Date().toISOString(),
-        reading.technician?.id,
-        reading.technician?.name,
+        reading.technician?.id ?? null,
+        reading.technician?.name ?? null,
       ],
       false
     );

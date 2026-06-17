@@ -1,26 +1,24 @@
-import { View, ScrollView, Box } from "native-base";
-import type { ColorType } from "native-base/lib/typescript/components/types";
-import { ComponentProps, useState, type ReactNode } from "react";
+import React, { ComponentProps, useState, type ReactNode } from "react";
+import { View, ScrollView } from "react-native";
 import Animated, {
-  Extrapolate,
+  Extrapolation,
   interpolate,
   useAnimatedScrollHandler,
   useAnimatedStyle,
   useSharedValue,
 } from "react-native-reanimated";
-
 const AnimatedScrollView = Animated.createAnimatedComponent(ScrollView);
-const AnimatedBox = Animated.createAnimatedComponent(Box);
+const AnimatedView = Animated.createAnimatedComponent(View);
 
 export type ParallaxScrollProps = ComponentProps<typeof ScrollView> & {
   header?: ReactNode | ReactNode[];
-  bg?: ColorType;
+  bg?: string;
 };
 
 export default function ParallaxScroll({
   children,
   header,
-  bg = "light.100",
+  bg = "#f5f5f5",
   ...props
 }: ParallaxScrollProps) {
   const scrollY = useSharedValue(0);
@@ -36,27 +34,36 @@ export default function ParallaxScroll({
       scrollY.value,
       [0, headerHeight],
       [0, headerHeight * 0.9],
-      Extrapolate.EXTEND
+      Extrapolation.EXTEND
     );
     const opacity = interpolate(
       scrollY.value,
       [0, headerHeight],
       [1, 0],
-      Extrapolate.CLAMP
+      Extrapolation.CLAMP
     );
 
     return { opacity, transform: [{ translateY }] };
   });
 
+  const backgroundColor = bg === "light.100" || bg === "light.50" 
+    ? "#f5f5f5" 
+    : bg;
+
   return (
-    <AnimatedScrollView onScroll={scrollHandler} bg={bg} {...props}>
-      <AnimatedBox
-        style={[animatedStyles]}
+    <AnimatedScrollView
+      onScroll={scrollHandler}
+      scrollEventThrottle={16}
+      style={{ backgroundColor }}
+      {...props}
+    >
+      <AnimatedView
+        style={[animatedStyles, { backgroundColor }]}
         onLayout={(e) => setHeaderHeight(e.nativeEvent.layout.height)}
       >
         {header}
-      </AnimatedBox>
-      <View bg={bg}>{children}</View>
+      </AnimatedView>
+      <View style={{ backgroundColor }}>{children}</View>
     </AnimatedScrollView>
   );
 }
